@@ -1,0 +1,13 @@
+# Created by .gitignore support plugin (hsz.mobi)
+.idea
+.publish
+build/lib
+build/web
+node_modules
+packages
+tools/compiler.jar
+web/packages
+web/src
+web/frameworks/js-bindings
+web/frameworks/runtime-src
+web/frameworks/cocos2d-x

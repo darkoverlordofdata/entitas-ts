@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Schmup Wars</title>
+    <link rel="icon" type="image/GIF" href="res/favicon64.png"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="full-screen" content="yes"/>
+    <meta name="screen-orientation" content="portrait"/>
+    <meta name="x5-fullscreen" content="true"/>
+    <meta name="360-fullscreen" content="true"/>
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Schmup Wars, oh give me those Schmup Wars...">
+    <meta name="author" content="">
+
+    <style>
+        @font-face{
+            font-family:'opendyslexic';
+            font-style: normal;
+            font-weight: 400;
+            src: local('opendyslexic'),
+            url(res/fonts/OpenDyslexic-Regular.eot) format('embedded-opentype'),
+            url(res/fonts/OpenDyslexic-Regular.woff) format('woff'),
+            url(res/fonts/OpenDyslexic-Regular.otf) format('opentype'),
+            url(res/fonts/OpenDyslexic-Regular.ttf) format('truetype');
+        }
+        html {
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            background-image:url(res/logo.png);
+        }
+        body {
+            padding:0;
+            margin: 0;
+            background: #000;
+        }
+        body, canvas, div {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            -khtml-user-select: none;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+    </style>
+</head>
+<body></body>
+<script src="src/entitas/Exception.js"></script>
+<script src="src/entitas/interfaces/IComponent.js"></script>
+<script src="src/entitas/interfaces/IMatcher.js"></script>
+<script src="src/entitas/interfaces/ISystem.js"></script>
+<script src="src/entitas/interfaces/IExecuteSystem.js"></script>
+<script src="src/entitas/interfaces/IInitializeSystem.js"></script>
+<script src="src/entitas/interfaces/IReactiveSystem.js"></script>
+<script src="src/entitas/matcher/Matcher.js"></script>
+<script src="src/entitas/matcher/MatcherInterfaces.js"></script>
+<script src="src/entitas/matcher/TriggerOnEvent.js"></script>
+<script src="src/entitas/Entity.js"></script>
+<script src="src/entitas/Group.js"></script>
+<script src="src/entitas/GroupObserver.js"></script>
+<script src="src/entitas/Pool.js"></script>
+<script src="src/entitas/ReactiveSystem.js"></script>
+<script src="src/entitas/Systems.js"></script>
+
+<script src="src/example/generated-ecs.js"></script>
+<script src="src/example/systems/AccelerateSystem.js"></script>
+<script src="src/example/systems/DestroySystem.js"></script>
+<script src="src/example/systems/InputSystem.js"></script>
+<script src="src/example/systems/MoveSystem.js"></script>
+<script src="src/example/systems/ReachedFinishSystem.js"></script>
+<script src="src/example/systems/RenderPositionSystem.js"></script>
+<script src="src/example/systems/AddViewSystem.js"></script>
+<script src="src/example/systems/RemoveViewSystem.js"></script>
+<script src="src/example/systems/CreateFinishLineSystem.js"></script>
+<script src="src/example/systems/CreateOpponentsSystem.js"></script>
+<script src="src/example/systems/CreatePlayerSystem.js"></script>
+<script src="src/example/GameController.js"></script>
+
+
+<script src="main.js"></script>
+</html>

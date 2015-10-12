@@ -1,0 +1,37 @@
+{
+  "version": "1.0",
+  "short_name": "Template",
+  "name": "Template",
+  "description": "{{ description }}",
+  "developer": {
+    "name": "darkoverlordofdata",
+    "url": "https://darkoverlordofdata.com/"
+  },
+  "default_locale": "en",
+
+  "icons": [
+    {
+      "src": "res/icons/icon96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "res/icons/icon144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "res/icons/icon192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "index.html",
+  "display": "fullscreen",
+  "fullscreen": "true",
+  "orientation": "portrait",
+  "installs_allowed_from": [
+    "*"
+  ]
+
+}

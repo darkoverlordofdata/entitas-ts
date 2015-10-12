@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "commonjs",
+    "noImplicitAny": false,
+    "removeComments": false,
+    "preserveConstEnums": false,
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "outDir": "web/src/entitas"
+  },
+  "files": [
+    "lib/src/Exception.ts",
+    "lib/src/interfaces/IComponent.ts",
+    "lib/src/interfaces/IMatcher.ts",
+    "lib/src/interfaces/ISystem.ts",
+    "lib/src/interfaces/IExecuteSystem.ts",
+    "lib/src/interfaces/IInitializeSystem.ts",
+    "lib/src/interfaces/IReactiveSystem.ts",
+    "lib/src/matcher/Matcher.ts",
+    "lib/src/matcher/MatcherInterfaces.ts",
+    "lib/src/matcher/TriggerOnEvent.ts",
+    "lib/src/Entity.ts",
+    "lib/src/Group.ts",
+    "lib/src/GroupObserver.ts",
+    "lib/src/Pool.ts",
+    "lib/src/ReactiveSystem.ts",
+    "lib/src/Systems.ts"
+  ]
+}

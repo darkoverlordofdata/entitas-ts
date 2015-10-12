@@ -1,0 +1,15 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+	"search.exclude": {
+		"**/.published": true,
+		"**/.settings": true,
+		"**/assets": true,
+		"**/bower_components": true,
+		"**/build": true,
+		"**/node_modules": true,
+		"**/packages": true,
+		"**/tools": true,
+		"**/web": true
+	}
+
+}

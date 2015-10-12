@@ -1,0 +1,34 @@
+{
+	"tags": {
+		"allowUnknownTags" : true
+	},
+	"plugins": ["plugins/markdown"],
+	"templates": {
+		"cleverLinks": true,
+		"monospaceLinks": true,
+		"default": {
+			"outputSourceFiles" : true
+		},
+		"applicationName": "Template.coffee",
+		"disqus": "",
+		"googleAnalytics": "",
+		"openGraph": {
+			"title": "",
+			"type": "website",
+			"image": "",
+			"site_name": "",
+			"url": ""
+		},
+		"meta": {
+			"title": "Template.coffee",
+			"description": "{{ description }}",
+			"keyword": "coffeescript ash"
+		},
+		"linenums": false
+	},
+	"markdown": {
+		"parser": "gfm",
+		"hardwrap": true,
+		"tags": ["examples"]
+	}
+}

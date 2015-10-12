@@ -1,0 +1,30 @@
+{
+  "name": "entitas",
+  "version": "0.0.1",
+  "description": "Entitas ECS",
+  "main": "index.js",
+  "config": {
+    "build": []
+  },
+  "scripts": {},
+  "author": "darkoverlordofdata@gmail.com",
+  "license": "MIT",
+  "directories": {
+    "lib": "./lib",
+    "example": "./example"
+  },
+  "devDependencies": {
+    "chai": "~1.9.2",
+    "coffee-script": "1.9.0",
+    "coffee2closure": "^0.1.12",
+    "gulp": "^3.9.0",
+    "gulp-gh-pages": "^0.5.2",
+    "gulp-manifest": "0.0.7",
+    "gulp-shell": "^0.4.2",
+    "gulp-webserver": "^0.9.1",
+    "mocha": "~2.0.1",
+    "morgan": "^1.6.1",
+    "walker": "^1.0.7"
+  },
+  "dependencies": {}
+}

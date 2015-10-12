@@ -1,0 +1,180 @@
+#!/usr/bin/env coffee
+###
+ * Entitas code generation
+ *
+###
+ecs = require('../entitas.json')
+
+###
+ * Header
+###
+sb = ["module #{ecs.namespace} {", ""]
+sb.push "  import Matcher = entitas.Matcher;"
+sb.push "  import IComponent = entitas.IComponent;"
+sb.push "  import IMatcher = entitas.IMatcher;"
+sb.push "  import ISystem = entitas.IMatcher;"
+
+###
+ * Components Enum
+###
+sb.push ""
+sb.push "  export enum CoreComponentIds {"
+for Name, properties of ecs.components
+  sb.push "    #{Name},"
+sb.push "    TotalComponents"
+sb.push "  }"
+sb.push ""
+
+###
+ * Components Class Definitions
+###
+sb.push ""
+for Name, properties of ecs.components
+  sb.push "  export class #{Name}Component implements IComponent {"
+  for p in properties
+    sb.push "    public #{p};"
+  sb.push "  }"
+sb.push ""
+
+###
+ * Entity with components
+###
+sb.push "  export class Entity extends entitas.Entity {"
+sb.push ""
+for Name, properties of ecs.components
+  name = Name[0].toLowerCase()+Name[1...];
+  switch properties
+    when false
+      sb.push "    static #{name}Component:#{Name}Component = new #{Name}Component();"
+      sb.push "    get is#{Name}():boolean {"
+      sb.push "      return this.hasComponent(CoreComponentIds.#{Name});"
+      sb.push "    }"
+      sb.push "    set is#{Name}(value:boolean) {"
+      sb.push "      if (value !== this.is#{Name}) {"
+      sb.push "        if (value) {"
+      sb.push "          this.addComponent(CoreComponentIds.#{Name}, Entity.#{name}Component);"
+      sb.push "        } else {"
+      sb.push "          this.removeComponent(CoreComponentIds.#{Name});"
+      sb.push "        }"
+      sb.push "      }"
+      sb.push "    }"
+      sb.push "    set#{Name}(value:boolean) {"
+      sb.push "      this.is#{Name} = value;"
+      sb.push "      return this;"
+      sb.push "    }"
+    else
+      sb.push "    static _#{name}ComponentPool:Array<#{Name}Component> = [];"
+      sb.push "    static clear#{Name}ComponentPool() {"
+      sb.push "            Entity._#{name}ComponentPool.length = 0;"
+      sb.push "    }"
+      sb.push "    get #{name}():#{Name}Component {"
+      sb.push "      return <#{Name}Component>this.getComponent(CoreComponentIds.#{Name});"
+      sb.push "    }"
+      sb.push "    get has#{Name}():boolean {"
+      sb.push "      return this.hasComponent(CoreComponentIds.#{Name});"
+      sb.push "    }"
+      sb.push "    add#{Name}(#{properties.join(', ')}) {"
+      sb.push "      var component = Entity._#{name}ComponentPool.length > 0 ? Entity._#{name}ComponentPool.pop() : new #{Name}Component();"
+      for p in properties
+        sb.push "      component.#{p.split(':')[0]} = #{p.split(':')[0]};"
+      sb.push "      return this.addComponent(CoreComponentIds.#{Name}, component);"
+
+      sb.push "    }"
+      sb.push "    replace#{Name}(#{properties.join(', ')}) {"
+      sb.push "      var previousComponent = this.has#{Name} ? this.#{name} : null;"
+      sb.push "      var component = Entity._#{name}ComponentPool.length > 0 ? Entity._#{name}ComponentPool.pop() : new #{Name}Component();"
+      for p in properties
+        sb.push "      component.#{p.split(':')[0]} = #{p.split(':')[0]};"
+      sb.push "      this.replaceComponent(CoreComponentIds.#{Name}, component);"
+      sb.push "      if (previousComponent != null) {"
+      sb.push "        Entity._#{name}ComponentPool.push(previousComponent);"
+      sb.push "      }"
+      sb.push "      return this;"
+      sb.push "    }"
+      sb.push "    remove#{Name}() {"
+      sb.push "      var component = this.#{name};"
+      sb.push "      this.removeComponent(CoreComponentIds.#{Name});"
+      sb.push "      Entity._#{name}ComponentPool.push(component);"
+      sb.push "      return this;"
+      sb.push "    }"
+sb.push "  }"
+
+###
+ * Matchers
+###
+sb.push ""
+sb.push "  export class CoreMatcher {"
+sb.push ""
+for Name, properties of ecs.components
+  name = Name[0].toLowerCase()+Name[1...];
+  sb.push "    private static _matcher#{Name}:IMatcher;"
+  sb.push "    "
+  sb.push "    public static get #{Name}():IMatcher {"
+  sb.push "      if (CoreMatcher._matcher#{Name} == null) {"
+  sb.push "        CoreMatcher._matcher#{Name} = Matcher.allOf(CoreComponentIds.#{Name});"
+  sb.push "      }"
+  sb.push "      "
+  sb.push "      return CoreMatcher._matcher#{Name};"
+  sb.push "    }"
+  sb.push "    "
+sb.push "  }"
+
+###
+ * Pooled Entities
+###
+sb.push ""
+sb.push "  export class Pool extends entitas.Pool {"
+sb.push ""
+for Name, pooled of ecs.entities
+  if pooled
+    name = Name[0].toLowerCase()+Name[1...];
+    sb.push "    get #{name}Entity():Entity {"
+    sb.push "      return <Entity>this.getGroup(CoreMatcher.#{Name}).getSingleEntity();"
+    sb.push "    }"
+    sb.push ""
+    sb.push "    get is#{Name}():boolean {"
+    sb.push "      return this.#{name}Entity != null;"
+    sb.push "    }"
+    sb.push ""
+    sb.push "    set is#{Name}(value:boolean) {"
+    sb.push "      var entity = this.#{name}Entity;"
+    sb.push "      if (value != (entity != null)) {"
+    sb.push "        if (value) {"
+    sb.push "          (<Entity>this.createEntity()).is#{Name} = true;"
+    sb.push "        } else {"
+    sb.push "          this.destroyEntity(entity);"
+    sb.push "        }"
+    sb.push "      }"
+    sb.push "    }"
+    sb.push ""
+sb.push ""
+sb.push "  }"
+
+###
+ * Pools
+###
+sb.push "  export class Pools {"
+sb.push "    "
+sb.push "    static _allPools:Array<Pool>;"
+sb.push "    "
+sb.push "    static get allPools():Array<Pool> {"
+sb.push "      if (Pools._allPools == null) {"
+sb.push "        Pools._allPools = [Pools.core];"
+sb.push "      }"
+sb.push "      return Pools._allPools;"
+sb.push "    }"
+sb.push "    "
+sb.push "    static _core:Pool;"
+sb.push "    "
+sb.push "    static get core():Pool {"
+sb.push "      if (Pools._core == null) {"
+sb.push "        Pools._core = new Pool(CoreComponentIds.TotalComponents);"
+sb.push "      }"
+sb.push "    "
+sb.push "      return Pools._core;"
+sb.push "    }"
+sb.push "  }"
+sb.push "}"
+
+fs = require('fs')
+fs.writeFileSync('example/generated.ts', sb.join('\n'))

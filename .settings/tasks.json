@@ -1,0 +1,63 @@
+{
+    "version": "0.1.0",
+    "command": "npm",
+    "isShellCommand": true,
+    "args": ["run"],
+    "tasks": [
+        {
+            "taskName": "_vscode_build",
+            "args": [],
+            "isBuildCommand": true,
+            "problemMatcher": [
+                "$lessCompile",
+                "$tsc",
+                "$jshint"
+            ]
+        },{
+            "taskName": "build",
+            "args": [],
+            "isBuildCommand": false,
+            "problemMatcher": []
+        },{
+            "taskName": "clean",
+            "args": [],
+            "isBuildCommand": false,
+            "problemMatcher": []
+        },{
+            "taskName": "closurebuild",
+            "args": [],
+            "isBuildCommand": false,
+            "problemMatcher": []
+        },{
+            "taskName": "config",
+            "args": [],
+            "isBuildCommand": false,
+            "problemMatcher": []
+        },{
+            "taskName": "deploy",
+            "args": [],
+            "isBuildCommand": false,
+            "problemMatcher": []
+        },{
+            "taskName": "jsdoc",
+            "args": [],
+            "isBuildCommand": false,
+            "problemMatcher": []
+        },{
+            "taskName": "manifest",
+            "args": [],
+            "isBuildCommand": false,
+            "problemMatcher": []
+        },{
+            "taskName": "serve",
+            "args": [],
+            "isBuildCommand": false,
+            "problemMatcher": []
+        },{
+            "taskName": "test",
+            "args": [],
+            "isBuildCommand": false,
+            "problemMatcher": []
+        }
+    ]
+}

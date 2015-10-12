@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+/**
+ * tools/server
+ * 
+ * Used by F5 ./settings/launch.json
+ * 
+ * author: darkoverlordofdata@gmail.com
+ */
+(function() {
+	var gulp = require('gulp');
+	var server = require('gulp-webserver');
+	var logger = require('morgan');
+	var path = process.argv[2] ? process.argv[2] : 'web';
+	
+	if (process.argv[3]) {
+		path = path + "/index_" + process.argv[3] + ".html"
+	}
+	
+	gulp.src('./')
+	.pipe(server({
+		host: 'localhost',
+		port: 0xd16a,
+		livereload: true,
+		directoryListing: false,
+		open: "http://localhost:53610/"+path,
+		middleware: logger('dev')
+	}));
+})();

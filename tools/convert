@@ -1,0 +1,168 @@
+#!/usr/bin/env coffee
+###
+ * Using the outputs from coffeescript
+ * create a closure-compiler ready source
+ *
+###
+fs = require('fs')
+c2c = require('coffee2closure')
+config = require('../jsconfig.json')
+exec = require('child_process').exec
+Walker = require('walker')
+
+
+###
+ * recursively list all the files 
+###
+ls = (path, next) ->
+	files = []
+	(new Walker(path))
+	.filterDir((d, stat) -> true)
+	.on('file', (file, stat) ->
+		files.push(file))
+	.on('end', -> next(files))
+
+
+###
+ * Convert a file name to a namespace 
+###
+getNamespace = (file) ->
+	ns = file.replace(/^web\/src\//, '').replace(/\.js$/,'').replace(/\//g,'.')
+	path = ns.split('.')
+	# convert the filename from snake to camel
+	name = path.pop().split('_')
+	for section, index in name
+		name[index] = section.charAt(0).toUpperCase() + section.substr(1)
+	path.push(name.join(''))
+	ns = path.join('.')
+	return ns
+	
+###
+ * Look for specific externals:
+ * 1 - superclass
+ * 2 - if superclass is node, get components 
+ * 
+###	
+superclass = (ns, src) ->
+	requires = []
+
+	# is there a superclass?
+	rx = new RegExp("goog.inherits\\(#{ns},\\s*(.*)\\);")
+	src.replace(rx, ($0, $1) -> requires.push($1))
+	if requires.length and requires[0] is 'ash.core.Node'
+		# require the components for this node
+		src.replace /\.components\s*=\s*\{([\s\S]*)\};/, ($0, $1) -> 
+			lines = $1.split('\n')
+			lines.pop()
+			lines.shift()
+			for line in lines
+				line.replace(/.*\:\s*([\w.]*),?/, ($0, $1) -> requires.push($1))
+		
+	for ext, index in requires
+		requires[index] = "goog.require('#{ext}');"
+		
+	return requires.join('\n')
+	
+###
+ * Analyze the dependencies
+ * Generate the goog.require statements
+ * Expand imported class names to full namespaces for closure compiler
+###
+dependencies = (ns, src) ->
+	
+	state = 0
+	found = false
+	src = src.split('\n')
+	for line, lineno in src
+		break if line.indexOf("#{ns} = function") isnt -1
+		if line[0..3] is 'var '
+			found = true
+			
+			vars = []
+			names = []
+			deps = {}
+			skip = []
+			for name, index in line[4...-1].split(/\s*,\s*/)
+				ivar = lineno+1+index
+				src[ivar].replace /(\w+)\s*=\s*(.*);/, ($0, $1, $2) -> 
+					names.push($1)
+					vars.push("goog.require('#{$2}');")
+					deps[$1] = $2
+				
+			for dep, index in vars
+				src[lineno+index] = dep
+				skip.push(lineno+index)
+			src[lineno+vars.length] = "";
+			skip.push(lineno+vars.length)
+			break			
+	
+	if found
+		for line, lineno in src
+			if skip.indexOf(lineno) is -1
+				for name in names
+				
+					# "new klass"
+					rx = new RegExp("new #{name}\\b", 'g')
+					line = line.replace(rx, 'new ' +deps[name])
+					
+					# ", klass,"
+					rx = new RegExp(", #{name},", 'g')
+					line = line.replace(rx, ", #{deps[name]},")
+					
+					# "(klass)"
+					rx = new RegExp("\\(#{name}\\)", 'g')
+					line = line.replace(rx, "(#{deps[name]})")
+					
+					# "klass,"
+					rx = new RegExp("\\b#{name}\\.", 'g')
+					line = line.replace(rx, "#{deps[name]}.")
+					
+					if line isnt src[lineno]
+						src[lineno] = line
+	
+	return src.join('\n')
+				
+
+###
+ * Convert coffeescript outputs to goog
+ *
+ * @param {string} name of app
+ * @param {string} root folder 
+###
+convert = (name, root, files, next) ->
+		
+	exec "coffee -o ./goog/#{root} --no-header -cb ./#{root}", (err, out) ->
+		throw err if err
+		deps = []
+		for file in files
+			
+			if file.indexOf('.js.map') is -1
+				if file.indexOf('prolog.js') is -1 and file.indexOf('index.js') is -1
+				# unless file.indexOf('prolog.js') isnt -1
+					ns = getNamespace(file)
+					alt = ns.replace('example', 'asteroids')
+					deps.push(ns)
+					src = fs.readFileSync(file.replace("web/src/#{name}", "./goog/#{root}"), 'utf8')
+					src = src.replace(/'use strict';/, '')
+					src = c2c.fix(src, addGenerateByHeader: false)	
+					src = dependencies(ns, src)
+					ext = superclass(alt, src)
+					
+					src = """
+					goog.provide('#{alt}');
+					#{ext}
+					#{src}
+					"""
+					fs.writeFileSync(file.replace("web/src/#{name}", "./goog/#{root}"), src)
+	
+	
+		next?()
+
+dir = {}
+
+ls './web/src/ash/', (files) ->
+	convert 'ash', 'lib', files, -> 
+		ls './web/src/example/', (files) ->
+			convert 'example', 'example', files , ->
+				fs.writeFileSync('./goog/example/index.js', "goog.provide('asteroids');")
+			

@@ -1,0 +1,30 @@
+{
+  "namespace":"example",
+  "components": {
+    "Acceleratable": false,
+    "Accelerating": false,
+    "Destroy": false,
+    "Move": ["speed:number", "maxSpeed:number"],
+    "Position": ["x:number","y:number","z:number"],
+    "FinishLine": false,
+    "Resource": ["name:string"],
+    "View": ["stage:Object"]
+  },
+  "systems": {
+    "Accelerate":["IReactiveSystem", "ISetPool"],
+    "Destroy":["IReactiveSystem", "ISetPool"],
+    "Input":["IExecuteSystem", "ISetPool"],
+    "Move":["IExecuteSystem", "ISetPool"],
+    "ReachedFinish":["IReactiveSystem", "ISetPool"],
+    "RenderPosition":["IReactiveSystem", "IEnsureComponents"],
+    "AddView":["IReactiveSystem"],
+    "RemoveView":["IMultiReactiveSystem", "ISetPool", "IEnsureComponents"],
+    "CreatePlayerSystem": ["IInitializeSystem", "ISetPool"],
+    "CreateOpponentsSystem": ["IInitializeSystem", "ISetPool"],
+    "CreateFinishLineSystem": ["IInitializeSystem", "ISetPool"]
+  },
+  "entities": {
+    "Accelerating": true,
+    "FinishLine": true
+  }
+}

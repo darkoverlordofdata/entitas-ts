@@ -1,0 +1,52 @@
+#!/usr/bin/env node
+/**
+ * ./configure
+ * 
+ * Configures package.json
+ * 
+ * author: darkoverlordofdata@gmail.com
+ */
+ (function() {
+ 
+	var fs = require('fs');
+	
+	// Load the project json
+	var project = require('../package.json');
+	
+	// Load the scripts configuration
+	var snarf = null;
+	
+	// try js first
+	if (fs.existsSync('./package.scripts.js')) {
+		snarf = require('../package.scripts.js');
+	}
+	// then coffee-script
+	if (fs.existsSync('./package.scripts.coffee')) {
+	
+		if (fs.existsSync('./node_modules/coffee-script/bin/coffee')) {
+			require('coffee-script');
+			require('coffee-script/register');
+			snarf = require('../package.scripts.coffee');
+		}
+	}
+	
+	// Thundercats HO!
+	if (snarf == null) {
+		throw Error('Missing package.scripts');
+	}
+	var scripts = snarf(project);
+	var name, script;
+	
+	for (name in scripts) { 
+		script = scripts[name]
+		if (Array.isArray(script)) {
+			script = script.join(' && ')
+		}
+		project.scripts[name] = (script || '').split('\n').join(' && ');
+		
+	}
+
+	var content = JSON.stringify(project, null, '  ');
+	
+	fs.writeFileSync('./package.json', content, 'utf8');
+})();

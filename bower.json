@@ -1,0 +1,33 @@
+{
+  "name": "entitas",
+  "version": "0.0.1",
+  "authors": [
+    "darkoverlordofdata@gmail.com"
+  ],
+  "description": "Entitas ECS",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "tmp",
+    "build",
+    "node_modules",
+    "packages",
+    "src",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "closure-compiler": "0.2.7",
+    "google-closure-library": "*"
+  },
+  "dependencies": {},
+  "install": {
+    "ignore": [
+      "closure-compiler",
+      "google-closure-library"
+    ],
+    "path": "web/src",
+    "sources": {}
+  }
+}
