@@ -6,6 +6,19 @@ module entitas {
   import IMatcher = entitas.IMatcher;
   import IComponent = entitas.IComponent;
 
+
+  class PoolDoesNotContainEntityException extends Exception {
+    public constructor(entity:Entity, message:string) {
+      super(message + "\nPool does not contain entity " + entity);
+    }
+  }
+
+  class EntityIsNotDestroyedException extends Exception {
+    public constructor(message:string) {
+      super(message + "\nEntity is not destroyed yet!");
+    }
+  }
+
   export module Pool {
     /**
      * event delegates:
@@ -209,17 +222,4 @@ module entitas {
     }
 
   }
-
-  class PoolDoesNotContainEntityException extends Exception {
-    public constructor(entity:Entity, message:string) {
-      super(message + "\nPool does not contain entity " + entity);
-    }
-  }
-
-  class EntityIsNotDestroyedException extends Exception {
-    public constructor(message:string) {
-      super(message + "\nEntity is not destroyed yet!");
-    }
-  }
-
 }

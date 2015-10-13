@@ -6,6 +6,7 @@ module example {
   import TriggerOnEvent = entitas.TriggerOnEvent;
   import Pool = entitas.Pool;
   import Entity = entitas.Entity;
+  import CoreMatcher = entitas.CoreMatcher;
 
   export class DestroySystem implements IReactiveSystem, ISetPool {
 

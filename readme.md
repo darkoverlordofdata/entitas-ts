@@ -2,6 +2,8 @@
 
 Entitas ECS
 
+Status: experimental. Compiles.
+
 Typescript implementation ported from https://github.com/sschmid/Entitas-CSharp
 
 # MIT License

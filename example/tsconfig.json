@@ -10,7 +10,7 @@
     "outDir": "../web/src/example"
   },
   "files": [
-    "entitas.d.ts",
+    "generated.d.ts",
     "generated.ts",
     "systems/AccelerateSystem.ts",
     "systems/AddViewSystem.ts",

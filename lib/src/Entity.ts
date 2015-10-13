@@ -3,6 +3,29 @@ module entitas {
   import Exception = entitas.Exception;
   import IComponent = entitas.IComponent;
 
+  class EntityAlreadyHasComponentException extends Exception {
+    public constructor(message:string, index:number) {
+      super(message + "\nEntity already has a component at index " + index);
+    }
+  }
+
+  class EntityDoesNotHaveComponentException extends Exception {
+    public constructor(message:string, index:number) {
+      super(message + "\nEntity does not have a component at index " + index);
+    }
+  }
+
+  class EntityIsNotEnabledException extends Exception {
+    public constructor(message:string) {
+      super(message + "\nEntity is not enabled");
+    }
+  }
+
+  class EntityIsAlreadyReleasedException extends Exception {
+    public constructor() {
+      super("Entity is already released!");
+    }
+  }
   export module Entity {
     /**
      * event delegates:
@@ -226,30 +249,6 @@ module entitas {
       } else if (this._refCount < 0) {
         throw new EntityIsAlreadyReleasedException();
       }
-    }
-  }
-
-  class EntityAlreadyHasComponentException extends Exception {
-    public constructor(message:string, index:number) {
-      super(message + "\nEntity already has a component at index " + index);
-    }
-  }
-
-  class EntityDoesNotHaveComponentException extends Exception {
-    public constructor(message:string, index:number) {
-      super(message + "\nEntity does not have a component at index " + index);
-    }
-  }
-
-  class EntityIsNotEnabledException extends Exception {
-    public constructor(message:string) {
-      super(message + "\nEntity is not enabled");
-    }
-  }
-
-  class EntityIsAlreadyReleasedException extends Exception {
-    public constructor() {
-      super("Entity is already released!");
     }
   }
 }

@@ -7,6 +7,8 @@ module example {
   import Pool = entitas.Pool;
   import Entity = entitas.Entity;
   import CoreMatcher = entitas.CoreMatcher;
+  import Matcher = entitas.Matcher;
+  import Exception = entitas.Exception;
 
   export class AccelerateSystem implements IReactiveSystem, ISetPool {
 
@@ -18,13 +20,17 @@ module example {
     _group:Group;
 
     public setPool(pool:Pool) {
-      _group = pool.getGroup(Matcher.allOf(CoreMatcher.Acceleratable, CoreMatcher.Move));
+      this._group = pool.getGroup(Matcher.allOf(CoreMatcher.Acceleratable, CoreMatcher.Move));
     }
 
-    public execute(entities:Array<Entity>) {
-      var accelerate = entities.SingleEntity().isAccelerating;
+    public execute(entities:Array<entitas.Entity>) {
+      if (entities.length !== 1) {
+        throw new Exception("Expected exactly one entity but found " + entities.length);
+      }
+      var accelerate = (<Entity>entities[0]).isAccelerating;
       var entities = this._group.getEntities();
       for (var i=0, l=entities.length; i<l; i++) {
+        var e:Entity = <Entity>entities[i];
         var move = e.move;
         var speed = accelerate ? move.maxSpeed : 0;
         e.replaceMove(speed, move.maxSpeed);

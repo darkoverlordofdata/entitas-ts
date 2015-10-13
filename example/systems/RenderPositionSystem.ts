@@ -3,6 +3,8 @@ module example {
   import IReactiveSystem = entitas.IReactiveSystem;
   import IEnsureComponents = entitas.IEnsureComponents;
   import TriggerOnEvent = entitas.TriggerOnEvent;
+  import Matcher = entitas.Matcher;
+  import IMatcher = entitas.IMatcher;
   import CoreMatcher = entitas.CoreMatcher;
   import Pool = entitas.Pool;
   import Entity = entitas.Entity;
@@ -11,7 +13,7 @@ module example {
   export class RenderPositionSystem implements IReactiveSystem, IEnsureComponents {
 
     public get trigger():TriggerOnEvent {
-      return Matcher.AllOf(CoreMatcher.View, CoreMatcher.Position).OnEntityAdded();
+      return (<Matcher>Matcher.allOf(CoreMatcher.View, CoreMatcher.Position)).onEntityAdded();
     }
 
     public get ensureComponents():IMatcher {

@@ -1,5 +1,11 @@
 {
   "namespace":"example",
+  "entitas": "build/entitas.d.ts",
+  "output": {
+    "typescript": "example/generated.ts",
+    "javascript": "example/extensions.js",
+    "declaration": "example/generated.d.ts"
+  },
   "components": {
     "Acceleratable": false,
     "Accelerating": false,
@@ -11,17 +17,17 @@
     "View": ["stage:Object"]
   },
   "systems": {
-    "Accelerate":["IReactiveSystem", "ISetPool"],
-    "Destroy":["IReactiveSystem", "ISetPool"],
-    "Input":["IExecuteSystem", "ISetPool"],
-    "Move":["IExecuteSystem", "ISetPool"],
-    "ReachedFinish":["IReactiveSystem", "ISetPool"],
-    "RenderPosition":["IReactiveSystem", "IEnsureComponents"],
-    "AddView":["IReactiveSystem"],
-    "RemoveView":["IMultiReactiveSystem", "ISetPool", "IEnsureComponents"],
-    "CreatePlayerSystem": ["IInitializeSystem", "ISetPool"],
-    "CreateOpponentsSystem": ["IInitializeSystem", "ISetPool"],
-    "CreateFinishLineSystem": ["IInitializeSystem", "ISetPool"]
+    "Accelerate":false,
+    "Destroy":false,
+    "Input":true,
+    "Move":true,
+    "ReachedFinish":false,
+    "RenderPosition":false,
+    "AddView":false,
+    "RemoveView":false,
+    "CreatePlayerSystem": false,
+    "CreateOpponentsSystem": false,
+    "CreateFinishLineSystem": false
   },
   "entities": {
     "Accelerating": true,

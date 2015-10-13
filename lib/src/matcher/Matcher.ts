@@ -8,8 +8,6 @@ module entitas {
   import IAnyOfMatcher = entitas.IAnyOfMatcher;
   import INoneOfMatcher = entitas.INoneOfMatcher;
 
-  export class CoreMatcher{}
-
   export class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {
 
     public get id():number {return this._id;}
