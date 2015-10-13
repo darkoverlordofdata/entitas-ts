@@ -222,7 +222,8 @@ module entitas {
         var components = this.getComponents();
         var lastSeperator = components.length - 1 ;
         for (var i = 0, componentsLength = components.length; i < componentsLength; i++) {
-          sb.push(typeof components[i]);
+          sb.push(components[i].constructor.name);
+          //sb.push(typeof components[i]);
           if (i < lastSeperator) {
             sb.push(seperator);
           }

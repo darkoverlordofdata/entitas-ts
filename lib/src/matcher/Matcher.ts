@@ -8,6 +8,7 @@ module entitas {
   import IAnyOfMatcher = entitas.IAnyOfMatcher;
   import INoneOfMatcher = entitas.INoneOfMatcher;
 
+  export class CoreMatcher {}
   export class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {
 
     public get id():number {return this._id;}
@@ -37,7 +38,7 @@ module entitas {
     }
 
     public anyOf(...args:any[]):IAnyOfMatcher {
-      if ('number' === typeof args[0]) {
+      if ('number' === typeof args[0] || 'string' === typeof args[0]) {
         this._anyOfIndices = Matcher.distinctIndices(args);
         this._indices = undefined;
         return this;
@@ -47,7 +48,7 @@ module entitas {
     }
 
     public noneOf(...args:any[]):INoneOfMatcher {
-      if ('number' === typeof args[0]) {
+      if ('number' === typeof args[0] || 'string' === typeof args[0]) {
         this._noneOfIndices = Matcher.distinctIndices(args);
         this._indices = undefined;
         return this;
@@ -71,30 +72,17 @@ module entitas {
 
       var indicesList = [];
       if (this._allOfIndices !== undefined) {
-        indicesList.concat(this._allOfIndices);
+        indicesList = indicesList.concat(this._allOfIndices);
       }
       if (this._anyOfIndices !== undefined) {
-        indicesList.concat(this._anyOfIndices);
+        indicesList = indicesList.concat(this._anyOfIndices);
       }
       if (this._noneOfIndices !== undefined) {
-        indicesList.concat(this._noneOfIndices);
+        indicesList = indicesList.concat(this._noneOfIndices);
       }
 
       return Matcher.distinctIndices(indicesList);
 
-    }
-    public static mergeIndices(matchers:Array<IMatcher>):number[] {
-
-      var indices = [];
-      for (var i = 0, matchersLength = matchers.length; i < matchersLength; i++) {
-        var matcher = matchers[i];
-        if (matcher.indices.length != 1) {
-          throw new MatcherException(matcher);
-        }
-        indices[i] = matcher.indices[0];
-      }
-
-      return indices;
     }
 
     public toString() {
@@ -164,24 +152,37 @@ module entitas {
       return [].concat(Object.keys(indicesSet));
     }
 
+    public static mergeIndices(matchers:Array<IMatcher>):number[] {
+
+      var indices = [];
+      for (var i = 0, matchersLength = matchers.length; i < matchersLength; i++) {
+        var matcher = matchers[i];
+        if (matcher.indices.length !== 1) {
+          throw new MatcherException(matcher);
+        }
+        indices[i] = matcher.indices[0];
+      }
+      return indices;
+    }
+
     public static allOf(...args:any[]):IAllOfMatcher {
-      if ('number' === typeof args[0]) {
+      if ('number' === typeof args[0] || 'string' === typeof args[0]) {
         var matcher = new Matcher();
         matcher._allOfIndices = Matcher.distinctIndices(args);
         return matcher;
       } else {
-        return Matcher.allOf(Matcher.mergeIndices(args));
+        return Matcher.allOf.apply(this, Matcher.mergeIndices(args));
       }
 
     }
 
     public static anyOf(...args:any[]):IAnyOfMatcher {
-      if ('number' === typeof args[0]) {
+      if ('number' === typeof args[0] || 'string' === typeof args[0]) {
         var matcher = new Matcher();
         matcher._anyOfIndices = Matcher.distinctIndices(args);
         return matcher;
       } else {
-        return Matcher.anyOf(Matcher.mergeIndices(args));
+        return Matcher.anyOf.apply(this, Matcher.mergeIndices(args));
       }
     }
 

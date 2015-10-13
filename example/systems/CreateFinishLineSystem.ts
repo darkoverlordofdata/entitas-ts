@@ -13,11 +13,10 @@
     }
 
     public initialize() {
-      var e:Entity = <Entity>this._pool.createEntity();
-
-      e.setFinishLine(true);
-      e.addResource("Finish Line");
-      e.addPosition(9, 7, 0);
+      this._pool.createEntity()
+        .setFinishLine(true)
+        .addResource("Finish Line")
+        .addPosition(9, 7, 0);
     }
   }
 

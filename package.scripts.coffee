@@ -22,7 +22,7 @@ BabelScript     = 4   # es6
 ClosureCompiler = 8   # plovr
 
 # paths:
-LIB_NAME        = "ash"
+LIB_NAME        = require('./package.json').name
 PLOVR           = "tools/plovr.jar"
 COMPILER_JAR    = "packages/closure-compiler/lib/vendor/compiler.jar"
 LIB_ASH         = "packages/ash.coffee/goog/lib"

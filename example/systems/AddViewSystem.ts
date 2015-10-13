@@ -13,6 +13,7 @@ module example {
     }
 
     public execute(entities:Array<Entity>) {
+      console.log('AddViewSystem::execute', entities);
       for (var i = 0, l = entities.length; i < l; i++) {
         var e = entities[i]
       }

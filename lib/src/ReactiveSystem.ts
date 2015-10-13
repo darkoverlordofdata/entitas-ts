@@ -38,7 +38,7 @@ module entitas {
       this._clearAfterExecute = subSystem['clearAfterExecute'];
 
       var triggersLength = triggers.length;
-      var groups = new Group[triggersLength];
+      var groups = new Array(triggersLength);
       var eventTypes = new Array(triggersLength);
       for (var i = 0; i < triggersLength; i++) {
         var trigger = triggers[i];

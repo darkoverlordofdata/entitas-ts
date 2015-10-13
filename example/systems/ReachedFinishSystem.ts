@@ -20,6 +20,7 @@ module example {
     }
 
     public execute(entities:Array<Entity>) {
+      console.log('ReachedFinishSystem::execute', entities);
       var finishLinePosY = this._pool.finishLineEntity.position.y;
       for (var i=0, l=entities.length; i<l; i++) {
         var e = entities[i];

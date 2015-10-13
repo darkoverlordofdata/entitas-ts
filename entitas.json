@@ -3,7 +3,7 @@
   "entitas": "build/entitas.d.ts",
   "output": {
     "typescript": "example/generated.ts",
-    "javascript": "example/extensions.js",
+    "javascript": "web/src/example/extensions.js",
     "declaration": "example/generated.d.ts"
   },
   "components": {

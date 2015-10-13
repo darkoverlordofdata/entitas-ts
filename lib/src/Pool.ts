@@ -167,26 +167,26 @@ module entitas {
       return group;
     }
 
-    protected updateGroupsComponentAddedOrRemoved(entity:Entity, index:number, component:IComponent) {
+    protected updateGroupsComponentAddedOrRemoved = (entity:Entity, index:number, component:IComponent) => {
       var groups = this._groupsForIndex[index];
       if (groups !== undefined) {
         for (var i = 0, groupsCount = groups.length; i < groupsCount; i++) {
           groups[i].handleEntity(entity, index, component);
         }
       }
-    }
+    };
 
 
-    protected updateGroupsComponentReplaced(entity:Entity, index:number, previousComponent:IComponent, newComponent:IComponent) {
+    protected updateGroupsComponentReplaced = (entity:Entity, index:number, previousComponent:IComponent, newComponent:IComponent) => {
       var groups = this._groupsForIndex[index];
       if (groups !== undefined) {
         for (var i = 0, groupsCount = groups.length; i < groupsCount; i++) {
           groups[i].updateEntity(entity, index, previousComponent, newComponent);
         }
       }
-    }
+    };
 
-    protected onEntityReleased(entity:Entity) {
+    protected onEntityReleased = (entity:Entity) => {
       if(entity._isEnabled){
         throw new EntityIsNotDestroyedException("Cannot release entity.");
       }
@@ -194,12 +194,17 @@ module entitas {
       if (e !== -1) entity.onEntityReleased.splice(e, 1);
       delete this._retainedEntities[entity.creationIndex];
       this._reusableEntities.push(entity);
-    }
+    };
 
 
 
     /** PoolExtension::createSystem */
-    public createSystem(system) {
+    public createSystem(system:ISystem|Function) {
+      if ('function' === typeof system) {
+        var Klass:any = system;
+        system = new Klass();
+      }
+
       Pool.setPool(system, this);
       var reactiveSystem:any = system['trigger'] ? system : null;
       if (reactiveSystem != null) {

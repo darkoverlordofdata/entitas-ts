@@ -21,6 +21,7 @@ module example {
     }
 
     public execute(entities:Array<Entity>) {
+      console.log('DestroySystem::execute', entities);
       for (var i=0, l=entities.length; i<l; i++) {
         var e = entities[i];
         this._pool.destroyEntity(e);
