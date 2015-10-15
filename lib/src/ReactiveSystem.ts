@@ -1,15 +1,15 @@
 module entitas {
 
-  import IReactiveExecuteSystem = entitas.IReactiveExecuteSystem;
-  import IReactiveSystem = entitas.IReactiveSystem;
-  import IMultiReactiveSystem = entitas.IMultiReactiveSystem;
-  import GroupObserver = entitas.GroupObserver;
+  import Group = entitas.Group;
   import IMatcher = entitas.IMatcher;
+  import GroupObserver = entitas.GroupObserver;
+  import GroupEventType = entitas.GroupEventType;
+  import IReactiveSystem = entitas.IReactiveSystem;
   import IEnsureComponents = entitas.IEnsureComponents;
   import IExcludeComponents = entitas.IExcludeComponents;
+  import IMultiReactiveSystem = entitas.IMultiReactiveSystem;
   import IClearReactiveSystem = entitas.IClearReactiveSystem;
-  import Group = entitas.Group;
-  import GroupEventType = entitas.GroupEventType;
+  import IReactiveExecuteSystem = entitas.IReactiveExecuteSystem;
 
   export class ReactiveSystem implements IExecuteSystem {
     public get subsystem():entitas.IReactiveExecuteSystem {return this._subsystem;}

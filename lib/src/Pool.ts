@@ -1,31 +1,30 @@
 module entitas {
 
-  import Exception = entitas.Exception;
   import Entity = entitas.Entity;
   import Group = entitas.Group;
   import IMatcher = entitas.IMatcher;
+  import PoolChanged = Pool.PoolChanged;
   import IComponent = entitas.IComponent;
+  import GroupChanged = Pool.GroupChanged;
+  import IReactiveSystem = entitas.IReactiveSystem;
+  import IMultiReactiveSystem = entitas.IMultiReactiveSystem;
+  import EntityIsNotDestroyedException = entitas.EntityIsNotDestroyedException;
+  import PoolDoesNotContainEntityException = entitas.PoolDoesNotContainEntityException;
 
-
-  class PoolDoesNotContainEntityException extends Exception {
-    public constructor(entity:Entity, message:string) {
-      super(message + "\nPool does not contain entity " + entity);
-    }
-  }
-
-  class EntityIsNotDestroyedException extends Exception {
-    public constructor(message:string) {
-      super(message + "\nEntity is not destroyed yet!");
-    }
-  }
-
+  /**
+   * event delegate boilerplate:
+   */
   export module Pool {
-    /**
-     * event delegates:
-     */
-    export interface PoolChanged {(pool:Pool, entity:Entity):void;}
-    export interface GroupChanged {(pool:Pool, group:Group):void;}
 
+    export interface PoolChanged {(pool:Pool, entity:Entity):void;}
+    export interface IPoolChanged<T> extends entitas.ISignal<T> {
+      dispatch(pool:Pool, entity:Entity):void;
+    }
+
+    export interface GroupChanged {(pool:Pool, group:Group):void;}
+    export interface IGroupChanged<T> extends entitas.ISignal<T> {
+      dispatch(pool:Pool, group:Group):void;
+    }
   }
 
   export interface ISetPool {
@@ -39,10 +38,10 @@ module entitas {
     public get reusableEntitiesCount():number {return this._reusableEntities.length;}
     public get retainedEntitiesCount():number {return Object.keys(this._retainedEntities).length;}
 
-    public onEntityCreated:Array<Pool.PoolChanged> = [];
-    public onEntityWillBeDestroyed:Array<Pool.PoolChanged> = [];
-    public onEntityDestroyed:Array<Pool.PoolChanged> = [];
-    public onGroupCreated:Array<Pool.GroupChanged> = [];
+    public onEntityCreated:Pool.IPoolChanged<PoolChanged>;
+    public onEntityWillBeDestroyed:Pool.IPoolChanged<PoolChanged>;
+    public onEntityDestroyed:Pool.IPoolChanged<PoolChanged>;
+    public onGroupCreated:Pool.IGroupChanged<GroupChanged>;
 
     public _entities = {};
     public _groups = {};
@@ -50,6 +49,7 @@ module entitas {
     public _reusableEntities:Array<Entity> = [];
     public _retainedEntities = {};
 
+    private _componentsEnum:Object;
     private _totalComponents:number = 0;
     public _creationIndex:number = 0;
     public _entitiesCache:Array<Entity>;
@@ -58,7 +58,11 @@ module entitas {
     public _cachedUpdateGroupsComponentReplaced:Entity.ComponentReplaced;
     public _cachedOnEntityReleased:Entity.EntityReleased;
 
-    constructor(totalComponents:number, startCreationIndex:number=0) {
+    constructor(components:{}, totalComponents:number, startCreationIndex:number=0) {
+      this.onGroupCreated = new Signal<GroupChanged>(this);
+      this.onEntityCreated = new Signal<PoolChanged>(this);
+      this.onEntityDestroyed = new Signal<PoolChanged>(this);
+      this.onEntityWillBeDestroyed = new Signal<PoolChanged>(this);
 
       this._totalComponents = totalComponents;
       this._creationIndex = startCreationIndex;
@@ -72,17 +76,15 @@ module entitas {
       var entity = this._reusableEntities.length > 0 ? this._reusableEntities.pop() : new Entity(this._totalComponents);
       entity._isEnabled = true;
       entity._creationIndex = this._creationIndex++;
-      entity.retain();
+      entity.addRef();
       this._entities[entity.creationIndex] = entity;
       this._entitiesCache = undefined;
-      entity.onComponentAdded.push(this._cachedUpdateGroupsComponentAddedOrRemoved);
-      entity.onComponentRemoved.push(this._cachedUpdateGroupsComponentAddedOrRemoved);
-      entity.onComponentReplaced.push(this._cachedUpdateGroupsComponentReplaced);
-      entity.onEntityReleased.push(this._cachedOnEntityReleased);
+      entity.onComponentAdded.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
+      entity.onComponentRemoved.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
+      entity.onComponentReplaced.add(this._cachedUpdateGroupsComponentReplaced);
+      entity.onEntityReleased.add(this._cachedOnEntityReleased);
 
-      for (var onEntityCreated=this.onEntityCreated, e=0; e<onEntityCreated.length; e++)
-        onEntityCreated[e](this, entity);
-
+      this.onEntityCreated.dispatch(this, entity);
       return entity;
     }
 
@@ -93,19 +95,13 @@ module entitas {
           "Could not destroy entity!");
       }
       this._entitiesCache = undefined;
-
-
-      for (var onEntityWillBeDestroyed=this.onEntityWillBeDestroyed, e=0; e<onEntityWillBeDestroyed.length; e++)
-        onEntityWillBeDestroyed[e](this, entity);
-
+      this.onEntityWillBeDestroyed.dispatch(this, entity);
       entity.destroy();
 
-      for (var onEntityDestroyed=this.onEntityDestroyed, e=0; e<onEntityDestroyed.length; e++)
-        onEntityDestroyed[e](this, entity);
+      this.onEntityDestroyed.dispatch(this, entity);
 
       if (entity._refCount === 1) {
-        var e = entity.onEntityReleased.indexOf(this._cachedOnEntityReleased);
-        if (e !== -1) entity.onEntityReleased.splice(e, 1);
+        entity.onEntityReleased.remove(this._cachedOnEntityReleased);
         this._reusableEntities.push(entity);
       } else {
         this._retainedEntities[entity.creationIndex] = entity;
@@ -161,8 +157,7 @@ module entitas {
           }
           this._groupsForIndex[index].push(group);
         }
-        for (var onGroupCreated=this.onGroupCreated, e=0; e<onGroupCreated.length; e++)
-          onGroupCreated[e](this, group);
+          this.onGroupCreated.dispatch(this, group);
       }
       return group;
     }
@@ -178,6 +173,7 @@ module entitas {
 
 
     protected updateGroupsComponentReplaced = (entity:Entity, index:number, previousComponent:IComponent, newComponent:IComponent) => {
+      console.log('updateGroupsComponentReplaced', entity);
       var groups = this._groupsForIndex[index];
       if (groups !== undefined) {
         for (var i = 0, groupsCount = groups.length; i < groupsCount; i++) {
@@ -187,11 +183,11 @@ module entitas {
     };
 
     protected onEntityReleased = (entity:Entity) => {
+      console.log('onEntityReleased', entity);
       if(entity._isEnabled){
         throw new EntityIsNotDestroyedException("Cannot release entity.");
       }
-      var e = entity.onEntityReleased.indexOf(this._cachedOnEntityReleased);
-      if (e !== -1) entity.onEntityReleased.splice(e, 1);
+      entity.onEntityReleased.remove(this._cachedOnEntityReleased);
       delete this._retainedEntities[entity.creationIndex];
       this._reusableEntities.push(entity);
     };
@@ -199,27 +195,30 @@ module entitas {
 
 
     /** PoolExtension::createSystem */
-    public createSystem(system:ISystem|Function) {
+    public createSystem(system:ISystem);
+    public createSystem(system:Function);
+
+    public createSystem(system) {
       if ('function' === typeof system) {
         var Klass:any = system;
         system = new Klass();
       }
 
       Pool.setPool(system, this);
-      var reactiveSystem:any = system['trigger'] ? system : null;
+      var reactiveSystem = system['trigger'] ? system : null;
       if (reactiveSystem != null) {
-        return <any>(new ReactiveSystem(this, reactiveSystem));
+        return new ReactiveSystem(this, <IReactiveSystem>reactiveSystem);
       }
       var multiReactiveSystem = system['triggers'] ? system : null;
       if (multiReactiveSystem != null) {
-        return new ReactiveSystem(this, multiReactiveSystem);
+        return new ReactiveSystem(this, <IMultiReactiveSystem>multiReactiveSystem);
       }
       return system;
     }
 
     /** PoolExtension::setPool */
     public static setPool(system:ISystem, pool:Pool) {
-      var poolSystem:ISetPool = <any>(system['setPool'] ? system : null);
+      var poolSystem:ISetPool = <ISetPool>(system['setPool'] ? system : null);
       if (poolSystem != null) {
         poolSystem.setPool(pool);
       }

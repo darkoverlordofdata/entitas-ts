@@ -27,7 +27,7 @@ module example {
 
 
     public setPool(pool:Pool) {
-      pool.getGroup(CoreMatcher.View).onEntityRemoved.push(this.onEntityRemoved);
+      pool.getGroup(CoreMatcher.View).onEntityRemoved.add(this.onEntityRemoved);
     }
 
     onEntityRemoved(group:Group, entity:Entity, index:number, component:IComponent) {

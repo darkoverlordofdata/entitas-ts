@@ -1,9 +1,9 @@
 module entitas {
 
-  import IInitializeSystem = entitas.IInitializeSystem;
-  import IExecuteSystem = entitas.IExecuteSystem;
   import ISystem = entitas.ISystem;
   import ReactiveSystem = entitas.ReactiveSystem;
+  import IExecuteSystem = entitas.IExecuteSystem;
+  import IInitializeSystem = entitas.IInitializeSystem;
 
   export enum SystemType {
     IInitializeSystem=1,          //  ::initialize()
@@ -26,7 +26,10 @@ module entitas {
       this._executeSystems = [];
     }
 
-    public add(system:ISystem|Function) {
+    public add(system:ISystem);
+    public add(system:Function);
+
+    public add(system) {
 
       if ('function' === typeof system) {
         var Klass:any = system;

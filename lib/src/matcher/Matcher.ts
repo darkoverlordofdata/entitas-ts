@@ -1,14 +1,14 @@
 module entitas {
 
-  import Exception = entitas.Exception;
   import Entity = entitas.Entity;
   import Component = entitas.IComponent;
-
   import IAllOfMatcher = entitas.IAllOfMatcher;
   import IAnyOfMatcher = entitas.IAnyOfMatcher;
   import INoneOfMatcher = entitas.INoneOfMatcher;
+  import MatcherException = entitas.MatcherException;
 
   export class CoreMatcher {}
+
   export class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {
 
     public get id():number {return this._id;}
@@ -37,15 +37,21 @@ module entitas {
       this._id = Matcher.uniqueId++;
     }
 
+    public anyOf(...args:Array<IMatcher>):IAnyOfMatcher;
+    public anyOf(...args:number[]):IAnyOfMatcher;
+
     public anyOf(...args:any[]):IAnyOfMatcher {
       if ('number' === typeof args[0] || 'string' === typeof args[0]) {
         this._anyOfIndices = Matcher.distinctIndices(args);
         this._indices = undefined;
         return this;
       } else {
-        return this.anyOf(Matcher.mergeIndices(args))
+        return this.anyOf.apply(this, Matcher.mergeIndices(args));
       }
     }
+
+    public noneOf(...args:number[]):INoneOfMatcher;
+    public noneOf(...args:Array<IMatcher>):INoneOfMatcher;
 
     public noneOf(...args:any[]):INoneOfMatcher {
       if ('number' === typeof args[0] || 'string' === typeof args[0]) {
@@ -53,7 +59,7 @@ module entitas {
         this._indices = undefined;
         return this;
       } else {
-        return this.noneOf(Matcher.mergeIndices(args))
+        return this.noneOf.apply(this, Matcher.mergeIndices(args));
       }
     }
 
@@ -165,6 +171,9 @@ module entitas {
       return indices;
     }
 
+    public static allOf(...args:number[]):IAllOfMatcher;
+    public static allOf(...args:Array<IMatcher>):IAllOfMatcher;
+
     public static allOf(...args:any[]):IAllOfMatcher {
       if ('number' === typeof args[0] || 'string' === typeof args[0]) {
         var matcher = new Matcher();
@@ -175,6 +184,9 @@ module entitas {
       }
 
     }
+
+    public static anyOf(...args:number[]):IAnyOfMatcher;
+    public static anyOf(...args:Array<IMatcher>):IAnyOfMatcher;
 
     public static anyOf(...args:any[]):IAnyOfMatcher {
       if ('number' === typeof args[0] || 'string' === typeof args[0]) {
@@ -217,12 +229,5 @@ module entitas {
     }
 
   }
-
-  class MatcherException extends Exception {
-    public constructor(matcher:IMatcher) {
-      super("matcher.indices.length must be 1 but was " + matcher.indices.length);
-    }
-  }
-
 }
 

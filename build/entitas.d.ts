@@ -4,48 +4,9 @@ declare module entitas {
         constructor(message: any);
         toString(): string;
     }
-    class EntityAlreadyHasComponentException extends Exception {
-        constructor(message: string, index: number);
-    }
-    class EntityDoesNotHaveComponentException extends Exception {
-        constructor(message: string, index: number);
-    }
-    class EntityIsNotEnabledException extends Exception {
-        constructor(message: string);
-    }
-    class EntityIsAlreadyReleasedException extends Exception {
-        constructor();
-    }
-    class SingleEntityException extends Exception {
-        constructor(matcher: IMatcher);
-    }
-    class GroupObserverException extends Exception {
-        constructor(message: string);
-    }
-    class PoolDoesNotContainEntityException extends Exception {
-        constructor(entity: Entity, message: string);
-    }
-    class EntityIsNotDestroyedException extends Exception {
-        constructor(message: string);
-    }
-    class MatcherException extends Exception {
-        constructor(matcher: IMatcher);
-    }
-}
-declare module entitas {
-    interface ISignal<T> {
-        dispatch(...args: any[]): void;
-        add(listener: T): void;
-        remove(listener: T): void;
-        clear(): void;
-    }
-    class Signal<T> implements ISignal<T> {
-        private _listeners;
-        private _context;
-        constructor(context: any);
-        dispatch(...args: any[]): void;
-        add(listener: T): void;
-        remove(listener: T): void;
+    interface IDelegate {
+        add(delegate: Function): void;
+        remove(delegate: Function): void;
         clear(): void;
     }
 }
@@ -164,42 +125,33 @@ declare module entitas {
     }
 }
 declare module entitas {
-    import ISignal = entitas.ISignal;
     import IComponent = entitas.IComponent;
-    import EntityChanged = Entity.EntityChanged;
-    import IEntityChanged = Entity.IEntityChanged;
-    import EntityReleased = Entity.EntityReleased;
-    import IEntityReleased = Entity.IEntityReleased;
-    import ComponentReplaced = Entity.ComponentReplaced;
-    /**
-     * event delegate boilerplate:
-     */
     module Entity {
+        /**
+         * event delegates:
+         */
         interface EntityReleased {
             (e: Entity): void;
-        }
-        interface IEntityReleased<T> extends ISignal<T> {
-            dispatch(e: Entity): void;
         }
         interface EntityChanged {
             (e: Entity, index: number, component: IComponent): void;
         }
-        interface IEntityChanged<T> extends ISignal<T> {
-            dispatch(e: Entity, index: number, component: IComponent): void;
-        }
         interface ComponentReplaced {
             (e: Entity, index: number, component: IComponent, replacement: IComponent): void;
         }
-        interface IComponentReplaced<T> extends ISignal<T> {
-            dispatch(e: Entity, index: number, component: IComponent, replacement: IComponent): void;
+        interface IEntityReleased extends IDelegate, EntityReleased {
+        }
+        interface IEntityChanged extends IDelegate, EntityChanged {
+        }
+        interface IComponentReplaced extends IDelegate, ComponentReplaced {
         }
     }
     class Entity {
         creationIndex: number;
-        onEntityReleased: IEntityReleased<EntityReleased>;
-        onComponentAdded: IEntityChanged<EntityChanged>;
-        onComponentRemoved: IEntityChanged<EntityChanged>;
-        onComponentReplaced: Entity.IComponentReplaced<ComponentReplaced>;
+        onEntityReleased: Entity.IEntityReleased;
+        onComponentAdded: Entity.IEntityChanged;
+        onComponentRemoved: Entity.IEntityChanged;
+        onComponentReplaced: Entity.IComponentReplaced;
         _creationIndex: number;
         _isEnabled: boolean;
         _components: any;
@@ -221,38 +173,34 @@ declare module entitas {
         removeAllComponents(): void;
         destroy(): void;
         toString(): string;
-        addRef(): Entity;
+        retain(): Entity;
         release(): void;
     }
 }
 declare module entitas {
+    import GroupEventType = entitas.GroupEventType;
     import Entity = entitas.Entity;
     import IMatcher = entitas.IMatcher;
     import IComponent = entitas.IComponent;
-    import GroupChanged = Group.GroupChanged;
-    import GroupUpdated = Group.GroupUpdated;
-    import GroupEventType = entitas.GroupEventType;
-    /**
-     * event delegate boilerplate:
-     */
     module Group {
+        /**
+         * event delegates:
+         */
         interface GroupChanged {
             (group: Group, entity: Entity, index: number, component: IComponent): void;
-        }
-        interface IGroupChanged<T> extends entitas.ISignal<T> {
-            dispatch(group: Group, entity: Entity, index: number, component: IComponent): void;
         }
         interface GroupUpdated {
             (group: Group, entity: Entity, index: number, component: IComponent, newComponent: IComponent): void;
         }
-        interface IGroupUpdated<T> extends entitas.ISignal<T> {
-            dispatch(group: Group, entity: Entity, index: number, component: IComponent, newComponent: IComponent): void;
+        interface IGroupChanged extends IDelegate, GroupChanged {
+        }
+        interface IGroupUpdated extends IDelegate, GroupUpdated {
         }
     }
     class Group {
-        onEntityAdded: Group.IGroupChanged<GroupChanged>;
-        onEntityRemoved: Group.IGroupChanged<GroupChanged>;
-        onEntityUpdated: Group.IGroupUpdated<GroupUpdated>;
+        onEntityAdded: Group.IGroupChanged;
+        onEntityRemoved: Group.IGroupChanged;
+        onEntityUpdated: Group.IGroupUpdated;
         count: number;
         matcher: IMatcher;
         private _matcher;
@@ -302,24 +250,20 @@ declare module entitas {
     import Entity = entitas.Entity;
     import Group = entitas.Group;
     import IMatcher = entitas.IMatcher;
-    import PoolChanged = Pool.PoolChanged;
     import IComponent = entitas.IComponent;
-    import GroupChanged = Pool.GroupChanged;
-    /**
-     * event delegate boilerplate:
-     */
     module Pool {
+        /**
+         * event delegates:
+         */
         interface PoolChanged {
             (pool: Pool, entity: Entity): void;
-        }
-        interface IPoolChanged<T> extends entitas.ISignal<T> {
-            dispatch(pool: Pool, entity: Entity): void;
         }
         interface GroupChanged {
             (pool: Pool, group: Group): void;
         }
-        interface IGroupChanged<T> extends entitas.ISignal<T> {
-            dispatch(pool: Pool, group: Group): void;
+        interface IPoolChanged extends IDelegate, PoolChanged {
+        }
+        interface IGroupChanged extends IDelegate, GroupChanged {
         }
     }
     interface ISetPool {
@@ -330,10 +274,10 @@ declare module entitas {
         count: number;
         reusableEntitiesCount: number;
         retainedEntitiesCount: number;
-        onEntityCreated: Pool.IPoolChanged<PoolChanged>;
-        onEntityWillBeDestroyed: Pool.IPoolChanged<PoolChanged>;
-        onEntityDestroyed: Pool.IPoolChanged<PoolChanged>;
-        onGroupCreated: Pool.IGroupChanged<GroupChanged>;
+        onEntityCreated: Pool.IPoolChanged;
+        onEntityWillBeDestroyed: Pool.IPoolChanged;
+        onEntityDestroyed: Pool.IPoolChanged;
+        onGroupCreated: Pool.IGroupChanged;
         _entities: {};
         _groups: {};
         _groupsForIndex: Array<Array<Group>>;
@@ -345,7 +289,7 @@ declare module entitas {
         _cachedUpdateGroupsComponentAddedOrRemoved: Entity.EntityChanged;
         _cachedUpdateGroupsComponentReplaced: Entity.ComponentReplaced;
         _cachedOnEntityReleased: Entity.EntityReleased;
-        constructor(components: {}, totalComponents: number, startCreationIndex?: number);
+        constructor(totalComponents: number, startCreationIndex?: number);
         createEntity(): Entity;
         destroyEntity(entity: Entity): void;
         destroyAllEntities(): void;
@@ -363,10 +307,10 @@ declare module entitas {
     }
 }
 declare module entitas {
-    import IMatcher = entitas.IMatcher;
-    import GroupObserver = entitas.GroupObserver;
     import IReactiveSystem = entitas.IReactiveSystem;
     import IMultiReactiveSystem = entitas.IMultiReactiveSystem;
+    import GroupObserver = entitas.GroupObserver;
+    import IMatcher = entitas.IMatcher;
     class ReactiveSystem implements IExecuteSystem {
         subsystem: entitas.IReactiveExecuteSystem;
         private _subsystem;
@@ -383,9 +327,9 @@ declare module entitas {
     }
 }
 declare module entitas {
-    import ISystem = entitas.ISystem;
-    import IExecuteSystem = entitas.IExecuteSystem;
     import IInitializeSystem = entitas.IInitializeSystem;
+    import IExecuteSystem = entitas.IExecuteSystem;
+    import ISystem = entitas.ISystem;
     enum SystemType {
         IInitializeSystem = 1,
         IExecuteSystem = 2,

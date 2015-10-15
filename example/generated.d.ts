@@ -4,6 +4,50 @@ declare module entitas {
         constructor(message: any);
         toString(): string;
     }
+    class EntityAlreadyHasComponentException extends Exception {
+        constructor(message: string, index: number);
+    }
+    class EntityDoesNotHaveComponentException extends Exception {
+        constructor(message: string, index: number);
+    }
+    class EntityIsNotEnabledException extends Exception {
+        constructor(message: string);
+    }
+    class EntityIsAlreadyReleasedException extends Exception {
+        constructor();
+    }
+    class SingleEntityException extends Exception {
+        constructor(matcher: IMatcher);
+    }
+    class GroupObserverException extends Exception {
+        constructor(message: string);
+    }
+    class PoolDoesNotContainEntityException extends Exception {
+        constructor(entity: Entity, message: string);
+    }
+    class EntityIsNotDestroyedException extends Exception {
+        constructor(message: string);
+    }
+    class MatcherException extends Exception {
+        constructor(matcher: IMatcher);
+    }
+}
+declare module entitas {
+    interface ISignal<T> {
+        dispatch(...args: any[]): void;
+        add(listener: T): void;
+        remove(listener: T): void;
+        clear(): void;
+    }
+    class Signal<T> implements ISignal<T> {
+        private _listeners;
+        private _context;
+        constructor(context: any);
+        dispatch(...args: any[]): void;
+        add(listener: T): void;
+        remove(listener: T): void;
+        clear(): void;
+    }
 }
 declare module entitas {
     interface IComponent {
@@ -87,17 +131,21 @@ declare module entitas {
         private _toStringCache;
         private _id;
         constructor();
-        anyOf(...args: any[]): IAnyOfMatcher;
-        noneOf(...args: any[]): INoneOfMatcher;
+        anyOf(...args: Array<IMatcher>): IAnyOfMatcher;
+        anyOf(...args: number[]): IAnyOfMatcher;
+        noneOf(...args: number[]): INoneOfMatcher;
+        noneOf(...args: Array<IMatcher>): INoneOfMatcher;
         matches(entity: Entity): boolean;
         mergeIndices(): number[];
-        static mergeIndices(matchers: Array<IMatcher>): number[];
         toString(): string;
         equals(obj: any): boolean;
         static equalIndices(i1: number[], i2: number[]): boolean;
         static distinctIndices(indices: number[]): number[];
-        static allOf(...args: any[]): IAllOfMatcher;
-        static anyOf(...args: any[]): IAnyOfMatcher;
+        static mergeIndices(matchers: Array<IMatcher>): number[];
+        static allOf(...args: number[]): IAllOfMatcher;
+        static allOf(...args: Array<IMatcher>): IAllOfMatcher;
+        static anyOf(...args: number[]): IAnyOfMatcher;
+        static anyOf(...args: Array<IMatcher>): IAnyOfMatcher;
         private static appendIndices(sb, prefix, indexArray);
         /** MatcherExtension::onEntityAdded */
         onEntityAdded(): TriggerOnEvent;
@@ -124,6 +172,7 @@ declare module entitas {
     }
 }
 declare module entitas {
+    import GroupEventType = entitas.GroupEventType;
     class TriggerOnEvent {
         trigger: IMatcher;
         eventType: GroupEventType;
@@ -131,19 +180,34 @@ declare module entitas {
     }
 }
 declare module entitas {
+    import ISignal = entitas.ISignal;
     import IComponent = entitas.IComponent;
+    import EntityChanged = Entity.EntityChanged;
+    import IEntityChanged = Entity.IEntityChanged;
+    import EntityReleased = Entity.EntityReleased;
+    import IEntityReleased = Entity.IEntityReleased;
+    import ComponentReplaced = Entity.ComponentReplaced;
+    /**
+     * event delegate boilerplate:
+     */
     module Entity {
-        /**
-         * event delegates:
-         */
         interface EntityReleased {
             (e: Entity): void;
+        }
+        interface IEntityReleased<T> extends ISignal<T> {
+            dispatch(e: Entity): void;
         }
         interface EntityChanged {
             (e: Entity, index: number, component: IComponent): void;
         }
+        interface IEntityChanged<T> extends ISignal<T> {
+            dispatch(e: Entity, index: number, component: IComponent): void;
+        }
         interface ComponentReplaced {
             (e: Entity, index: number, component: IComponent, replacement: IComponent): void;
+        }
+        interface IComponentReplaced<T> extends ISignal<T> {
+            dispatch(e: Entity, index: number, component: IComponent, replacement: IComponent): void;
         }
     }
     class Entity {
@@ -188,10 +252,10 @@ declare module entitas {
         replaceView(stage:Object);
         removeView();
         creationIndex: number;
-        onEntityReleased: Array<Entity.EntityReleased>;
-        onComponentAdded: Array<Entity.EntityChanged>;
-        onComponentRemoved: Array<Entity.EntityChanged>;
-        onComponentReplaced: Array<Entity.ComponentReplaced>;
+        onEntityReleased: IEntityReleased<EntityReleased>;
+        onComponentAdded: IEntityChanged<EntityChanged>;
+        onComponentRemoved: IEntityChanged<EntityChanged>;
+        onComponentReplaced: Entity.IComponentReplaced<ComponentReplaced>;
         _creationIndex: number;
         _isEnabled: boolean;
         _components: any;
@@ -213,7 +277,7 @@ declare module entitas {
         removeAllComponents(): void;
         destroy(): void;
         toString(): string;
-        retain(): Entity;
+        addRef(): Entity;
         release(): void;
     }
 }
@@ -221,21 +285,30 @@ declare module entitas {
     import Entity = entitas.Entity;
     import IMatcher = entitas.IMatcher;
     import IComponent = entitas.IComponent;
+    import GroupChanged = Group.GroupChanged;
+    import GroupUpdated = Group.GroupUpdated;
+    import GroupEventType = entitas.GroupEventType;
+    /**
+     * event delegate boilerplate:
+     */
     module Group {
-        /**
-         * event delegates:
-         */
         interface GroupChanged {
             (group: Group, entity: Entity, index: number, component: IComponent): void;
+        }
+        interface IGroupChanged<T> extends entitas.ISignal<T> {
+            dispatch(group: Group, entity: Entity, index: number, component: IComponent): void;
         }
         interface GroupUpdated {
             (group: Group, entity: Entity, index: number, component: IComponent, newComponent: IComponent): void;
         }
+        interface IGroupUpdated<T> extends entitas.ISignal<T> {
+            dispatch(group: Group, entity: Entity, index: number, component: IComponent, newComponent: IComponent): void;
+        }
     }
     class Group {
-        onEntityAdded: Array<Group.GroupChanged>;
-        onEntityRemoved: Array<Group.GroupChanged>;
-        onEntityUpdated: Array<Group.GroupUpdated>;
+        onEntityAdded: Group.IGroupChanged<GroupChanged>;
+        onEntityRemoved: Group.IGroupChanged<GroupChanged>;
+        onEntityUpdated: Group.IGroupUpdated<GroupUpdated>;
         count: number;
         matcher: IMatcher;
         private _matcher;
@@ -285,16 +358,24 @@ declare module entitas {
     import Entity = entitas.Entity;
     import Group = entitas.Group;
     import IMatcher = entitas.IMatcher;
+    import PoolChanged = Pool.PoolChanged;
     import IComponent = entitas.IComponent;
+    import GroupChanged = Pool.GroupChanged;
+    /**
+     * event delegate boilerplate:
+     */
     module Pool {
-        /**
-         * event delegates:
-         */
         interface PoolChanged {
             (pool: Pool, entity: Entity): void;
         }
+        interface IPoolChanged<T> extends entitas.ISignal<T> {
+            dispatch(pool: Pool, entity: Entity): void;
+        }
         interface GroupChanged {
             (pool: Pool, group: Group): void;
+        }
+        interface IGroupChanged<T> extends entitas.ISignal<T> {
+            dispatch(pool: Pool, group: Group): void;
         }
     }
     interface ISetPool {
@@ -309,10 +390,10 @@ declare module entitas {
         count: number;
         reusableEntitiesCount: number;
         retainedEntitiesCount: number;
-        onEntityCreated: Array<Pool.PoolChanged>;
-        onEntityWillBeDestroyed: Array<Pool.PoolChanged>;
-        onEntityDestroyed: Array<Pool.PoolChanged>;
-        onGroupCreated: Array<Pool.GroupChanged>;
+        onEntityCreated: Pool.IPoolChanged<PoolChanged>;
+        onEntityWillBeDestroyed: Pool.IPoolChanged<PoolChanged>;
+        onEntityDestroyed: Pool.IPoolChanged<PoolChanged>;
+        onGroupCreated: Pool.IGroupChanged<GroupChanged>;
         _entities: {};
         _groups: {};
         _groupsForIndex: Array<Array<Group>>;
@@ -324,27 +405,28 @@ declare module entitas {
         _cachedUpdateGroupsComponentAddedOrRemoved: Entity.EntityChanged;
         _cachedUpdateGroupsComponentReplaced: Entity.ComponentReplaced;
         _cachedOnEntityReleased: Entity.EntityReleased;
-        constructor(totalComponents: number, startCreationIndex?: number);
+        constructor(components: {}, totalComponents: number, startCreationIndex?: number);
         createEntity(): Entity;
         destroyEntity(entity: Entity): void;
         destroyAllEntities(): void;
         hasEntity(entity: Entity): boolean;
         getEntities(matcher?: IMatcher): Entity[];
         getGroup(matcher: IMatcher): Group;
-        protected updateGroupsComponentAddedOrRemoved(entity: Entity, index: number, component: IComponent): void;
-        protected updateGroupsComponentReplaced(entity: Entity, index: number, previousComponent: IComponent, newComponent: IComponent): void;
-        protected onEntityReleased(entity: Entity): void;
+        protected updateGroupsComponentAddedOrRemoved: (entity: Entity, index: number, component: IComponent) => void;
+        protected updateGroupsComponentReplaced: (entity: Entity, index: number, previousComponent: IComponent, newComponent: IComponent) => void;
+        protected onEntityReleased: (entity: Entity) => void;
         /** PoolExtension::createSystem */
-        createSystem<T>(system?: any): T;
+        createSystem(system: ISystem): any;
+        createSystem(system: Function): any;
         /** PoolExtension::setPool */
         static setPool(system: ISystem, pool: Pool): void;
     }
 }
 declare module entitas {
+    import IMatcher = entitas.IMatcher;
+    import GroupObserver = entitas.GroupObserver;
     import IReactiveSystem = entitas.IReactiveSystem;
     import IMultiReactiveSystem = entitas.IMultiReactiveSystem;
-    import GroupObserver = entitas.GroupObserver;
-    import IMatcher = entitas.IMatcher;
     class ReactiveSystem implements IExecuteSystem {
         subsystem: entitas.IReactiveExecuteSystem;
         private _subsystem;
@@ -361,9 +443,9 @@ declare module entitas {
     }
 }
 declare module entitas {
-    import IInitializeSystem = entitas.IInitializeSystem;
-    import IExecuteSystem = entitas.IExecuteSystem;
     import ISystem = entitas.ISystem;
+    import IExecuteSystem = entitas.IExecuteSystem;
+    import IInitializeSystem = entitas.IInitializeSystem;
     enum SystemType {
         IInitializeSystem = 1,
         IExecuteSystem = 2,
@@ -378,7 +460,8 @@ declare module entitas {
         protected _initializeSystems: Array<IInitializeSystem>;
         protected _executeSystems: Array<IExecuteSystem>;
         constructor();
-        add(system: ISystem | Function): Systems;
+        add(system: ISystem): any;
+        add(system: Function): any;
         initialize(): void;
         execute(): void;
         clearReactiveSystems(): void;

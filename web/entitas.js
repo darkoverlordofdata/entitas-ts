@@ -1,3 +1,8 @@
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var entitas;
 (function (entitas) {
     var Exception = (function () {
@@ -10,15 +15,116 @@ var entitas;
         return Exception;
     })();
     entitas.Exception = Exception;
+    var EntityAlreadyHasComponentException = (function (_super) {
+        __extends(EntityAlreadyHasComponentException, _super);
+        function EntityAlreadyHasComponentException(message, index) {
+            _super.call(this, message + "\nEntity already has a component at index " + index);
+        }
+        return EntityAlreadyHasComponentException;
+    })(Exception);
+    entitas.EntityAlreadyHasComponentException = EntityAlreadyHasComponentException;
+    var EntityDoesNotHaveComponentException = (function (_super) {
+        __extends(EntityDoesNotHaveComponentException, _super);
+        function EntityDoesNotHaveComponentException(message, index) {
+            _super.call(this, message + "\nEntity does not have a component at index " + index);
+        }
+        return EntityDoesNotHaveComponentException;
+    })(Exception);
+    entitas.EntityDoesNotHaveComponentException = EntityDoesNotHaveComponentException;
+    var EntityIsNotEnabledException = (function (_super) {
+        __extends(EntityIsNotEnabledException, _super);
+        function EntityIsNotEnabledException(message) {
+            _super.call(this, message + "\nEntity is not enabled");
+        }
+        return EntityIsNotEnabledException;
+    })(Exception);
+    entitas.EntityIsNotEnabledException = EntityIsNotEnabledException;
+    var EntityIsAlreadyReleasedException = (function (_super) {
+        __extends(EntityIsAlreadyReleasedException, _super);
+        function EntityIsAlreadyReleasedException() {
+            _super.call(this, "Entity is already released!");
+        }
+        return EntityIsAlreadyReleasedException;
+    })(Exception);
+    entitas.EntityIsAlreadyReleasedException = EntityIsAlreadyReleasedException;
+    var SingleEntityException = (function (_super) {
+        __extends(SingleEntityException, _super);
+        function SingleEntityException(matcher) {
+            _super.call(this, "Multiple entities exist matching " + matcher);
+        }
+        return SingleEntityException;
+    })(Exception);
+    entitas.SingleEntityException = SingleEntityException;
+    var GroupObserverException = (function (_super) {
+        __extends(GroupObserverException, _super);
+        function GroupObserverException(message) {
+            _super.call(this, message);
+        }
+        return GroupObserverException;
+    })(Exception);
+    entitas.GroupObserverException = GroupObserverException;
+    var PoolDoesNotContainEntityException = (function (_super) {
+        __extends(PoolDoesNotContainEntityException, _super);
+        function PoolDoesNotContainEntityException(entity, message) {
+            _super.call(this, message + "\nPool does not contain entity " + entity);
+        }
+        return PoolDoesNotContainEntityException;
+    })(Exception);
+    entitas.PoolDoesNotContainEntityException = PoolDoesNotContainEntityException;
+    var EntityIsNotDestroyedException = (function (_super) {
+        __extends(EntityIsNotDestroyedException, _super);
+        function EntityIsNotDestroyedException(message) {
+            _super.call(this, message + "\nEntity is not destroyed yet!");
+        }
+        return EntityIsNotDestroyedException;
+    })(Exception);
+    entitas.EntityIsNotDestroyedException = EntityIsNotDestroyedException;
+    var MatcherException = (function (_super) {
+        __extends(MatcherException, _super);
+        function MatcherException(matcher) {
+            _super.call(this, "matcher.indices.length must be 1 but was " + matcher.indices.length);
+        }
+        return MatcherException;
+    })(Exception);
+    entitas.MatcherException = MatcherException;
 })(entitas || (entitas = {}));
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 var entitas;
 (function (entitas) {
-    var Exception = entitas.Exception;
+    var Signal = (function () {
+        function Signal(context) {
+            this._listeners = [];
+            this._context = context;
+        }
+        Signal.prototype.dispatch = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
+            var listeners = this._listeners;
+            for (var i = 0, l = listeners.length; i < l; i++) {
+                listeners[i].apply(this._context, args);
+            }
+        };
+        Signal.prototype.add = function (listener) {
+            this._listeners.push(listener);
+        };
+        Signal.prototype.remove = function (listener) {
+            var listeners = this._listeners;
+            var index = listeners.indexOf(event);
+            if (index !== -1) {
+                listeners.splice(index, 1);
+            }
+        };
+        Signal.prototype.clear = function () {
+            this._listeners.length = 0;
+        };
+        return Signal;
+    })();
+    entitas.Signal = Signal;
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var MatcherException = entitas.MatcherException;
     var CoreMatcher = (function () {
         function CoreMatcher() {
         }
@@ -64,13 +170,13 @@ var entitas;
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i - 0] = arguments[_i];
             }
-            if ('number' === typeof args[0]) {
+            if ('number' === typeof args[0] || 'string' === typeof args[0]) {
                 this._anyOfIndices = Matcher.distinctIndices(args);
                 this._indices = undefined;
                 return this;
             }
             else {
-                return this.anyOf(Matcher.mergeIndices(args));
+                return this.anyOf.apply(this, Matcher.mergeIndices(args));
             }
         };
         Matcher.prototype.noneOf = function () {
@@ -78,13 +184,13 @@ var entitas;
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i - 0] = arguments[_i];
             }
-            if ('number' === typeof args[0]) {
+            if ('number' === typeof args[0] || 'string' === typeof args[0]) {
                 this._noneOfIndices = Matcher.distinctIndices(args);
                 this._indices = undefined;
                 return this;
             }
             else {
-                return this.noneOf(Matcher.mergeIndices(args));
+                return this.noneOf.apply(this, Matcher.mergeIndices(args));
             }
         };
         Matcher.prototype.matches = function (entity) {
@@ -99,26 +205,15 @@ var entitas;
             //  + (this._noneOfIndices !== undefined ? this._noneOfIndices.length : 0);
             var indicesList = [];
             if (this._allOfIndices !== undefined) {
-                indicesList.concat(this._allOfIndices);
+                indicesList = indicesList.concat(this._allOfIndices);
             }
             if (this._anyOfIndices !== undefined) {
-                indicesList.concat(this._anyOfIndices);
+                indicesList = indicesList.concat(this._anyOfIndices);
             }
             if (this._noneOfIndices !== undefined) {
-                indicesList.concat(this._noneOfIndices);
+                indicesList = indicesList.concat(this._noneOfIndices);
             }
             return Matcher.distinctIndices(indicesList);
-        };
-        Matcher.mergeIndices = function (matchers) {
-            var indices = [];
-            for (var i = 0, matchersLength = matchers.length; i < matchersLength; i++) {
-                var matcher = matchers[i];
-                if (matcher.indices.length != 1) {
-                    throw new MatcherException(matcher);
-                }
-                indices[i] = matcher.indices[0];
-            }
-            return indices;
         };
         Matcher.prototype.toString = function () {
             if (this._toStringCache === undefined) {
@@ -180,18 +275,29 @@ var entitas;
             }
             return [].concat(Object.keys(indicesSet));
         };
+        Matcher.mergeIndices = function (matchers) {
+            var indices = [];
+            for (var i = 0, matchersLength = matchers.length; i < matchersLength; i++) {
+                var matcher = matchers[i];
+                if (matcher.indices.length !== 1) {
+                    throw new MatcherException(matcher);
+                }
+                indices[i] = matcher.indices[0];
+            }
+            return indices;
+        };
         Matcher.allOf = function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i - 0] = arguments[_i];
             }
-            if ('number' === typeof args[0]) {
+            if ('number' === typeof args[0] || 'string' === typeof args[0]) {
                 var matcher = new Matcher();
                 matcher._allOfIndices = Matcher.distinctIndices(args);
                 return matcher;
             }
             else {
-                return Matcher.allOf(Matcher.mergeIndices(args));
+                return Matcher.allOf.apply(this, Matcher.mergeIndices(args));
             }
         };
         Matcher.anyOf = function () {
@@ -199,13 +305,13 @@ var entitas;
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i - 0] = arguments[_i];
             }
-            if ('number' === typeof args[0]) {
+            if ('number' === typeof args[0] || 'string' === typeof args[0]) {
                 var matcher = new Matcher();
                 matcher._anyOfIndices = Matcher.distinctIndices(args);
                 return matcher;
             }
             else {
-                return Matcher.anyOf(Matcher.mergeIndices(args));
+                return Matcher.anyOf.apply(this, Matcher.mergeIndices(args));
             }
         };
         Matcher.appendIndices = function (sb, prefix, indexArray) {
@@ -237,13 +343,6 @@ var entitas;
         return Matcher;
     })();
     entitas.Matcher = Matcher;
-    var MatcherException = (function (_super) {
-        __extends(MatcherException, _super);
-        function MatcherException(matcher) {
-            _super.call(this, "matcher.indices.length must be 1 but was " + matcher.indices.length);
-        }
-        return MatcherException;
-    })(Exception);
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
@@ -258,17 +357,21 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
-    var Exception = entitas.Exception;
+    var Signal = entitas.Signal;
+    var EntityIsNotEnabledException = entitas.EntityIsNotEnabledException;
+    var EntityIsAlreadyReleasedException = entitas.EntityIsAlreadyReleasedException;
+    var EntityAlreadyHasComponentException = entitas.EntityAlreadyHasComponentException;
+    var EntityDoesNotHaveComponentException = entitas.EntityDoesNotHaveComponentException;
     var Entity = (function () {
         function Entity(totalComponents) {
             if (totalComponents === void 0) { totalComponents = 16; }
-            this.onEntityReleased = [];
-            this.onComponentAdded = [];
-            this.onComponentRemoved = [];
-            this.onComponentReplaced = [];
             this._creationIndex = 0;
             this._isEnabled = true;
             this._refCount = 0;
+            this.onEntityReleased = new Signal(this);
+            this.onComponentAdded = new Signal(this);
+            this.onComponentRemoved = new Signal(this);
+            this.onComponentReplaced = new Signal(this);
             this._components = new Array(totalComponents);
         }
         Object.defineProperty(Entity.prototype, "creationIndex", {
@@ -288,8 +391,7 @@ var entitas;
             this._componentsCache = undefined;
             this._componentIndicesCache = undefined;
             this._toStringCache = undefined;
-            for (var onComponentAdded = this.onComponentAdded, e = 0; e < onComponentAdded.length; e++)
-                onComponentAdded[e](this, index, component);
+            this.onComponentAdded.dispatch(this, index, component);
             return this;
         };
         Entity.prototype.removeComponent = function (index) {
@@ -318,8 +420,7 @@ var entitas;
         Entity.prototype._replaceComponent = function (index, replacement) {
             var previousComponent = this._components[index];
             if (previousComponent === replacement) {
-                for (var onComponentReplaced = this.onComponentReplaced, e = 0; e < onComponentReplaced.length; e++)
-                    onComponentReplaced[e](this, index, previousComponent, replacement);
+                this.onComponentReplaced.dispatch(this, index, previousComponent, replacement);
             }
             else {
                 this._components[index] = replacement;
@@ -327,12 +428,10 @@ var entitas;
                 if (replacement === undefined) {
                     this._componentIndicesCache = undefined;
                     this._toStringCache = undefined;
-                    for (var onComponentRemoved = this.onComponentRemoved, e = 0; e < onComponentRemoved.length; e++)
-                        onComponentRemoved[e](this, index, previousComponent);
+                    this.onComponentRemoved.dispatch(this, index, previousComponent);
                 }
                 else {
-                    for (var onComponentReplaced = this.onComponentReplaced, e = 0; e < onComponentReplaced.length; e++)
-                        onComponentReplaced[e](this, index, previousComponent, replacement);
+                    this.onComponentReplaced.dispatch(this, index, previousComponent, replacement);
                 }
             }
         };
@@ -397,9 +496,9 @@ var entitas;
         };
         Entity.prototype.destroy = function () {
             this.removeAllComponents();
-            this.onComponentAdded = [];
-            this.onComponentReplaced = [];
-            this.onComponentRemoved = [];
+            this.onComponentAdded.clear();
+            this.onComponentReplaced.clear();
+            this.onComponentRemoved.clear();
             this._isEnabled = false;
         };
         Entity.prototype.toString = function () {
@@ -412,7 +511,7 @@ var entitas;
                 var components = this.getComponents();
                 var lastSeperator = components.length - 1;
                 for (var i = 0, componentsLength = components.length; i < componentsLength; i++) {
-                    sb.push(typeof components[i]);
+                    sb.push(components[i].constructor['name']);
                     if (i < lastSeperator) {
                         sb.push(seperator);
                     }
@@ -422,15 +521,14 @@ var entitas;
             }
             return this._toStringCache;
         };
-        Entity.prototype.retain = function () {
+        Entity.prototype.addRef = function () {
             this._refCount += 1;
             return this;
         };
         Entity.prototype.release = function () {
             this._refCount -= 1;
-            if (this._refCount == 0) {
-                for (var onEntityReleased = this.onEntityReleased, e = 0; e < onEntityReleased.length; e++)
-                    onEntityReleased[e](this);
+            if (this._refCount === 0) {
+                this.onEntityReleased.dispatch(this);
             }
             else if (this._refCount < 0) {
                 throw new EntityIsAlreadyReleasedException();
@@ -439,44 +537,18 @@ var entitas;
         return Entity;
     })();
     entitas.Entity = Entity;
-    var EntityAlreadyHasComponentException = (function (_super) {
-        __extends(EntityAlreadyHasComponentException, _super);
-        function EntityAlreadyHasComponentException(message, index) {
-            _super.call(this, message + "\nEntity already has a component at index " + index);
-        }
-        return EntityAlreadyHasComponentException;
-    })(Exception);
-    var EntityDoesNotHaveComponentException = (function (_super) {
-        __extends(EntityDoesNotHaveComponentException, _super);
-        function EntityDoesNotHaveComponentException(message, index) {
-            _super.call(this, message + "\nEntity does not have a component at index " + index);
-        }
-        return EntityDoesNotHaveComponentException;
-    })(Exception);
-    var EntityIsNotEnabledException = (function (_super) {
-        __extends(EntityIsNotEnabledException, _super);
-        function EntityIsNotEnabledException(message) {
-            _super.call(this, message + "\nEntity is not enabled");
-        }
-        return EntityIsNotEnabledException;
-    })(Exception);
-    var EntityIsAlreadyReleasedException = (function (_super) {
-        __extends(EntityIsAlreadyReleasedException, _super);
-        function EntityIsAlreadyReleasedException() {
-            _super.call(this, "Entity is already released!");
-        }
-        return EntityIsAlreadyReleasedException;
-    })(Exception);
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
-    var Exception = entitas.Exception;
+    var Signal = entitas.Signal;
+    var GroupEventType = entitas.GroupEventType;
+    var SingleEntityException = entitas.SingleEntityException;
     var Group = (function () {
         function Group(matcher) {
-            this.onEntityAdded = [];
-            this.onEntityRemoved = [];
-            this.onEntityUpdated = [];
             this._entities = {};
+            this.onEntityAdded = new Signal(this);
+            this.onEntityRemoved = new Signal(this);
+            this.onEntityUpdated = new Signal(this);
             this._matcher = matcher;
         }
         Object.defineProperty(Group.prototype, "count", {
@@ -507,12 +579,9 @@ var entitas;
         };
         Group.prototype.updateEntity = function (entity, index, previousComponent, newComponent) {
             if (this._entities[entity.creationIndex]) {
-                for (var onEntityRemoved = this.onEntityRemoved, e = 0; e < onEntityRemoved.length; e++)
-                    onEntityRemoved[e](this, entity, index, previousComponent);
-                for (var onEntityAdded = this.onEntityAdded, e = 0; e < onEntityAdded.length; e++)
-                    onEntityAdded[e](this, entity, index, newComponent);
-                for (var onEntityUpdated = this.onEntityUpdated, e = 0; e < onEntityUpdated.length; e++)
-                    onEntityUpdated[e](this, entity, index, previousComponent, newComponent);
+                this.onEntityRemoved.dispatch(this, entity, index, previousComponent);
+                this.onEntityAdded.dispatch(this, entity, index, newComponent);
+                this.onEntityUpdated.dispatch(this, entity, index, previousComponent, newComponent);
             }
         };
         Group.prototype.addEntitySilently = function (entity) {
@@ -521,7 +590,7 @@ var entitas;
                 this._entities[entity.creationIndex] = entity;
                 this._entitiesCache = undefined;
                 this._singleEntityCache = undefined;
-                entity.retain();
+                entity.addRef();
             }
         };
         Group.prototype.addEntity = function (entity, index, component) {
@@ -530,9 +599,8 @@ var entitas;
                 this._entities[entity.creationIndex] = entity;
                 this._entitiesCache = undefined;
                 this._singleEntityCache = undefined;
-                entity.retain();
-                for (var onEntityAdded = this.onEntityAdded, e = 0; e < onEntityAdded.length; e++)
-                    onEntityAdded[e](this, entity, index, component);
+                entity.addRef();
+                this.onEntityAdded.dispatch(this, entity, index, component);
             }
         };
         Group.prototype.removeEntitySilently = function (entity) {
@@ -550,8 +618,7 @@ var entitas;
                 delete this._entities[entity.creationIndex];
                 this._entitiesCache = undefined;
                 this._singleEntityCache = undefined;
-                for (var onEntityRemoved = this.onEntityRemoved, e = 0; e < onEntityRemoved.length; e++)
-                    onEntityRemoved[e](this, entity, index, component);
+                this.onEntityRemoved.dispatch(this, entity, index, component);
                 entity.release();
             }
         };
@@ -591,23 +658,16 @@ var entitas;
         };
         /** GroupExtension::createObserver */
         Group.prototype.createObserver = function (eventType) {
-            if (eventType === void 0) { eventType = entitas.GroupEventType.OnEntityAdded; }
+            if (eventType === void 0) { eventType = GroupEventType.OnEntityAdded; }
             return new entitas.GroupObserver(this, eventType);
         };
         return Group;
     })();
     entitas.Group = Group;
-    var SingleEntityException = (function (_super) {
-        __extends(SingleEntityException, _super);
-        function SingleEntityException(matcher) {
-            _super.call(this, "Multiple entities exist matching " + matcher);
-        }
-        return SingleEntityException;
-    })(Exception);
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
-    var Exception = entitas.Exception;
+    var GroupObserverException = entitas.GroupObserverException;
     (function (GroupEventType) {
         GroupEventType[GroupEventType["OnEntityAdded"] = 0] = "OnEntityAdded";
         GroupEventType[GroupEventType["OnEntityRemoved"] = 1] = "OnEntityRemoved";
@@ -637,18 +697,18 @@ var entitas;
                 var group = this._groups[i];
                 var eventType = this._eventTypes[i];
                 if (eventType === GroupEventType.OnEntityAdded) {
-                    if (group.onEntityAdded.indexOf(this._addEntityCache) === -1)
-                        group.onEntityAdded.push(this._addEntityCache);
+                    group.onEntityAdded.remove(this._addEntityCache);
+                    group.onEntityAdded.add(this._addEntityCache);
                 }
                 else if (eventType === GroupEventType.OnEntityRemoved) {
-                    if (group.onEntityRemoved.indexOf(this._addEntityCache) === -1)
-                        group.onEntityRemoved.push(this._addEntityCache);
+                    group.onEntityRemoved.remove(this._addEntityCache);
+                    group.onEntityRemoved.add(this._addEntityCache);
                 }
                 else if (eventType === GroupEventType.OnEntityAddedOrRemoved) {
-                    if (group.onEntityAdded.indexOf(this._addEntityCache) === -1)
-                        group.onEntityAdded.push(this._addEntityCache);
-                    if (group.onEntityRemoved.indexOf(this._addEntityCache) === -1)
-                        group.onEntityRemoved.push(this._addEntityCache);
+                    group.onEntityAdded.remove(this._addEntityCache);
+                    group.onEntityAdded.add(this._addEntityCache);
+                    group.onEntityRemoved.remove(this._addEntityCache);
+                    group.onEntityRemoved.add(this._addEntityCache);
                 }
             }
         };
@@ -656,12 +716,8 @@ var entitas;
             var e;
             for (var i = 0, groupsLength = this._groups.length; i < groupsLength; i++) {
                 var group = this._groups[i];
-                e = group.onEntityAdded.indexOf(this._addEntityCache);
-                if (e !== -1)
-                    group.onEntityAdded.splice(e, 1);
-                e = group.onEntityRemoved.indexOf(this._addEntityCache);
-                if (e !== -1)
-                    group.onEntityRemoved.splice(e, 1);
+                group.onEntityAdded.remove(this._addEntityCache);
+                group.onEntityRemoved.remove(this._addEntityCache);
                 this.clearCollectedEntities();
             }
         };
@@ -675,38 +731,60 @@ var entitas;
             var added = !this._collectedEntities[entity.creationIndex];
             if (added) {
                 this._collectedEntities[entity.creationIndex] = entity;
-                entity.retain();
+                entity.addRef();
             }
         };
         return GroupObserver;
     })();
     entitas.GroupObserver = GroupObserver;
-    var GroupObserverException = (function (_super) {
-        __extends(GroupObserverException, _super);
-        function GroupObserverException(message) {
-            _super.call(this, message);
-        }
-        return GroupObserverException;
-    })(Exception);
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
-    var Exception = entitas.Exception;
     var Entity = entitas.Entity;
     var Group = entitas.Group;
+    var EntityIsNotDestroyedException = entitas.EntityIsNotDestroyedException;
+    var PoolDoesNotContainEntityException = entitas.PoolDoesNotContainEntityException;
     var Pool = (function () {
-        function Pool(totalComponents, startCreationIndex) {
+        function Pool(components, totalComponents, startCreationIndex) {
+            var _this = this;
             if (startCreationIndex === void 0) { startCreationIndex = 0; }
-            this.onEntityCreated = [];
-            this.onEntityWillBeDestroyed = [];
-            this.onEntityDestroyed = [];
-            this.onGroupCreated = [];
             this._entities = {};
             this._groups = {};
             this._reusableEntities = [];
             this._retainedEntities = {};
             this._totalComponents = 0;
             this._creationIndex = 0;
+            this.updateGroupsComponentAddedOrRemoved = function (entity, index, component) {
+                var groups = _this._groupsForIndex[index];
+                if (groups !== undefined) {
+                    for (var i = 0, groupsCount = groups.length; i < groupsCount; i++) {
+                        groups[i].handleEntity(entity, index, component);
+                    }
+                }
+            };
+            this.updateGroupsComponentReplaced = function (entity, index, previousComponent, newComponent) {
+                console.log('updateGroupsComponentReplaced', entity);
+                var groups = _this._groupsForIndex[index];
+                if (groups !== undefined) {
+                    for (var i = 0, groupsCount = groups.length; i < groupsCount; i++) {
+                        groups[i].updateEntity(entity, index, previousComponent, newComponent);
+                    }
+                }
+            };
+            this.onEntityReleased = function (entity) {
+                console.log('onEntityReleased', entity);
+                if (entity._isEnabled) {
+                    throw new EntityIsNotDestroyedException("Cannot release entity.");
+                }
+                entity.onEntityReleased.remove(_this._cachedOnEntityReleased);
+                delete _this._retainedEntities[entity.creationIndex];
+                _this._reusableEntities.push(entity);
+            };
+            console.log(components);
+            this.onGroupCreated = new entitas.Signal(this);
+            this.onEntityCreated = new entitas.Signal(this);
+            this.onEntityDestroyed = new entitas.Signal(this);
+            this.onEntityWillBeDestroyed = new entitas.Signal(this);
             this._totalComponents = totalComponents;
             this._creationIndex = startCreationIndex;
             this._groupsForIndex = [];
@@ -738,15 +816,14 @@ var entitas;
             var entity = this._reusableEntities.length > 0 ? this._reusableEntities.pop() : new Entity(this._totalComponents);
             entity._isEnabled = true;
             entity._creationIndex = this._creationIndex++;
-            entity.retain();
+            entity.addRef();
             this._entities[entity.creationIndex] = entity;
             this._entitiesCache = undefined;
-            entity.onComponentAdded.push(this._cachedUpdateGroupsComponentAddedOrRemoved);
-            entity.onComponentRemoved.push(this._cachedUpdateGroupsComponentAddedOrRemoved);
-            entity.onComponentReplaced.push(this._cachedUpdateGroupsComponentReplaced);
-            entity.onEntityReleased.push(this._cachedOnEntityReleased);
-            for (var onEntityCreated = this.onEntityCreated, e = 0; e < onEntityCreated.length; e++)
-                onEntityCreated[e](this, entity);
+            entity.onComponentAdded.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
+            entity.onComponentRemoved.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
+            entity.onComponentReplaced.add(this._cachedUpdateGroupsComponentReplaced);
+            entity.onEntityReleased.add(this._cachedOnEntityReleased);
+            this.onEntityCreated.dispatch(this, entity);
             return entity;
         };
         Pool.prototype.destroyEntity = function (entity) {
@@ -755,15 +832,11 @@ var entitas;
                 throw new PoolDoesNotContainEntityException(entity, "Could not destroy entity!");
             }
             this._entitiesCache = undefined;
-            for (var onEntityWillBeDestroyed = this.onEntityWillBeDestroyed, e = 0; e < onEntityWillBeDestroyed.length; e++)
-                onEntityWillBeDestroyed[e](this, entity);
+            this.onEntityWillBeDestroyed.dispatch(this, entity);
             entity.destroy();
-            for (var onEntityDestroyed = this.onEntityDestroyed, e = 0; e < onEntityDestroyed.length; e++)
-                onEntityDestroyed[e](this, entity);
+            this.onEntityDestroyed.dispatch(this, entity);
             if (entity._refCount === 1) {
-                var e = entity.onEntityReleased.indexOf(this._cachedOnEntityReleased);
-                if (e !== -1)
-                    entity.onEntityReleased.splice(e, 1);
+                entity.onEntityReleased.remove(this._cachedOnEntityReleased);
                 this._reusableEntities.push(entity);
             }
             else {
@@ -814,54 +887,25 @@ var entitas;
                     }
                     this._groupsForIndex[index].push(group);
                 }
-                for (var onGroupCreated = this.onGroupCreated, e = 0; e < onGroupCreated.length; e++)
-                    onGroupCreated[e](this, group);
+                this.onGroupCreated.dispatch(this, group);
             }
             return group;
         };
-        Pool.prototype.updateGroupsComponentAddedOrRemoved = function (entity, index, component) {
-            var groups = this._groupsForIndex[index];
-            if (groups !== undefined) {
-                for (var i = 0, groupsCount = groups.length; i < groupsCount; i++) {
-                    groups[i].handleEntity(entity, index, component);
-                }
-            }
-        };
-        Pool.prototype.updateGroupsComponentReplaced = function (entity, index, previousComponent, newComponent) {
-            var groups = this._groupsForIndex[index];
-            if (groups !== undefined) {
-                for (var i = 0, groupsCount = groups.length; i < groupsCount; i++) {
-                    groups[i].updateEntity(entity, index, previousComponent, newComponent);
-                }
-            }
-        };
-        Pool.prototype.onEntityReleased = function (entity) {
-            if (entity._isEnabled) {
-                throw new EntityIsNotDestroyedException("Cannot release entity.");
-            }
-            var e = entity.onEntityReleased.indexOf(this._cachedOnEntityReleased);
-            if (e !== -1)
-                entity.onEntityReleased.splice(e, 1);
-            delete this._retainedEntities[entity.creationIndex];
-            this._reusableEntities.push(entity);
-        };
-        /** PoolExtension::createSystem */
         Pool.prototype.createSystem = function (system) {
-            if (system) {
-                Pool.setPool(system, this);
-                var reactiveSystem = system['trigger'] ? system : null;
-                if (reactiveSystem != null) {
-                    return (new entitas.ReactiveSystem(this, reactiveSystem));
-                }
-                var multiReactiveSystem = system['triggers'] ? system : null;
-                if (multiReactiveSystem != null) {
-                    return (new entitas.ReactiveSystem(this, multiReactiveSystem));
-                }
-                return system;
+            if ('function' === typeof system) {
+                var Klass = system;
+                system = new Klass();
             }
-            else {
-                return (this.createSystem());
+            Pool.setPool(system, this);
+            var reactiveSystem = system['trigger'] ? system : null;
+            if (reactiveSystem != null) {
+                return new entitas.ReactiveSystem(this, reactiveSystem);
             }
+            var multiReactiveSystem = system['triggers'] ? system : null;
+            if (multiReactiveSystem != null) {
+                return new entitas.ReactiveSystem(this, multiReactiveSystem);
+            }
+            return system;
         };
         /** PoolExtension::setPool */
         Pool.setPool = function (system, pool) {
@@ -873,25 +917,10 @@ var entitas;
         return Pool;
     })();
     entitas.Pool = Pool;
-    var PoolDoesNotContainEntityException = (function (_super) {
-        __extends(PoolDoesNotContainEntityException, _super);
-        function PoolDoesNotContainEntityException(entity, message) {
-            _super.call(this, message + "\nPool does not contain entity " + entity);
-        }
-        return PoolDoesNotContainEntityException;
-    })(Exception);
-    var EntityIsNotDestroyedException = (function (_super) {
-        __extends(EntityIsNotDestroyedException, _super);
-        function EntityIsNotDestroyedException(message) {
-            _super.call(this, message + "\nEntity is not destroyed yet!");
-        }
-        return EntityIsNotDestroyedException;
-    })(Exception);
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
     var GroupObserver = entitas.GroupObserver;
-    var Group = entitas.Group;
     var ReactiveSystem = (function () {
         function ReactiveSystem(pool, subSystem) {
             var triggers = subSystem['triggers'] ? subSystem['triggers'] : [subSystem['trigger']];
@@ -906,7 +935,7 @@ var entitas;
             }
             this._clearAfterExecute = subSystem['clearAfterExecute'];
             var triggersLength = triggers.length;
-            var groups = new Group[triggersLength];
+            var groups = new Array(triggersLength);
             var eventTypes = new Array(triggersLength);
             for (var i = 0; i < triggersLength; i++) {
                 var trigger = triggers[i];

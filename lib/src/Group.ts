@@ -1,23 +1,35 @@
 module entitas {
 
-  import Exception = entitas.Exception;
+  import Signal = entitas.Signal;
   import Entity = entitas.Entity;
   import IMatcher = entitas.IMatcher;
   import IComponent = entitas.IComponent;
+  import GroupChanged = Group.GroupChanged;
+  import GroupUpdated = Group.GroupUpdated;
+  import GroupEventType = entitas.GroupEventType;
+  import SingleEntityException = entitas.SingleEntityException;
 
+  /**
+   * event delegate boilerplate:
+   */
   export module Group {
-    /**
-     * event delegates:
-     */
+
     export interface GroupChanged {(group:Group, entity:Entity, index:number, component:IComponent):void;}
+    export interface IGroupChanged<T> extends entitas.ISignal<T> {
+      dispatch(group:Group, entity:Entity, index:number, component:IComponent):void;
+    }
+
     export interface GroupUpdated {(group:Group, entity:Entity, index:number, component:IComponent, newComponent:IComponent):void;}
+    export interface IGroupUpdated<T> extends entitas.ISignal<T> {
+      dispatch(group:Group, entity:Entity, index:number, component:IComponent, newComponent:IComponent):void;
+    }
   }
 
   export class Group {
 
-    public onEntityAdded:Array<Group.GroupChanged> = [];
-    public onEntityRemoved:Array<Group.GroupChanged> = [];
-    public onEntityUpdated:Array<Group.GroupUpdated> = [];
+    public onEntityAdded:Group.IGroupChanged<GroupChanged>;
+    public onEntityRemoved:Group.IGroupChanged<GroupChanged>;
+    public onEntityUpdated:Group.IGroupUpdated<GroupUpdated>;
 
     public get count():number {return Object.keys(this._entities).length;}
     public get matcher():IMatcher {return this._matcher;}
@@ -29,6 +41,9 @@ module entitas {
     public _toStringCache:string;
 
     constructor(matcher:IMatcher) {
+      this.onEntityAdded = new Signal<GroupChanged>(this);
+      this.onEntityRemoved = new Signal<GroupChanged>(this);
+      this.onEntityUpdated = new Signal<GroupUpdated>(this);
       this._matcher = matcher;
     }
 
@@ -51,14 +66,9 @@ module entitas {
     public updateEntity(entity:Entity, index:number, previousComponent:IComponent, newComponent:IComponent) {
       if (this._entities[entity.creationIndex]) {
 
-        for (var onEntityRemoved=this.onEntityRemoved, e=0; e<onEntityRemoved.length; e++)
-          onEntityRemoved[e](this, entity, index, previousComponent);
-
-        for (var onEntityAdded=this.onEntityAdded, e=0; e<onEntityAdded.length; e++)
-          onEntityAdded[e](this, entity, index, newComponent);
-
-        for (var onEntityUpdated=this.onEntityUpdated, e=0; e<onEntityUpdated.length; e++)
-          onEntityUpdated[e](this, entity, index, previousComponent, newComponent);
+        this.onEntityRemoved.dispatch(this, entity, index, previousComponent);
+        this.onEntityAdded.dispatch(this, entity, index, newComponent);
+        this.onEntityUpdated.dispatch(this, entity, index, previousComponent, newComponent);
 
       }
     }
@@ -69,7 +79,7 @@ module entitas {
         this._entities[entity.creationIndex] = entity;
         this._entitiesCache = undefined;
         this._singleEntityCache = undefined;
-        entity.retain();
+        entity.addRef();
       }
     }
 
@@ -79,9 +89,8 @@ module entitas {
         this._entities[entity.creationIndex] = entity;
         this._entitiesCache = undefined;
         this._singleEntityCache = undefined;
-        entity.retain();
-        for (var onEntityAdded=this.onEntityAdded, e=0; e<onEntityAdded.length; e++)
-          onEntityAdded[e](this, entity, index, component);
+        entity.addRef();
+        this.onEntityAdded.dispatch(this, entity, index, component)
 
       }
     }
@@ -102,9 +111,7 @@ module entitas {
         delete this._entities[entity.creationIndex];
         this._entitiesCache = undefined;
         this._singleEntityCache = undefined;
-        for (var onEntityRemoved=this.onEntityRemoved, e=0; e<onEntityRemoved.length; e++)
-          onEntityRemoved[e](this, entity, index, component);
-
+        this.onEntityRemoved.dispatch(this, entity, index, component);
         entity.release();
       }
     }
@@ -152,12 +159,6 @@ module entitas {
     }
 
 
-  }
-
-  class SingleEntityException extends Exception {
-    public constructor(matcher:IMatcher) {
-      super("Multiple entities exist matching " + matcher);
-    }
   }
 
 }

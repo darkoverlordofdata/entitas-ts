@@ -1,6 +1,6 @@
 {
   "namespace":"example",
-  "entitas": "build/entitas.d.ts",
+  "entitas": "web/entitas.d.ts",
   "output": {
     "typescript": "example/generated.ts",
     "javascript": "web/src/example/extensions.js",

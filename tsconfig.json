@@ -10,7 +10,8 @@
     "outDir": "web/src/entitas"
   },
   "files": [
-    "lib/src/Exception.ts",
+    "lib/src/utils/Exceptions.ts",
+    "lib/src/utils/Signal.ts",
     "lib/src/interfaces/IComponent.ts",
     "lib/src/interfaces/IMatcher.ts",
     "lib/src/interfaces/ISystem.ts",

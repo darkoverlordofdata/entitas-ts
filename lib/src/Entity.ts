@@ -1,49 +1,48 @@
 module entitas {
 
-  import Exception = entitas.Exception;
+  import Signal = entitas.Signal;
+  import ISignal = entitas.ISignal;
   import IComponent = entitas.IComponent;
+  import EntityChanged = Entity.EntityChanged;
+  import IEntityChanged = Entity.IEntityChanged;
+  import EntityReleased = Entity.EntityReleased;
+  import IEntityReleased = Entity.IEntityReleased;
+  import ComponentReplaced = Entity.ComponentReplaced;
+  import IComponentReplaced = Entity.IComponentReplaced;
+  import EntityIsNotEnabledException = entitas.EntityIsNotEnabledException;
+  import EntityIsAlreadyReleasedException = entitas.EntityIsAlreadyReleasedException;
+  import EntityAlreadyHasComponentException = entitas.EntityAlreadyHasComponentException;
+  import EntityDoesNotHaveComponentException = entitas.EntityDoesNotHaveComponentException;
 
-  class EntityAlreadyHasComponentException extends Exception {
-    public constructor(message:string, index:number) {
-      super(message + "\nEntity already has a component at index " + index);
-    }
-  }
-
-  class EntityDoesNotHaveComponentException extends Exception {
-    public constructor(message:string, index:number) {
-      super(message + "\nEntity does not have a component at index " + index);
-    }
-  }
-
-  class EntityIsNotEnabledException extends Exception {
-    public constructor(message:string) {
-      super(message + "\nEntity is not enabled");
-    }
-  }
-
-  class EntityIsAlreadyReleasedException extends Exception {
-    public constructor() {
-      super("Entity is already released!");
-    }
-  }
+  /**
+   * event delegate boilerplate:
+   */
   export module Entity {
-    /**
-     * event delegates:
-     */
-    export interface EntityReleased {(e:Entity):void;}
-    export interface EntityChanged {(e:Entity, index:number, component:IComponent):void;}
-    export interface ComponentReplaced {(e:Entity, index:number, component:IComponent, replacement:IComponent):void;}
 
+    export interface EntityReleased {(e:Entity):void;}
+    export interface IEntityReleased<T> extends ISignal<T> {
+      dispatch(e:Entity):void;
+    }
+
+    export interface EntityChanged {(e:Entity, index:number, component:IComponent):void;}
+    export interface IEntityChanged<T> extends ISignal<T> {
+      dispatch(e:Entity, index:number, component:IComponent):void;
+    }
+
+    export interface ComponentReplaced {(e:Entity, index:number, component:IComponent, replacement:IComponent):void;}
+    export interface IComponentReplaced<T> extends ISignal<T> {
+      dispatch(e:Entity, index:number, component:IComponent, replacement:IComponent):void;
+    }
   }
 
   export class Entity {
 
     public get creationIndex():number {return this._creationIndex;}
 
-    public onEntityReleased:Array<Entity.EntityReleased> = [];
-    public onComponentAdded:Array<Entity.EntityChanged> = [];
-    public onComponentRemoved:Array<Entity.EntityChanged> = [];
-    public onComponentReplaced:Array<Entity.ComponentReplaced> = [];
+    public onEntityReleased:IEntityReleased<EntityReleased>;
+    public onComponentAdded:IEntityChanged<EntityChanged>;
+    public onComponentRemoved:IEntityChanged<EntityChanged>;
+    public onComponentReplaced:Entity.IComponentReplaced<ComponentReplaced>;
 
     public _creationIndex:number=0;
     public _isEnabled:boolean=true;
@@ -55,8 +54,12 @@ module entitas {
 
     public _refCount:number=0;
 
-
     constructor(totalComponents:number=16) {
+      this.onEntityReleased = new Signal<EntityReleased>(this);
+      this.onComponentAdded = new Signal<EntityChanged>(this);
+      this.onComponentRemoved = new Signal<EntityChanged>(this);
+      this.onComponentReplaced = new Signal<ComponentReplaced>(this);
+
       this._components = new Array(totalComponents);
     }
 
@@ -72,8 +75,7 @@ module entitas {
       this._componentsCache = undefined;
       this._componentIndicesCache = undefined;
       this._toStringCache = undefined;
-      for (var onComponentAdded=this.onComponentAdded, e=0; e<onComponentAdded.length; e++)
-        onComponentAdded[e](this, index, component);
+      this.onComponentAdded.dispatch(this, index, component);
 
       return this;
     }
@@ -107,8 +109,7 @@ module entitas {
     protected _replaceComponent(index:number, replacement:IComponent) {
       var previousComponent = this._components[index];
       if (previousComponent === replacement) {
-        for (var onComponentReplaced=this.onComponentReplaced, e=0; e<onComponentReplaced.length; e++)
-          onComponentReplaced[e](this, index, previousComponent, replacement);
+        this.onComponentReplaced.dispatch(this, index, previousComponent, replacement);
 
       } else {
         this._components[index] = replacement;
@@ -116,13 +117,10 @@ module entitas {
         if (replacement === undefined) {
           this._componentIndicesCache = undefined;
           this._toStringCache = undefined;
-          for (var onComponentRemoved=this.onComponentRemoved, e=0; e<onComponentRemoved.length; e++)
-            onComponentRemoved[e](this, index, previousComponent);
+          this.onComponentRemoved.dispatch(this, index, previousComponent);
 
         } else {
-          for (var onComponentReplaced=this.onComponentReplaced, e=0; e<onComponentReplaced.length; e++)
-            onComponentReplaced[e](this, index, previousComponent, replacement);
-
+          this.onComponentReplaced.dispatch(this, index, previousComponent, replacement);
         }
       }
 
@@ -204,9 +202,9 @@ module entitas {
 
     public destroy() {
       this.removeAllComponents();
-      this.onComponentAdded = [];
-      this.onComponentReplaced = [];
-      this.onComponentRemoved = [];
+      this.onComponentAdded.clear();
+      this.onComponentReplaced.clear();
+      this.onComponentRemoved.clear();
       this._isEnabled = false;
 
     }
@@ -222,8 +220,7 @@ module entitas {
         var components = this.getComponents();
         var lastSeperator = components.length - 1 ;
         for (var i = 0, componentsLength = components.length; i < componentsLength; i++) {
-          sb.push(components[i].constructor.name);
-          //sb.push(typeof components[i]);
+          sb.push(components[i].constructor['name']);
           if (i < lastSeperator) {
             sb.push(seperator);
           }
@@ -236,16 +233,15 @@ module entitas {
       return this._toStringCache;
     }
 
-    public retain():Entity {
+    public addRef():Entity {
       this._refCount += 1;
       return this;
     }
 
     public release() {
       this._refCount -= 1;
-      if (this._refCount == 0) {
-        for (var onEntityReleased=this.onEntityReleased, e=0; e<onEntityReleased.length; e++)
-          onEntityReleased[e](this);
+      if (this._refCount === 0) {
+        this.onEntityReleased.dispatch(this);
 
       } else if (this._refCount < 0) {
         throw new EntityIsAlreadyReleasedException();

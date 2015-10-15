@@ -66,7 +66,7 @@ module example {
     
     static get core():Pool {
       if (Pools._core == null) {
-        Pools._core = new Pool(CoreComponentIds.TotalComponents);
+        Pools._core = new Pool(CoreComponentIds, CoreComponentIds.TotalComponents);
       }
     
       return Pools._core;

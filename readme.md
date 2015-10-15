@@ -1,10 +1,39 @@
-# Entitas
+# entitas-ts
 
 Entitas ECS
-
-Status: experimental. Compiles.
-
 Typescript implementation ported from https://github.com/sschmid/Entitas-CSharp
+
+    +------------------+
+    |       Pool       |
+    |------------------|
+    |    e       e     |      +-----------+
+    |        e     e---|----> |  Entity   |
+    |  e        e      |      |-----------|
+    |     e  e       e |      | Component |
+    | e            e   |      |           |      +-----------+
+    |    e     e       |      | Component-|----> | Component |
+    |  e    e     e    |      |           |      |-----------|
+    |    e      e    e |      | Component |      |   Data    |
+    +------------------+      +-----------+      +-----------+
+      |
+      |
+      |     +-------------+  Groups:
+      |     |      e      |  Subsets of entities in the pool
+      |     |   e     e   |  for blazing fast querying
+      +---> |        +------------+
+            |     e  |    |       |
+            |  e     | e  |  e    |
+            +--------|----+    e  |
+                     |     e      |
+                     |  e     e   |
+                     +------------+
+    
+Status: testing...
+
+generate classes & extensions:
+
+    bin/entitas
+
 
 # MIT License
 

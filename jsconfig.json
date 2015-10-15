@@ -1,6 +1,7 @@
 {
     "files": [
-        "web/src/entitas/Exception.js",
+        "web/src/entitas/utils/Exceptions.js",
+        "web/src/entitas/utils/Signal.js",
         "web/src/entitas/interfaces/IComponent.js",
         "web/src/entitas/interfaces/IMatcher.js",
         "web/src/entitas/interfaces/ISystem.js",
