@@ -259,11 +259,12 @@ declare module entitas {
         _creationIndex: number;
         _isEnabled: boolean;
         _components: any;
+        private _componentsEnum;
         _componentsCache: any;
         _componentIndicesCache: number[];
         _toStringCache: string;
         _refCount: number;
-        constructor(totalComponents?: number);
+        constructor(componentsEnum: {}, totalComponents?: number);
         addComponent(index: number, component: IComponent): Entity;
         removeComponent(index: number): Entity;
         replaceComponent(index: number, component: IComponent): Entity;
@@ -399,6 +400,7 @@ declare module entitas {
         _groupsForIndex: Array<Array<Group>>;
         _reusableEntities: Array<Entity>;
         _retainedEntities: {};
+        private _componentsEnum;
         private _totalComponents;
         _creationIndex: number;
         _entitiesCache: Array<Entity>;

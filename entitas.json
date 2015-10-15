@@ -2,9 +2,9 @@
   "namespace":"example",
   "entitas": "web/entitas.d.ts",
   "output": {
-    "typescript": "example/generated.ts",
     "javascript": "web/src/example/extensions.js",
-    "declaration": "example/generated.d.ts"
+    "typescript": "example/src/generated.ts",
+    "declaration": "example/ext/generated.d.ts"
   },
   "components": {
     "Acceleratable": false,

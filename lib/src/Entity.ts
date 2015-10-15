@@ -48,19 +48,22 @@ module entitas {
     public _isEnabled:boolean=true;
     public _components;
 
+    private _componentsEnum:{};
     public _componentsCache;
     public _componentIndicesCache:number[];
     public _toStringCache:string;
 
     public _refCount:number=0;
 
-    constructor(totalComponents:number=16) {
+    constructor(componentsEnum:{}, totalComponents:number=16) {
       this.onEntityReleased = new Signal<EntityReleased>(this);
       this.onComponentAdded = new Signal<EntityChanged>(this);
       this.onComponentRemoved = new Signal<EntityChanged>(this);
       this.onComponentReplaced = new Signal<ComponentReplaced>(this);
 
       this._components = new Array(totalComponents);
+      this._componentsEnum = componentsEnum;
+
     }
 
     public addComponent(index:number, component:IComponent):Entity {
@@ -220,7 +223,7 @@ module entitas {
         var components = this.getComponents();
         var lastSeperator = components.length - 1 ;
         for (var i = 0, componentsLength = components.length; i < componentsLength; i++) {
-          sb.push(components[i].constructor['name']);
+          sb.push(this._componentsEnum[i]);
           if (i < lastSeperator) {
             sb.push(seperator);
           }

@@ -21,13 +21,17 @@
     "closure-compiler": "0.2.7",
     "google-closure-library": "*"
   },
-  "dependencies": {},
+  "dependencies": {
+    "pixi.js": "~3.0.8"
+  },
   "install": {
     "ignore": [
       "closure-compiler",
       "google-closure-library"
     ],
     "path": "web/src",
-    "sources": {}
+    "sources": {
+      "pixi.js": "packages/pixi.js/bin/pixi.min.js"
+    }
   }
 }

@@ -363,11 +363,12 @@ var entitas;
     var EntityAlreadyHasComponentException = entitas.EntityAlreadyHasComponentException;
     var EntityDoesNotHaveComponentException = entitas.EntityDoesNotHaveComponentException;
     var Entity = (function () {
-        function Entity(totalComponents) {
+        function Entity(componentsEnum, totalComponents) {
             if (totalComponents === void 0) { totalComponents = 16; }
             this._creationIndex = 0;
             this._isEnabled = true;
             this._refCount = 0;
+            this._componentsEnum = componentsEnum;
             this.onEntityReleased = new Signal(this);
             this.onComponentAdded = new Signal(this);
             this.onComponentRemoved = new Signal(this);
@@ -780,11 +781,11 @@ var entitas;
                 delete _this._retainedEntities[entity.creationIndex];
                 _this._reusableEntities.push(entity);
             };
-            console.log(components);
             this.onGroupCreated = new entitas.Signal(this);
             this.onEntityCreated = new entitas.Signal(this);
             this.onEntityDestroyed = new entitas.Signal(this);
             this.onEntityWillBeDestroyed = new entitas.Signal(this);
+            this._componentsEnum = components;
             this._totalComponents = totalComponents;
             this._creationIndex = startCreationIndex;
             this._groupsForIndex = [];
@@ -813,7 +814,7 @@ var entitas;
             configurable: true
         });
         Pool.prototype.createEntity = function () {
-            var entity = this._reusableEntities.length > 0 ? this._reusableEntities.pop() : new Entity(this._totalComponents);
+            var entity = this._reusableEntities.length > 0 ? this._reusableEntities.pop() : new Entity(this._componentsEnum, this._totalComponents);
             entity._isEnabled = true;
             entity._creationIndex = this._creationIndex++;
             entity.addRef();

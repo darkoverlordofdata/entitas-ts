@@ -1,7 +1,8 @@
 module entitas {
 
-  import Signal = entitas.Signal;
   import Entity = entitas.Entity;
+  import Signal = entitas.Signal;
+  import ISignal = entitas.ISignal;
   import IMatcher = entitas.IMatcher;
   import IComponent = entitas.IComponent;
   import GroupChanged = Group.GroupChanged;
@@ -15,12 +16,12 @@ module entitas {
   export module Group {
 
     export interface GroupChanged {(group:Group, entity:Entity, index:number, component:IComponent):void;}
-    export interface IGroupChanged<T> extends entitas.ISignal<T> {
+    export interface IGroupChanged<T> extends ISignal<T> {
       dispatch(group:Group, entity:Entity, index:number, component:IComponent):void;
     }
 
     export interface GroupUpdated {(group:Group, entity:Entity, index:number, component:IComponent, newComponent:IComponent):void;}
-    export interface IGroupUpdated<T> extends entitas.ISignal<T> {
+    export interface IGroupUpdated<T> extends ISignal<T> {
       dispatch(group:Group, entity:Entity, index:number, component:IComponent, newComponent:IComponent):void;
     }
   }

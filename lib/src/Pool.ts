@@ -1,8 +1,10 @@
 module entitas {
 
-  import Entity = entitas.Entity;
   import Group = entitas.Group;
+  import Entity = entitas.Entity;
+  import ISignal = entitas.ISignal;
   import IMatcher = entitas.IMatcher;
+  import ISetPool = entitas.ISetPool;
   import PoolChanged = Pool.PoolChanged;
   import IComponent = entitas.IComponent;
   import GroupChanged = Pool.GroupChanged;
@@ -17,18 +19,14 @@ module entitas {
   export module Pool {
 
     export interface PoolChanged {(pool:Pool, entity:Entity):void;}
-    export interface IPoolChanged<T> extends entitas.ISignal<T> {
+    export interface IPoolChanged<T> extends ISignal<T> {
       dispatch(pool:Pool, entity:Entity):void;
     }
 
     export interface GroupChanged {(pool:Pool, group:Group):void;}
-    export interface IGroupChanged<T> extends entitas.ISignal<T> {
+    export interface IGroupChanged<T> extends ISignal<T> {
       dispatch(pool:Pool, group:Group):void;
     }
-  }
-
-  export interface ISetPool {
-    setPool(pool:Pool);
   }
 
   export class Pool {
@@ -64,6 +62,7 @@ module entitas {
       this.onEntityDestroyed = new Signal<PoolChanged>(this);
       this.onEntityWillBeDestroyed = new Signal<PoolChanged>(this);
 
+      this._componentsEnum = components;
       this._totalComponents = totalComponents;
       this._creationIndex = startCreationIndex;
       this._groupsForIndex = [];
@@ -73,7 +72,7 @@ module entitas {
     }
 
     public createEntity():Entity {
-      var entity = this._reusableEntities.length > 0 ? this._reusableEntities.pop() : new Entity(this._totalComponents);
+      var entity = this._reusableEntities.length > 0 ? this._reusableEntities.pop() : new Entity(this._componentsEnum, this._totalComponents);
       entity._isEnabled = true;
       entity._creationIndex = this._creationIndex++;
       entity.addRef();
@@ -173,7 +172,7 @@ module entitas {
 
 
     protected updateGroupsComponentReplaced = (entity:Entity, index:number, previousComponent:IComponent, newComponent:IComponent) => {
-      console.log('updateGroupsComponentReplaced', entity);
+      console.log('updateGroupsComponentReplaced', entity.toString(), entity);
       var groups = this._groupsForIndex[index];
       if (groups !== undefined) {
         for (var i = 0, groupsCount = groups.length; i < groupsCount; i++) {
