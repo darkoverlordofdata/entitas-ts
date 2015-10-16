@@ -100,7 +100,7 @@ module entitas {
      * @param name
      */
     public createEntity(name):Entity {
-      var entity = this._reusableEntities.length > 0 ? this._reusableEntities.pop() : new Entity(this._componentsEnum, this._totalComponents);
+      var entity = this._reusableEntities.length > 0 ? this._reusableEntities.pop() : new Entity(this._totalComponents);
       entity._isEnabled = true;
       entity.name = name;
       entity._creationIndex = this._creationIndex++;

@@ -121,7 +121,7 @@ module entitas {
       if (this._entitiesCache === undefined) {
         this._entitiesCache = [];
         for (var k in this._entities) {
-            this._entitiesCache.push(this._entities[k]);
+          this._entitiesCache.push(this._entities[k]);
         }
       }
       return this._entitiesCache;

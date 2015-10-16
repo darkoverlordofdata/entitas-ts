@@ -30,7 +30,7 @@ Typescript implementation ported from https://github.com/sschmid/Entitas-CSharp
     
 Status: example works.
 
-generate classes & extensions:
+generate components & extensions:
 
     bin/entitas
 

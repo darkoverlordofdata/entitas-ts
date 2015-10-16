@@ -56,14 +56,13 @@ module entitas {
 
     public _refCount:number=0;
 
-    constructor(componentsEnum:{}, totalComponents:number=16) {
+    constructor(totalComponents:number=16) {
       this.onEntityReleased = new Signal<EntityReleased>(this);
       this.onComponentAdded = new Signal<EntityChanged>(this);
       this.onComponentRemoved = new Signal<EntityChanged>(this);
       this.onComponentReplaced = new Signal<ComponentReplaced>(this);
 
       this._components = new Array(totalComponents);
-      this._componentsEnum = componentsEnum;
 
     }
 

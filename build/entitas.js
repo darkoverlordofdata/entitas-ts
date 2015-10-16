@@ -1,3 +1,8 @@
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var entitas;
 (function (entitas) {
     var Exception = (function () {
@@ -10,23 +15,170 @@ var entitas;
         return Exception;
     })();
     entitas.Exception = Exception;
+    var EntityAlreadyHasComponentException = (function (_super) {
+        __extends(EntityAlreadyHasComponentException, _super);
+        function EntityAlreadyHasComponentException(message, index) {
+            _super.call(this, message + "\nEntity already has a component at index " + index);
+        }
+        return EntityAlreadyHasComponentException;
+    })(Exception);
+    entitas.EntityAlreadyHasComponentException = EntityAlreadyHasComponentException;
+    var EntityDoesNotHaveComponentException = (function (_super) {
+        __extends(EntityDoesNotHaveComponentException, _super);
+        function EntityDoesNotHaveComponentException(message, index) {
+            _super.call(this, message + "\nEntity does not have a component at index " + index);
+        }
+        return EntityDoesNotHaveComponentException;
+    })(Exception);
+    entitas.EntityDoesNotHaveComponentException = EntityDoesNotHaveComponentException;
+    var EntityIsNotEnabledException = (function (_super) {
+        __extends(EntityIsNotEnabledException, _super);
+        function EntityIsNotEnabledException(message) {
+            _super.call(this, message + "\nEntity is not enabled");
+        }
+        return EntityIsNotEnabledException;
+    })(Exception);
+    entitas.EntityIsNotEnabledException = EntityIsNotEnabledException;
+    var EntityIsAlreadyReleasedException = (function (_super) {
+        __extends(EntityIsAlreadyReleasedException, _super);
+        function EntityIsAlreadyReleasedException() {
+            _super.call(this, "Entity is already released!");
+        }
+        return EntityIsAlreadyReleasedException;
+    })(Exception);
+    entitas.EntityIsAlreadyReleasedException = EntityIsAlreadyReleasedException;
+    var SingleEntityException = (function (_super) {
+        __extends(SingleEntityException, _super);
+        function SingleEntityException(matcher) {
+            _super.call(this, "Multiple entities exist matching " + matcher);
+        }
+        return SingleEntityException;
+    })(Exception);
+    entitas.SingleEntityException = SingleEntityException;
+    var GroupObserverException = (function (_super) {
+        __extends(GroupObserverException, _super);
+        function GroupObserverException(message) {
+            _super.call(this, message);
+        }
+        return GroupObserverException;
+    })(Exception);
+    entitas.GroupObserverException = GroupObserverException;
+    var PoolDoesNotContainEntityException = (function (_super) {
+        __extends(PoolDoesNotContainEntityException, _super);
+        function PoolDoesNotContainEntityException(entity, message) {
+            _super.call(this, message + "\nPool does not contain entity " + entity);
+        }
+        return PoolDoesNotContainEntityException;
+    })(Exception);
+    entitas.PoolDoesNotContainEntityException = PoolDoesNotContainEntityException;
+    var EntityIsNotDestroyedException = (function (_super) {
+        __extends(EntityIsNotDestroyedException, _super);
+        function EntityIsNotDestroyedException(message) {
+            _super.call(this, message + "\nEntity is not destroyed yet!");
+        }
+        return EntityIsNotDestroyedException;
+    })(Exception);
+    entitas.EntityIsNotDestroyedException = EntityIsNotDestroyedException;
+    var MatcherException = (function (_super) {
+        __extends(MatcherException, _super);
+        function MatcherException(matcher) {
+            _super.call(this, "matcher.indices.length must be 1 but was " + matcher.indices.length);
+        }
+        return MatcherException;
+    })(Exception);
+    entitas.MatcherException = MatcherException;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Exception.js.map
+//# sourceMappingURL=Exceptions.js.map
+var entitas;
+(function (entitas) {
+    var Signal = (function () {
+        /**
+         *
+         * @param context
+         * @param alloc
+         */
+        function Signal(context, alloc) {
+            if (alloc === void 0) { alloc = 16; }
+            this._listeners = [];
+            this._context = context;
+            this._alloc = alloc;
+            this._size = 0;
+        }
+        /**
+         * Dispatch event
+         * @param args
+         */
+        Signal.prototype.dispatch = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
+            var listeners = this._listeners;
+            var size = listeners.length;
+            var context = this._context;
+            for (var i = 0; i < size; i++) {
+                listeners[i].apply(context, args);
+            }
+        };
+        /**
+         * Add event listener
+         * @param listener
+         */
+        Signal.prototype.add = function (listener) {
+            this._listeners.push(listener);
+            //var listeners = this._listeners;
+            //var length = listeners.length;
+            //
+            //if (this._size === length) {
+            //  listeners.length = ~~((length * 3) / 2) + 1;
+            //}
+            //listeners[this._size++] = listener;
+            //
+        };
+        /**
+         * Remove event listener
+         * @param listener
+         */
+        Signal.prototype.remove = function (listener) {
+            var listeners = this._listeners;
+            var index = listeners.indexOf(listener);
+            if (index !== -1)
+                listeners.splice(index, 1);
+            //var listeners = this._listeners;
+            //var size = this._size;
+            //
+            //for (var i = 0; i < size; i++) {
+            //  if (listener == listeners[i]) {
+            //    for (var j = i, k = i+1; k < size; j++, k++) {
+            //      listeners[j] = listeners[k];
+            //    }
+            //    delete listeners[--this._size];
+            //    //listeners[--this._size] = undefined;
+            //    return;
+            //  }
+            //}
+        };
+        /**
+         * Clear and reset to original alloc
+         */
+        Signal.prototype.clear = function () {
+            this._listeners.length = 0;
+            //this._listeners.length = this._alloc;
+        };
+        return Signal;
+    })();
+    entitas.Signal = Signal;
+})(entitas || (entitas = {}));
+//# sourceMappingURL=Signal.js.map
 //# sourceMappingURL=IComponent.js.map
 //# sourceMappingURL=IMatcher.js.map
 //# sourceMappingURL=ISystem.js.map
 //# sourceMappingURL=IExecuteSystem.js.map
 //# sourceMappingURL=IInitializeSystem.js.map
 //# sourceMappingURL=IReactiveSystem.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
 var entitas;
 (function (entitas) {
-    var Exception = entitas.Exception;
+    var MatcherException = entitas.MatcherException;
     var CoreMatcher = (function () {
         function CoreMatcher() {
         }
@@ -78,7 +230,7 @@ var entitas;
                 return this;
             }
             else {
-                return this.anyOf(Matcher.mergeIndices(args));
+                return this.anyOf.apply(this, Matcher.mergeIndices(args));
             }
         };
         Matcher.prototype.noneOf = function () {
@@ -92,7 +244,7 @@ var entitas;
                 return this;
             }
             else {
-                return this.noneOf(Matcher.mergeIndices(args));
+                return this.noneOf.apply(this, Matcher.mergeIndices(args));
             }
         };
         Matcher.prototype.matches = function (entity) {
@@ -245,13 +397,6 @@ var entitas;
         return Matcher;
     })();
     entitas.Matcher = Matcher;
-    var MatcherException = (function (_super) {
-        __extends(MatcherException, _super);
-        function MatcherException(matcher) {
-            _super.call(this, "matcher.indices.length must be 1 but was " + matcher.indices.length);
-        }
-        return MatcherException;
-    })(Exception);
 })(entitas || (entitas = {}));
 //# sourceMappingURL=Matcher.js.map
 //# sourceMappingURL=MatcherInterfaces.js.map
@@ -267,53 +412,23 @@ var entitas;
     entitas.TriggerOnEvent = TriggerOnEvent;
 })(entitas || (entitas = {}));
 //# sourceMappingURL=TriggerOnEvent.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
 var entitas;
 (function (entitas) {
-    var Exception = entitas.Exception;
-    var EntityAlreadyHasComponentException = (function (_super) {
-        __extends(EntityAlreadyHasComponentException, _super);
-        function EntityAlreadyHasComponentException(message, index) {
-            _super.call(this, message + "\nEntity already has a component at index " + index);
-        }
-        return EntityAlreadyHasComponentException;
-    })(Exception);
-    var EntityDoesNotHaveComponentException = (function (_super) {
-        __extends(EntityDoesNotHaveComponentException, _super);
-        function EntityDoesNotHaveComponentException(message, index) {
-            _super.call(this, message + "\nEntity does not have a component at index " + index);
-        }
-        return EntityDoesNotHaveComponentException;
-    })(Exception);
-    var EntityIsNotEnabledException = (function (_super) {
-        __extends(EntityIsNotEnabledException, _super);
-        function EntityIsNotEnabledException(message) {
-            _super.call(this, message + "\nEntity is not enabled");
-        }
-        return EntityIsNotEnabledException;
-    })(Exception);
-    var EntityIsAlreadyReleasedException = (function (_super) {
-        __extends(EntityIsAlreadyReleasedException, _super);
-        function EntityIsAlreadyReleasedException() {
-            _super.call(this, "Entity is already released!");
-        }
-        return EntityIsAlreadyReleasedException;
-    })(Exception);
+    var Signal = entitas.Signal;
+    var EntityIsNotEnabledException = entitas.EntityIsNotEnabledException;
+    var EntityIsAlreadyReleasedException = entitas.EntityIsAlreadyReleasedException;
+    var EntityAlreadyHasComponentException = entitas.EntityAlreadyHasComponentException;
+    var EntityDoesNotHaveComponentException = entitas.EntityDoesNotHaveComponentException;
     var Entity = (function () {
         function Entity(totalComponents) {
             if (totalComponents === void 0) { totalComponents = 16; }
-            this.onEntityReleased = [];
-            this.onComponentAdded = [];
-            this.onComponentRemoved = [];
-            this.onComponentReplaced = [];
             this._creationIndex = 0;
             this._isEnabled = true;
             this._refCount = 0;
+            this.onEntityReleased = new Signal(this);
+            this.onComponentAdded = new Signal(this);
+            this.onComponentRemoved = new Signal(this);
+            this.onComponentReplaced = new Signal(this);
             this._components = new Array(totalComponents);
         }
         Object.defineProperty(Entity.prototype, "creationIndex", {
@@ -333,15 +448,14 @@ var entitas;
             this._componentsCache = undefined;
             this._componentIndicesCache = undefined;
             this._toStringCache = undefined;
-            for (var onComponentAdded = this.onComponentAdded, e = 0; e < onComponentAdded.length; e++)
-                onComponentAdded[e](this, index, component);
+            this.onComponentAdded.dispatch(this, index, component);
             return this;
         };
         Entity.prototype.removeComponent = function (index) {
             if (!this._isEnabled) {
                 throw new EntityIsNotEnabledException("Cannot remove component!");
             }
-            if (this.hasComponent(index)) {
+            if (!this.hasComponent(index)) {
                 var errorMsg = "Cannot remove component at index " + index + " from " + this;
                 throw new EntityDoesNotHaveComponentException(errorMsg, index);
             }
@@ -363,21 +477,19 @@ var entitas;
         Entity.prototype._replaceComponent = function (index, replacement) {
             var previousComponent = this._components[index];
             if (previousComponent === replacement) {
-                for (var onComponentReplaced = this.onComponentReplaced, e = 0; e < onComponentReplaced.length; e++)
-                    onComponentReplaced[e](this, index, previousComponent, replacement);
+                this.onComponentReplaced.dispatch(this, index, previousComponent, replacement);
             }
             else {
                 this._components[index] = replacement;
                 this._componentsCache = undefined;
                 if (replacement === undefined) {
+                    delete this._components[index];
                     this._componentIndicesCache = undefined;
                     this._toStringCache = undefined;
-                    for (var onComponentRemoved = this.onComponentRemoved, e = 0; e < onComponentRemoved.length; e++)
-                        onComponentRemoved[e](this, index, previousComponent);
+                    this.onComponentRemoved.dispatch(this, index, previousComponent);
                 }
                 else {
-                    for (var onComponentReplaced = this.onComponentReplaced, e = 0; e < onComponentReplaced.length; e++)
-                        onComponentReplaced[e](this, index, previousComponent, replacement);
+                    this.onComponentReplaced.dispatch(this, index, previousComponent, replacement);
                 }
             }
         };
@@ -442,9 +554,9 @@ var entitas;
         };
         Entity.prototype.destroy = function () {
             this.removeAllComponents();
-            this.onComponentAdded = [];
-            this.onComponentReplaced = [];
-            this.onComponentRemoved = [];
+            this.onComponentAdded.clear();
+            this.onComponentReplaced.clear();
+            this.onComponentRemoved.clear();
             this._isEnabled = false;
         };
         Entity.prototype.toString = function () {
@@ -457,8 +569,7 @@ var entitas;
                 var components = this.getComponents();
                 var lastSeperator = components.length - 1;
                 for (var i = 0, componentsLength = components.length; i < componentsLength; i++) {
-                    sb.push(components[i].constructor.name);
-                    //sb.push(typeof components[i]);
+                    sb.push(this._componentsEnum[i]);
                     if (i < lastSeperator) {
                         sb.push(seperator);
                     }
@@ -468,15 +579,14 @@ var entitas;
             }
             return this._toStringCache;
         };
-        Entity.prototype.retain = function () {
+        Entity.prototype.addRef = function () {
             this._refCount += 1;
             return this;
         };
         Entity.prototype.release = function () {
             this._refCount -= 1;
-            if (this._refCount == 0) {
-                for (var onEntityReleased = this.onEntityReleased, e = 0; e < onEntityReleased.length; e++)
-                    onEntityReleased[e](this);
+            if (this._refCount === 0) {
+                this.onEntityReleased.dispatch(this);
             }
             else if (this._refCount < 0) {
                 throw new EntityIsAlreadyReleasedException();
@@ -487,21 +597,17 @@ var entitas;
     entitas.Entity = Entity;
 })(entitas || (entitas = {}));
 //# sourceMappingURL=Entity.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
 var entitas;
 (function (entitas) {
-    var Exception = entitas.Exception;
+    var Signal = entitas.Signal;
+    var GroupEventType = entitas.GroupEventType;
+    var SingleEntityException = entitas.SingleEntityException;
     var Group = (function () {
         function Group(matcher) {
-            this.onEntityAdded = [];
-            this.onEntityRemoved = [];
-            this.onEntityUpdated = [];
             this._entities = {};
+            this.onEntityAdded = new Signal(this);
+            this.onEntityRemoved = new Signal(this);
+            this.onEntityUpdated = new Signal(this);
             this._matcher = matcher;
         }
         Object.defineProperty(Group.prototype, "count", {
@@ -531,38 +637,31 @@ var entitas;
             }
         };
         Group.prototype.updateEntity = function (entity, index, previousComponent, newComponent) {
-            if (this._entities[entity.creationIndex]) {
-                for (var onEntityRemoved = this.onEntityRemoved, e = 0; e < onEntityRemoved.length; e++)
-                    onEntityRemoved[e](this, entity, index, previousComponent);
-                for (var onEntityAdded = this.onEntityAdded, e = 0; e < onEntityAdded.length; e++)
-                    onEntityAdded[e](this, entity, index, newComponent);
-                for (var onEntityUpdated = this.onEntityUpdated, e = 0; e < onEntityUpdated.length; e++)
-                    onEntityUpdated[e](this, entity, index, previousComponent, newComponent);
+            if (entity.creationIndex in this._entities) {
+                this.onEntityRemoved.dispatch(this, entity, index, previousComponent);
+                this.onEntityAdded.dispatch(this, entity, index, newComponent);
+                this.onEntityUpdated.dispatch(this, entity, index, previousComponent, newComponent);
             }
         };
         Group.prototype.addEntitySilently = function (entity) {
-            var added = !this._entities[entity.creationIndex];
-            if (added) {
+            if (!(entity.creationIndex in this._entities)) {
                 this._entities[entity.creationIndex] = entity;
                 this._entitiesCache = undefined;
                 this._singleEntityCache = undefined;
-                entity.retain();
+                entity.addRef();
             }
         };
         Group.prototype.addEntity = function (entity, index, component) {
-            var added = !this._entities[entity.creationIndex];
-            if (added) {
+            if (!(entity.creationIndex in this._entities)) {
                 this._entities[entity.creationIndex] = entity;
                 this._entitiesCache = undefined;
                 this._singleEntityCache = undefined;
-                entity.retain();
-                for (var onEntityAdded = this.onEntityAdded, e = 0; e < onEntityAdded.length; e++)
-                    onEntityAdded[e](this, entity, index, component);
+                entity.addRef();
+                this.onEntityAdded.dispatch(this, entity, index, component);
             }
         };
         Group.prototype.removeEntitySilently = function (entity) {
-            var removed = !!this._entities[entity.creationIndex];
-            if (removed) {
+            if (entity.creationIndex in this._entities) {
                 delete this._entities[entity.creationIndex];
                 this._entitiesCache = undefined;
                 this._singleEntityCache = undefined;
@@ -570,23 +669,21 @@ var entitas;
             }
         };
         Group.prototype.removeEntity = function (entity, index, component) {
-            var removed = !!this._entities[entity.creationIndex];
-            if (removed) {
+            if (entity.creationIndex in this._entities) {
                 delete this._entities[entity.creationIndex];
                 this._entitiesCache = undefined;
                 this._singleEntityCache = undefined;
-                for (var onEntityRemoved = this.onEntityRemoved, e = 0; e < onEntityRemoved.length; e++)
-                    onEntityRemoved[e](this, entity, index, component);
+                this.onEntityRemoved.dispatch(this, entity, index, component);
                 entity.release();
             }
         };
         Group.prototype.containsEntity = function (entity) {
-            return !this._entities[entity.creationIndex];
+            return entity.creationIndex in this._entities;
         };
         Group.prototype.getEntities = function () {
             if (this._entitiesCache === undefined) {
                 this._entitiesCache = [];
-                for (var k in Object.keys(this._entities)) {
+                for (var k in this._entities) {
                     this._entitiesCache.push(this._entities[k]);
                 }
             }
@@ -616,30 +713,17 @@ var entitas;
         };
         /** GroupExtension::createObserver */
         Group.prototype.createObserver = function (eventType) {
-            if (eventType === void 0) { eventType = entitas.GroupEventType.OnEntityAdded; }
+            if (eventType === void 0) { eventType = GroupEventType.OnEntityAdded; }
             return new entitas.GroupObserver(this, eventType);
         };
         return Group;
     })();
     entitas.Group = Group;
-    var SingleEntityException = (function (_super) {
-        __extends(SingleEntityException, _super);
-        function SingleEntityException(matcher) {
-            _super.call(this, "Multiple entities exist matching " + matcher);
-        }
-        return SingleEntityException;
-    })(Exception);
 })(entitas || (entitas = {}));
 //# sourceMappingURL=Group.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
 var entitas;
 (function (entitas) {
-    var Exception = entitas.Exception;
+    var GroupObserverException = entitas.GroupObserverException;
     (function (GroupEventType) {
         GroupEventType[GroupEventType["OnEntityAdded"] = 0] = "OnEntityAdded";
         GroupEventType[GroupEventType["OnEntityRemoved"] = 1] = "OnEntityRemoved";
@@ -648,9 +732,16 @@ var entitas;
     var GroupEventType = entitas.GroupEventType;
     var GroupObserver = (function () {
         function GroupObserver(groups, eventTypes) {
+            var _this = this;
             this._collectedEntities = {};
-            this._groups = groups[0] ? groups : [groups];
-            this._eventTypes = eventTypes[0] ? eventTypes : [eventTypes];
+            this.addEntity = function (group, entity, index, component) {
+                if (!(entity.creationIndex in _this._collectedEntities)) {
+                    _this._collectedEntities[entity.creationIndex] = entity;
+                    entity.addRef();
+                }
+            };
+            this._groups = Array.isArray(groups) ? groups : [groups];
+            this._eventTypes = Array.isArray(eventTypes) ? eventTypes : [eventTypes];
             if (groups.length !== eventTypes.length) {
                 throw new GroupObserverException("Unbalanced count with groups (" + groups.length +
                     ") and event types (" + eventTypes.length + ")");
@@ -669,18 +760,21 @@ var entitas;
                 var group = this._groups[i];
                 var eventType = this._eventTypes[i];
                 if (eventType === GroupEventType.OnEntityAdded) {
-                    if (group.onEntityAdded.indexOf(this._addEntityCache) === -1)
-                        group.onEntityAdded.push(this._addEntityCache);
+                    group.onEntityAdded.remove(this._addEntityCache);
+                    group.onEntityAdded.add(this._addEntityCache);
                 }
                 else if (eventType === GroupEventType.OnEntityRemoved) {
-                    if (group.onEntityRemoved.indexOf(this._addEntityCache) === -1)
-                        group.onEntityRemoved.push(this._addEntityCache);
+                    group.onEntityRemoved.remove(this._addEntityCache);
+                    group.onEntityRemoved.add(this._addEntityCache);
                 }
                 else if (eventType === GroupEventType.OnEntityAddedOrRemoved) {
-                    if (group.onEntityAdded.indexOf(this._addEntityCache) === -1)
-                        group.onEntityAdded.push(this._addEntityCache);
-                    if (group.onEntityRemoved.indexOf(this._addEntityCache) === -1)
-                        group.onEntityRemoved.push(this._addEntityCache);
+                    group.onEntityAdded.remove(this._addEntityCache);
+                    group.onEntityAdded.add(this._addEntityCache);
+                    group.onEntityRemoved.remove(this._addEntityCache);
+                    group.onEntityRemoved.add(this._addEntityCache);
+                }
+                else {
+                    throw "Invalid eventType [" + typeof eventType + ":" + eventType + "] in GroupObserver::activate";
                 }
             }
         };
@@ -688,12 +782,8 @@ var entitas;
             var e;
             for (var i = 0, groupsLength = this._groups.length; i < groupsLength; i++) {
                 var group = this._groups[i];
-                e = group.onEntityAdded.indexOf(this._addEntityCache);
-                if (e !== -1)
-                    group.onEntityAdded.splice(e, 1);
-                e = group.onEntityRemoved.indexOf(this._addEntityCache);
-                if (e !== -1)
-                    group.onEntityRemoved.splice(e, 1);
+                group.onEntityAdded.remove(this._addEntityCache);
+                group.onEntityRemoved.remove(this._addEntityCache);
                 this.clearCollectedEntities();
             }
         };
@@ -703,58 +793,21 @@ var entitas;
             }
             this._collectedEntities = {};
         };
-        GroupObserver.prototype.addEntity = function (group, entity, index, component) {
-            var added = !this._collectedEntities[entity.creationIndex];
-            if (added) {
-                this._collectedEntities[entity.creationIndex] = entity;
-                entity.retain();
-            }
-        };
         return GroupObserver;
     })();
     entitas.GroupObserver = GroupObserver;
-    var GroupObserverException = (function (_super) {
-        __extends(GroupObserverException, _super);
-        function GroupObserverException(message) {
-            _super.call(this, message);
-        }
-        return GroupObserverException;
-    })(Exception);
 })(entitas || (entitas = {}));
 //# sourceMappingURL=GroupObserver.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
 var entitas;
 (function (entitas) {
-    var Exception = entitas.Exception;
-    var Entity = entitas.Entity;
     var Group = entitas.Group;
-    var PoolDoesNotContainEntityException = (function (_super) {
-        __extends(PoolDoesNotContainEntityException, _super);
-        function PoolDoesNotContainEntityException(entity, message) {
-            _super.call(this, message + "\nPool does not contain entity " + entity);
-        }
-        return PoolDoesNotContainEntityException;
-    })(Exception);
-    var EntityIsNotDestroyedException = (function (_super) {
-        __extends(EntityIsNotDestroyedException, _super);
-        function EntityIsNotDestroyedException(message) {
-            _super.call(this, message + "\nEntity is not destroyed yet!");
-        }
-        return EntityIsNotDestroyedException;
-    })(Exception);
+    var Entity = entitas.Entity;
+    var EntityIsNotDestroyedException = entitas.EntityIsNotDestroyedException;
+    var PoolDoesNotContainEntityException = entitas.PoolDoesNotContainEntityException;
     var Pool = (function () {
-        function Pool(totalComponents, startCreationIndex) {
+        function Pool(components, totalComponents, startCreationIndex) {
             var _this = this;
             if (startCreationIndex === void 0) { startCreationIndex = 0; }
-            this.onEntityCreated = [];
-            this.onEntityWillBeDestroyed = [];
-            this.onEntityDestroyed = [];
-            this.onGroupCreated = [];
             this._entities = {};
             this._groups = {};
             this._reusableEntities = [];
@@ -781,18 +834,23 @@ var entitas;
                 if (entity._isEnabled) {
                     throw new EntityIsNotDestroyedException("Cannot release entity.");
                 }
-                var e = entity.onEntityReleased.indexOf(_this._cachedOnEntityReleased);
-                if (e !== -1)
-                    entity.onEntityReleased.splice(e, 1);
+                entity.onEntityReleased.remove(_this._cachedOnEntityReleased);
                 delete _this._retainedEntities[entity.creationIndex];
                 _this._reusableEntities.push(entity);
             };
+            this.onGroupCreated = new entitas.Signal(this);
+            this.onEntityCreated = new entitas.Signal(this);
+            this.onEntityDestroyed = new entitas.Signal(this);
+            this.onEntityWillBeDestroyed = new entitas.Signal(this);
+            this._componentsEnum = components;
             this._totalComponents = totalComponents;
             this._creationIndex = startCreationIndex;
             this._groupsForIndex = [];
             this._cachedUpdateGroupsComponentAddedOrRemoved = this.updateGroupsComponentAddedOrRemoved;
             this._cachedUpdateGroupsComponentReplaced = this.updateGroupsComponentReplaced;
             this._cachedOnEntityReleased = this.onEntityReleased;
+            Pool.componentsEnum = components;
+            Pool.totalComponents = totalComponents;
         }
         Object.defineProperty(Pool.prototype, "totalComponents", {
             get: function () { return this._totalComponents; },
@@ -814,36 +872,55 @@ var entitas;
             enumerable: true,
             configurable: true
         });
-        Pool.prototype.createEntity = function () {
+        /**
+         * groupDesc
+         *
+         * expand out the group tostring for better debug info
+         *
+         * @param group
+         * @returns {string}
+         */
+        Pool.groupDesc = function (group) {
+            var s = group.toString();
+            for (var c = Pool.totalComponents; c > -1; c--) {
+                s = s.replace('' + c, Pool.componentsEnum[c]);
+            }
+            return s;
+        };
+        /**
+         *
+         * @param name
+         */
+        Pool.prototype.createEntity = function (name) {
             var entity = this._reusableEntities.length > 0 ? this._reusableEntities.pop() : new Entity(this._totalComponents);
             entity._isEnabled = true;
+            entity.name = name;
             entity._creationIndex = this._creationIndex++;
-            entity.retain();
+            entity.addRef();
             this._entities[entity.creationIndex] = entity;
             this._entitiesCache = undefined;
-            entity.onComponentAdded.push(this._cachedUpdateGroupsComponentAddedOrRemoved);
-            entity.onComponentRemoved.push(this._cachedUpdateGroupsComponentAddedOrRemoved);
-            entity.onComponentReplaced.push(this._cachedUpdateGroupsComponentReplaced);
-            entity.onEntityReleased.push(this._cachedOnEntityReleased);
-            for (var onEntityCreated = this.onEntityCreated, e = 0; e < onEntityCreated.length; e++)
-                onEntityCreated[e](this, entity);
+            entity.onComponentAdded.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
+            entity.onComponentRemoved.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
+            entity.onComponentReplaced.add(this._cachedUpdateGroupsComponentReplaced);
+            entity.onEntityReleased.add(this._cachedOnEntityReleased);
+            this.onEntityCreated.dispatch(this, entity);
             return entity;
         };
+        /**
+         *
+         * @param entity
+         */
         Pool.prototype.destroyEntity = function (entity) {
-            var removed = !!this._entities[entity.creationIndex];
-            if (!removed) {
+            if (!(entity.creationIndex in this._entities)) {
                 throw new PoolDoesNotContainEntityException(entity, "Could not destroy entity!");
             }
+            delete this._entities[entity.creationIndex];
             this._entitiesCache = undefined;
-            for (var onEntityWillBeDestroyed = this.onEntityWillBeDestroyed, e = 0; e < onEntityWillBeDestroyed.length; e++)
-                onEntityWillBeDestroyed[e](this, entity);
+            this.onEntityWillBeDestroyed.dispatch(this, entity);
             entity.destroy();
-            for (var onEntityDestroyed = this.onEntityDestroyed, e = 0; e < onEntityDestroyed.length; e++)
-                onEntityDestroyed[e](this, entity);
+            this.onEntityDestroyed.dispatch(this, entity);
             if (entity._refCount === 1) {
-                var e = entity.onEntityReleased.indexOf(this._cachedOnEntityReleased);
-                if (e !== -1)
-                    entity.onEntityReleased.splice(e, 1);
+                entity.onEntityReleased.remove(this._cachedOnEntityReleased);
                 this._reusableEntities.push(entity);
             }
             else {
@@ -858,7 +935,7 @@ var entitas;
             }
         };
         Pool.prototype.hasEntity = function (entity) {
-            return !!this._entities[entity.creationIndex];
+            return entity.creationIndex in this._entities;
         };
         Pool.prototype.getEntities = function (matcher) {
             if (matcher) {
@@ -877,7 +954,7 @@ var entitas;
         };
         Pool.prototype.getGroup = function (matcher) {
             var group;
-            if (!!this._groups[matcher.id]) {
+            if (matcher.id in this._groups) {
                 group = this._groups[matcher.id];
             }
             else {
@@ -894,23 +971,21 @@ var entitas;
                     }
                     this._groupsForIndex[index].push(group);
                 }
-                for (var onGroupCreated = this.onGroupCreated, e = 0; e < onGroupCreated.length; e++)
-                    onGroupCreated[e](this, group);
+                this.onGroupCreated.dispatch(this, group);
             }
             return group;
         };
-        /** PoolExtension::createSystem */
         Pool.prototype.createSystem = function (system) {
             if ('function' === typeof system) {
                 var Klass = system;
                 system = new Klass();
             }
             Pool.setPool(system, this);
-            var reactiveSystem = system['trigger'] ? system : null;
+            var reactiveSystem = 'trigger' in system ? system : null;
             if (reactiveSystem != null) {
-                return (new entitas.ReactiveSystem(this, reactiveSystem));
+                return new entitas.ReactiveSystem(this, reactiveSystem);
             }
-            var multiReactiveSystem = system['triggers'] ? system : null;
+            var multiReactiveSystem = 'triggers' in system ? system : null;
             if (multiReactiveSystem != null) {
                 return new entitas.ReactiveSystem(this, multiReactiveSystem);
             }
@@ -918,11 +993,12 @@ var entitas;
         };
         /** PoolExtension::setPool */
         Pool.setPool = function (system, pool) {
-            var poolSystem = (system['setPool'] ? system : null);
+            var poolSystem = ('setPool' in system ? system : null);
             if (poolSystem != null) {
                 poolSystem.setPool(pool);
             }
         };
+        Pool.totalComponents = 0;
         return Pool;
     })();
     entitas.Pool = Pool;
@@ -933,13 +1009,13 @@ var entitas;
     var GroupObserver = entitas.GroupObserver;
     var ReactiveSystem = (function () {
         function ReactiveSystem(pool, subSystem) {
-            var triggers = subSystem['triggers'] ? subSystem['triggers'] : [subSystem['trigger']];
+            var triggers = 'triggers' in subSystem ? subSystem['triggers'] : [subSystem['trigger']];
             this._subsystem = subSystem;
-            var ensureComponents = (subSystem['ensureComponents'] ? subSystem : null);
+            var ensureComponents = ('ensureComponents' in subSystem ? subSystem : null);
             if (ensureComponents != null) {
                 this._ensureComponents = ensureComponents.ensureComponents;
             }
-            var excludeComponents = (subSystem['excludeComponents'] ? subSystem : null);
+            var excludeComponents = ('excludeComponents' in subSystem ? subSystem : null);
             if (excludeComponents != null) {
                 this._excludeComponents = excludeComponents.excludeComponents;
             }
@@ -980,7 +1056,7 @@ var entitas;
                         for (var k in collectedEntities) {
                             var e = collectedEntities[k];
                             if (ensureComponents.matches(e) && !excludeComponents.matches(e)) {
-                                buffer.push(e.retain());
+                                buffer.push(e.addRef());
                             }
                         }
                     }
@@ -988,7 +1064,7 @@ var entitas;
                         for (var k in collectedEntities) {
                             var e = collectedEntities[k];
                             if (ensureComponents.matches(e)) {
-                                buffer.push(e.retain());
+                                buffer.push(e.addRef());
                             }
                         }
                     }
@@ -997,14 +1073,14 @@ var entitas;
                     for (var k in collectedEntities) {
                         var e = collectedEntities[k];
                         if (!excludeComponents.matches(e)) {
-                            buffer.push(e.retain());
+                            buffer.push(e.addRef());
                         }
                     }
                 }
                 else {
                     for (var k in collectedEntities) {
                         var e = collectedEntities[k];
-                        buffer.push(e.retain());
+                        buffer.push(e.addRef());
                     }
                 }
                 this._observer.clearCollectedEntities();
@@ -1048,14 +1124,14 @@ var entitas;
                 var Klass = system;
                 system = new Klass();
             }
-            var reactiveSystem = (system['trigger'] || system['triggers'] ? system : null);
+            var reactiveSystem = ('trigger' in system || 'triggers' in system ? system : null);
             var initializeSystem = (reactiveSystem != null
-                ? reactiveSystem.subsystem['initialize'] ? reactiveSystem.subsystem : null
-                : system['initialize'] ? system : null);
+                ? 'initialize' in reactiveSystem.subsystem ? reactiveSystem.subsystem : null
+                : 'initialize' in system ? system : null);
             if (initializeSystem != null) {
                 this._initializeSystems.push(initializeSystem);
             }
-            var executeSystem = (system['execute'] ? system : null);
+            var executeSystem = ('execute' in system ? system : null);
             if (executeSystem != null) {
                 this._executeSystems.push(executeSystem);
             }
@@ -1088,800 +1164,3 @@ var entitas;
     entitas.Systems = Systems;
 })(entitas || (entitas = {}));
 //# sourceMappingURL=Systems.js.map
-/**
- * Entitas Generated Classes for example
- *
- * do not edit this file
- */
-var example;
-(function (example) {
-    var Pool = entitas.Pool;
-    (function (CoreComponentIds) {
-        CoreComponentIds[CoreComponentIds["Acceleratable"] = 0] = "Acceleratable";
-        CoreComponentIds[CoreComponentIds["Accelerating"] = 1] = "Accelerating";
-        CoreComponentIds[CoreComponentIds["Destroy"] = 2] = "Destroy";
-        CoreComponentIds[CoreComponentIds["Move"] = 3] = "Move";
-        CoreComponentIds[CoreComponentIds["Position"] = 4] = "Position";
-        CoreComponentIds[CoreComponentIds["FinishLine"] = 5] = "FinishLine";
-        CoreComponentIds[CoreComponentIds["Resource"] = 6] = "Resource";
-        CoreComponentIds[CoreComponentIds["View"] = 7] = "View";
-        CoreComponentIds[CoreComponentIds["TotalComponents"] = 8] = "TotalComponents";
-    })(example.CoreComponentIds || (example.CoreComponentIds = {}));
-    var CoreComponentIds = example.CoreComponentIds;
-    var AcceleratableComponent = (function () {
-        function AcceleratableComponent() {
-        }
-        return AcceleratableComponent;
-    })();
-    example.AcceleratableComponent = AcceleratableComponent;
-    var AcceleratingComponent = (function () {
-        function AcceleratingComponent() {
-        }
-        return AcceleratingComponent;
-    })();
-    example.AcceleratingComponent = AcceleratingComponent;
-    var DestroyComponent = (function () {
-        function DestroyComponent() {
-        }
-        return DestroyComponent;
-    })();
-    example.DestroyComponent = DestroyComponent;
-    var MoveComponent = (function () {
-        function MoveComponent() {
-        }
-        return MoveComponent;
-    })();
-    example.MoveComponent = MoveComponent;
-    var PositionComponent = (function () {
-        function PositionComponent() {
-        }
-        return PositionComponent;
-    })();
-    example.PositionComponent = PositionComponent;
-    var FinishLineComponent = (function () {
-        function FinishLineComponent() {
-        }
-        return FinishLineComponent;
-    })();
-    example.FinishLineComponent = FinishLineComponent;
-    var ResourceComponent = (function () {
-        function ResourceComponent() {
-        }
-        return ResourceComponent;
-    })();
-    example.ResourceComponent = ResourceComponent;
-    var ViewComponent = (function () {
-        function ViewComponent() {
-        }
-        return ViewComponent;
-    })();
-    example.ViewComponent = ViewComponent;
-    var Pools = (function () {
-        function Pools() {
-        }
-        Object.defineProperty(Pools, "allPools", {
-            get: function () {
-                if (Pools._allPools == null) {
-                    Pools._allPools = [Pools.core];
-                }
-                return Pools._allPools;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Pools, "core", {
-            get: function () {
-                if (Pools._core == null) {
-                    Pools._core = new Pool(CoreComponentIds.TotalComponents);
-                }
-                return Pools._core;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        return Pools;
-    })();
-    example.Pools = Pools;
-})(example || (example = {}));
-//# sourceMappingURL=generated.js.map
-/**
- * Entitas Generated Extensions
- *
- * do not edit this file
- */
-(function(){
-  var Pool = entitas.Pool;
-  var Matcher = entitas.Matcher;
-  var Entity = entitas.Entity;
-  var CoreMatcher = entitas.CoreMatcher;
-  var AcceleratableComponent = example.AcceleratableComponent;
-  var AcceleratingComponent = example.AcceleratingComponent;
-  var DestroyComponent = example.DestroyComponent;
-  var MoveComponent = example.MoveComponent;
-  var PositionComponent = example.PositionComponent;
-  var FinishLineComponent = example.FinishLineComponent;
-  var ResourceComponent = example.ResourceComponent;
-  var ViewComponent = example.ViewComponent;
-  var CoreComponentIds = example.CoreComponentIds;
-  Entity.acceleratableComponent = new AcceleratableComponent();
-  Object.defineProperty(Entity.prototype, 'isAcceleratable', {
-    get: function() {
-      return this.hasComponent(CoreComponentIds.Acceleratable);
-    },
-    set: function(value) {
-      if (value !== this.isAcceleratable) {
-        if (value) {
-          this.addComponent(CoreComponentIds.Acceleratable, Entity.acceleratableComponent);
-        } else {
-          this.removeComponent(CoreComponentIds.Acceleratable);
-        }
-      }
-    }
-  });
-  Entity.prototype.setAcceleratable = function(value) {
-    this.isAcceleratable = value;
-    return this;
-  };
-  Entity.acceleratingComponent = new AcceleratingComponent();
-  Object.defineProperty(Entity.prototype, 'isAccelerating', {
-    get: function() {
-      return this.hasComponent(CoreComponentIds.Accelerating);
-    },
-    set: function(value) {
-      if (value !== this.isAccelerating) {
-        if (value) {
-          this.addComponent(CoreComponentIds.Accelerating, Entity.acceleratingComponent);
-        } else {
-          this.removeComponent(CoreComponentIds.Accelerating);
-        }
-      }
-    }
-  });
-  Entity.prototype.setAccelerating = function(value) {
-    this.isAccelerating = value;
-    return this;
-  };
-  Entity.destroyComponent = new DestroyComponent();
-  Object.defineProperty(Entity.prototype, 'isDestroy', {
-    get: function() {
-      return this.hasComponent(CoreComponentIds.Destroy);
-    },
-    set: function(value) {
-      if (value !== this.isDestroy) {
-        if (value) {
-          this.addComponent(CoreComponentIds.Destroy, Entity.destroyComponent);
-        } else {
-          this.removeComponent(CoreComponentIds.Destroy);
-        }
-      }
-    }
-  });
-  Entity.prototype.setDestroy = function(value) {
-    this.isDestroy = value;
-    return this;
-  };
-  Entity._moveComponentPool = [];
-  Entity.clearMoveComponentPool = function() {
-    Entity._moveComponentPool.length = 0;
-  };
-  Object.defineProperty(Entity.prototype, 'move', {
-    get: function() {
-      return this.getComponent(CoreComponentIds.Move);
-    }
-  });
-  Object.defineProperty(Entity.prototype, 'hasMove', {
-    get: function() {
-      return this.hasComponent(CoreComponentIds.Move);
-    }
-  });
-  Entity.prototype.addMove = function(speed, maxSpeed) {
-    var component = Entity._moveComponentPool.length > 0 ? Entity._moveComponentPool.pop() : new MoveComponent();
-    component.speed = speed;
-    component.maxSpeed = maxSpeed;
-    return this.addComponent(CoreComponentIds.Move, component);
-  };
-  Entity.prototype.replaceMove = function(speed, maxSpeed) {
-    var previousComponent = this.hasMove ? this.move : null;
-    var component = Entity._moveComponentPool.length > 0 ? Entity._moveComponentPool.pop() : new MoveComponent();
-    component.speed = speed;
-    component.maxSpeed = maxSpeed;
-    this.replaceComponent(CoreComponentIds.Move, component);
-    if (previousComponent != null) {
-      Entity._moveComponentPool.push(previousComponent);
-    }
-    return this;
-  };
-  Entity.prototype.removeMove = function() {
-    var component = this.move;
-    this.removeComponent(CoreComponentIds.Move);
-    Entity._moveComponentPool.push(component);
-    return this;
-  };
-  Entity._positionComponentPool = [];
-  Entity.clearPositionComponentPool = function() {
-    Entity._positionComponentPool.length = 0;
-  };
-  Object.defineProperty(Entity.prototype, 'position', {
-    get: function() {
-      return this.getComponent(CoreComponentIds.Position);
-    }
-  });
-  Object.defineProperty(Entity.prototype, 'hasPosition', {
-    get: function() {
-      return this.hasComponent(CoreComponentIds.Position);
-    }
-  });
-  Entity.prototype.addPosition = function(x, y, z) {
-    var component = Entity._positionComponentPool.length > 0 ? Entity._positionComponentPool.pop() : new PositionComponent();
-    component.x = x;
-    component.y = y;
-    component.z = z;
-    return this.addComponent(CoreComponentIds.Position, component);
-  };
-  Entity.prototype.replacePosition = function(x, y, z) {
-    var previousComponent = this.hasPosition ? this.position : null;
-    var component = Entity._positionComponentPool.length > 0 ? Entity._positionComponentPool.pop() : new PositionComponent();
-    component.x = x;
-    component.y = y;
-    component.z = z;
-    this.replaceComponent(CoreComponentIds.Position, component);
-    if (previousComponent != null) {
-      Entity._positionComponentPool.push(previousComponent);
-    }
-    return this;
-  };
-  Entity.prototype.removePosition = function() {
-    var component = this.position;
-    this.removeComponent(CoreComponentIds.Position);
-    Entity._positionComponentPool.push(component);
-    return this;
-  };
-  Entity.finishLineComponent = new FinishLineComponent();
-  Object.defineProperty(Entity.prototype, 'isFinishLine', {
-    get: function() {
-      return this.hasComponent(CoreComponentIds.FinishLine);
-    },
-    set: function(value) {
-      if (value !== this.isFinishLine) {
-        if (value) {
-          this.addComponent(CoreComponentIds.FinishLine, Entity.finishLineComponent);
-        } else {
-          this.removeComponent(CoreComponentIds.FinishLine);
-        }
-      }
-    }
-  });
-  Entity.prototype.setFinishLine = function(value) {
-    this.isFinishLine = value;
-    return this;
-  };
-  Entity._resourceComponentPool = [];
-  Entity.clearResourceComponentPool = function() {
-    Entity._resourceComponentPool.length = 0;
-  };
-  Object.defineProperty(Entity.prototype, 'resource', {
-    get: function() {
-      return this.getComponent(CoreComponentIds.Resource);
-    }
-  });
-  Object.defineProperty(Entity.prototype, 'hasResource', {
-    get: function() {
-      return this.hasComponent(CoreComponentIds.Resource);
-    }
-  });
-  Entity.prototype.addResource = function(name) {
-    var component = Entity._resourceComponentPool.length > 0 ? Entity._resourceComponentPool.pop() : new ResourceComponent();
-    component.name = name;
-    return this.addComponent(CoreComponentIds.Resource, component);
-  };
-  Entity.prototype.replaceResource = function(name) {
-    var previousComponent = this.hasResource ? this.resource : null;
-    var component = Entity._resourceComponentPool.length > 0 ? Entity._resourceComponentPool.pop() : new ResourceComponent();
-    component.name = name;
-    this.replaceComponent(CoreComponentIds.Resource, component);
-    if (previousComponent != null) {
-      Entity._resourceComponentPool.push(previousComponent);
-    }
-    return this;
-  };
-  Entity.prototype.removeResource = function() {
-    var component = this.resource;
-    this.removeComponent(CoreComponentIds.Resource);
-    Entity._resourceComponentPool.push(component);
-    return this;
-  };
-  Entity._viewComponentPool = [];
-  Entity.clearViewComponentPool = function() {
-    Entity._viewComponentPool.length = 0;
-  };
-  Object.defineProperty(Entity.prototype, 'view', {
-    get: function() {
-      return this.getComponent(CoreComponentIds.View);
-    }
-  });
-  Object.defineProperty(Entity.prototype, 'hasView', {
-    get: function() {
-      return this.hasComponent(CoreComponentIds.View);
-    }
-  });
-  Entity.prototype.addView = function(stage) {
-    var component = Entity._viewComponentPool.length > 0 ? Entity._viewComponentPool.pop() : new ViewComponent();
-    component.stage = stage;
-    return this.addComponent(CoreComponentIds.View, component);
-  };
-  Entity.prototype.replaceView = function(stage) {
-    var previousComponent = this.hasView ? this.view : null;
-    var component = Entity._viewComponentPool.length > 0 ? Entity._viewComponentPool.pop() : new ViewComponent();
-    component.stage = stage;
-    this.replaceComponent(CoreComponentIds.View, component);
-    if (previousComponent != null) {
-      Entity._viewComponentPool.push(previousComponent);
-    }
-    return this;
-  };
-  Entity.prototype.removeView = function() {
-    var component = this.view;
-    this.removeComponent(CoreComponentIds.View);
-    Entity._viewComponentPool.push(component);
-    return this;
-  };
-  CoreMatcher._matcherAcceleratable=null;
-  
-  Object.defineProperty(CoreMatcher, 'Acceleratable', {
-    get: function() {
-      if (CoreMatcher._matcherAcceleratable == null) {
-        CoreMatcher._matcherAcceleratable = Matcher.allOf(CoreComponentIds.Acceleratable);
-      }
-      
-      return CoreMatcher._matcherAcceleratable;
-    }
-  });
-  CoreMatcher._matcherAccelerating=null;
-  
-  Object.defineProperty(CoreMatcher, 'Accelerating', {
-    get: function() {
-      if (CoreMatcher._matcherAccelerating == null) {
-        CoreMatcher._matcherAccelerating = Matcher.allOf(CoreComponentIds.Accelerating);
-      }
-      
-      return CoreMatcher._matcherAccelerating;
-    }
-  });
-  CoreMatcher._matcherDestroy=null;
-  
-  Object.defineProperty(CoreMatcher, 'Destroy', {
-    get: function() {
-      if (CoreMatcher._matcherDestroy == null) {
-        CoreMatcher._matcherDestroy = Matcher.allOf(CoreComponentIds.Destroy);
-      }
-      
-      return CoreMatcher._matcherDestroy;
-    }
-  });
-  CoreMatcher._matcherMove=null;
-  
-  Object.defineProperty(CoreMatcher, 'Move', {
-    get: function() {
-      if (CoreMatcher._matcherMove == null) {
-        CoreMatcher._matcherMove = Matcher.allOf(CoreComponentIds.Move);
-      }
-      
-      return CoreMatcher._matcherMove;
-    }
-  });
-  CoreMatcher._matcherPosition=null;
-  
-  Object.defineProperty(CoreMatcher, 'Position', {
-    get: function() {
-      if (CoreMatcher._matcherPosition == null) {
-        CoreMatcher._matcherPosition = Matcher.allOf(CoreComponentIds.Position);
-      }
-      
-      return CoreMatcher._matcherPosition;
-    }
-  });
-  CoreMatcher._matcherFinishLine=null;
-  
-  Object.defineProperty(CoreMatcher, 'FinishLine', {
-    get: function() {
-      if (CoreMatcher._matcherFinishLine == null) {
-        CoreMatcher._matcherFinishLine = Matcher.allOf(CoreComponentIds.FinishLine);
-      }
-      
-      return CoreMatcher._matcherFinishLine;
-    }
-  });
-  CoreMatcher._matcherResource=null;
-  
-  Object.defineProperty(CoreMatcher, 'Resource', {
-    get: function() {
-      if (CoreMatcher._matcherResource == null) {
-        CoreMatcher._matcherResource = Matcher.allOf(CoreComponentIds.Resource);
-      }
-      
-      return CoreMatcher._matcherResource;
-    }
-  });
-  CoreMatcher._matcherView=null;
-  
-  Object.defineProperty(CoreMatcher, 'View', {
-    get: function() {
-      if (CoreMatcher._matcherView == null) {
-        CoreMatcher._matcherView = Matcher.allOf(CoreComponentIds.View);
-      }
-      
-      return CoreMatcher._matcherView;
-    }
-  });
-  Object.defineProperty(Pool.prototype, 'acceleratingEntity', {
-    get: function() {
-      return this.getGroup(CoreMatcher.Accelerating)[0];
-    }
-  });
-  Object.defineProperty(Pool.prototype, 'isAccelerating', {
-    get: function() {
-      return this.acceleratingEntity != null;
-    },
-    set: function(value) {
-      var entity = this.acceleratingEntity;
-      if (value != (entity != null)) {
-        if (value) {
-          this.createEntity().isAccelerating = true;
-        } else {
-          this.destroyEntity(entity);
-        }
-      }
-    }
-  });
-  Object.defineProperty(Pool.prototype, 'finishLineEntity', {
-    get: function() {
-      return this.getGroup(CoreMatcher.FinishLine)[0];
-    }
-  });
-  Object.defineProperty(Pool.prototype, 'isFinishLine', {
-    get: function() {
-      return this.finishLineEntity != null;
-    },
-    set: function(value) {
-      var entity = this.finishLineEntity;
-      if (value != (entity != null)) {
-        if (value) {
-          this.createEntity().isFinishLine = true;
-        } else {
-          this.destroyEntity(entity);
-        }
-      }
-    }
-  });
-})();
-var example;
-(function (example) {
-    var CoreMatcher = entitas.CoreMatcher;
-    var Matcher = entitas.Matcher;
-    var Exception = entitas.Exception;
-    var AccelerateSystem = (function () {
-        function AccelerateSystem() {
-        }
-        Object.defineProperty(AccelerateSystem.prototype, "trigger", {
-            get: function () {
-                return CoreMatcher.Accelerating.onEntityAddedOrRemoved();
-            },
-            enumerable: true,
-            configurable: true
-        });
-        AccelerateSystem.prototype.setPool = function (pool) {
-            var x = Matcher.allOf(CoreMatcher.Acceleratable, CoreMatcher.Move);
-            this._group = pool.getGroup(x);
-        };
-        AccelerateSystem.prototype.execute = function (entities) {
-            console.log('AccelerateSystem::execute', entities);
-            if (entities.length !== 1) {
-                throw new Exception("Expected exactly one entity but found " + entities.length);
-            }
-            var accelerate = entities[0].isAccelerating;
-            var entities = this._group.getEntities();
-            for (var i = 0, l = entities.length; i < l; i++) {
-                var e = entities[i];
-                var move = e.move;
-                var speed = accelerate ? move.maxSpeed : 0;
-                e.replaceMove(speed, move.maxSpeed);
-            }
-        };
-        return AccelerateSystem;
-    })();
-    example.AccelerateSystem = AccelerateSystem;
-})(example || (example = {}));
-//# sourceMappingURL=AccelerateSystem.js.map
-var example;
-(function (example) {
-    var CoreMatcher = entitas.CoreMatcher;
-    var DestroySystem = (function () {
-        function DestroySystem() {
-        }
-        Object.defineProperty(DestroySystem.prototype, "trigger", {
-            get: function () {
-                return CoreMatcher.Destroy.onEntityAdded();
-            },
-            enumerable: true,
-            configurable: true
-        });
-        DestroySystem.prototype.setPool = function (pool) {
-            this._pool = pool;
-        };
-        DestroySystem.prototype.execute = function (entities) {
-            console.log('DestroySystem::execute', entities);
-            for (var i = 0, l = entities.length; i < l; i++) {
-                var e = entities[i];
-                this._pool.destroyEntity(e);
-            }
-        };
-        return DestroySystem;
-    })();
-    example.DestroySystem = DestroySystem;
-})(example || (example = {}));
-//# sourceMappingURL=DestroySystem.js.map
-var example;
-(function (example) {
-    //[Core]
-    var InputSystem = (function () {
-        function InputSystem() {
-        }
-        InputSystem.prototype.setPool = function (pool) {
-            this._pool = pool;
-        };
-        InputSystem.prototype.execute = function () {
-            console.log('InputSystem::execute');
-            //this._pool.isAccelerating = Input.GetMouseButton(0);
-        };
-        return InputSystem;
-    })();
-    example.InputSystem = InputSystem;
-})(example || (example = {}));
-//# sourceMappingURL=InputSystem.js.map
-var example;
-(function (example) {
-    var CoreMatcher = entitas.CoreMatcher;
-    var Matcher = entitas.Matcher;
-    var MoveSystem = (function () {
-        function MoveSystem() {
-        }
-        MoveSystem.prototype.setPool = function (pool) {
-            this._group = pool.getGroup(Matcher.allOf(CoreMatcher.Move, CoreMatcher.Position));
-        };
-        MoveSystem.prototype.execute = function () {
-            var entities = this._group.getEntities();
-            for (var i = 0, l = entities.length; i < l; i++) {
-                var e = entities[i];
-                var move = e.move;
-                var pos = e.position;
-                console.log(i, pos.x, pos.y);
-                e.replacePosition(pos.x, pos.y + move.speed, pos.z);
-            }
-        };
-        return MoveSystem;
-    })();
-    example.MoveSystem = MoveSystem;
-})(example || (example = {}));
-//# sourceMappingURL=MoveSystem.js.map
-var example;
-(function (example) {
-    var CoreMatcher = entitas.CoreMatcher;
-    var ReachedFinishSystem = (function () {
-        function ReachedFinishSystem() {
-        }
-        Object.defineProperty(ReachedFinishSystem.prototype, "trigger", {
-            get: function () {
-                return CoreMatcher.Position.onEntityAdded();
-            },
-            enumerable: true,
-            configurable: true
-        });
-        ReachedFinishSystem.prototype.setPool = function (pool) {
-            this._pool = pool;
-        };
-        ReachedFinishSystem.prototype.execute = function (entities) {
-            console.log('ReachedFinishSystem::execute', entities);
-            var finishLinePosY = this._pool.finishLineEntity.position.y;
-            for (var i = 0, l = entities.length; i < l; i++) {
-                var e = entities[i];
-                if (e.position.y > finishLinePosY) {
-                    e.isDestroy = true;
-                }
-            }
-        };
-        return ReachedFinishSystem;
-    })();
-    example.ReachedFinishSystem = ReachedFinishSystem;
-})(example || (example = {}));
-//# sourceMappingURL=ReachedFinishSystem.js.map
-var example;
-(function (example) {
-    var Matcher = entitas.Matcher;
-    var CoreMatcher = entitas.CoreMatcher;
-    var RenderPositionSystem = (function () {
-        function RenderPositionSystem() {
-        }
-        Object.defineProperty(RenderPositionSystem.prototype, "trigger", {
-            get: function () {
-                return Matcher.allOf(CoreMatcher.View, CoreMatcher.Position).onEntityAdded();
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(RenderPositionSystem.prototype, "ensureComponents", {
-            get: function () {
-                return CoreMatcher.View;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        RenderPositionSystem.prototype.execute = function (entities) {
-            console.log('RenderPositionSystem::execute', entities);
-            for (var i = 0, l = entities.length; i < l; i++) {
-                var e = entities[i];
-                var pos = e.position;
-            }
-        };
-        return RenderPositionSystem;
-    })();
-    example.RenderPositionSystem = RenderPositionSystem;
-})(example || (example = {}));
-//# sourceMappingURL=RenderPositionSystem.js.map
-var example;
-(function (example) {
-    var CoreMatcher = entitas.CoreMatcher;
-    var AddViewSystem = (function () {
-        function AddViewSystem() {
-        }
-        Object.defineProperty(AddViewSystem.prototype, "trigger", {
-            get: function () {
-                return CoreMatcher.Resource.onEntityAdded();
-            },
-            enumerable: true,
-            configurable: true
-        });
-        AddViewSystem.prototype.execute = function (entities) {
-            console.log('AddViewSystem::execute', entities);
-            for (var i = 0, l = entities.length; i < l; i++) {
-                var e = entities[i];
-            }
-        };
-        return AddViewSystem;
-    })();
-    example.AddViewSystem = AddViewSystem;
-})(example || (example = {}));
-//# sourceMappingURL=AddViewSystem.js.map
-var example;
-(function (example) {
-    var CoreMatcher = entitas.CoreMatcher;
-    var Matcher = entitas.Matcher;
-    var RemoveViewSystem = (function () {
-        function RemoveViewSystem() {
-        }
-        Object.defineProperty(RemoveViewSystem.prototype, "triggers", {
-            get: function () {
-                return [
-                    CoreMatcher.Resource.onEntityRemoved(),
-                    Matcher.allOf(CoreMatcher.Resource, CoreMatcher.Destroy).onEntityAdded()
-                ];
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(RemoveViewSystem.prototype, "ensureComponents", {
-            get: function () {
-                return CoreMatcher.View;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        RemoveViewSystem.prototype.setPool = function (pool) {
-            pool.getGroup(CoreMatcher.View).onEntityRemoved.push(this.onEntityRemoved);
-        };
-        RemoveViewSystem.prototype.onEntityRemoved = function (group, entity, index, component) {
-            //var viewComponent = <ViewComponent>component;
-            //Object.Destroy(viewComponent.gameObject);
-        };
-        RemoveViewSystem.prototype.execute = function (entities) {
-            console.log('RemoveViewSystem::execute', entities);
-            for (var i = 0, l = entities.length; i < l; i++) {
-                var e = entities[i];
-                e.removeView();
-            }
-        };
-        return RemoveViewSystem;
-    })();
-    example.RemoveViewSystem = RemoveViewSystem;
-})(example || (example = {}));
-//# sourceMappingURL=RemoveViewSystem.js.map
-var example;
-(function (example) {
-    var CreateFinishLineSystem = (function () {
-        function CreateFinishLineSystem() {
-        }
-        CreateFinishLineSystem.prototype.setPool = function (pool) {
-            this._pool = pool;
-        };
-        CreateFinishLineSystem.prototype.initialize = function () {
-            this._pool.createEntity()
-                .setFinishLine(true)
-                .addResource("Finish Line")
-                .addPosition(9, 7, 0);
-        };
-        return CreateFinishLineSystem;
-    })();
-    example.CreateFinishLineSystem = CreateFinishLineSystem;
-})(example || (example = {}));
-//# sourceMappingURL=CreateFinishLineSystem.js.map
-var example;
-(function (example) {
-    var CreateOpponentsSystem = (function () {
-        function CreateOpponentsSystem() {
-        }
-        CreateOpponentsSystem.prototype.setPool = function (pool) {
-            this._pool = pool;
-        };
-        CreateOpponentsSystem.prototype.initialize = function () {
-            var resourceName = "Opponent";
-            for (var i = 1; i < 10; i++) {
-                var speed = Math.random() * 0.02;
-                this._pool.createEntity()
-                    .addResource(resourceName)
-                    .addPosition(i + i, 0, 0)
-                    .addMove(speed, speed);
-            }
-        };
-        return CreateOpponentsSystem;
-    })();
-    example.CreateOpponentsSystem = CreateOpponentsSystem;
-})(example || (example = {}));
-//# sourceMappingURL=CreateOpponentsSystem.js.map
-var example;
-(function (example) {
-    var CreatePlayerSystem = (function () {
-        function CreatePlayerSystem() {
-        }
-        CreatePlayerSystem.prototype.setPool = function (pool) {
-            this._pool = pool;
-        };
-        CreatePlayerSystem.prototype.initialize = function () {
-            this._pool.createEntity()
-                .addResource("Player")
-                .addPosition(0, 0, 0)
-                .addMove(0, 0.025)
-                .setAcceleratable(true);
-        };
-        return CreatePlayerSystem;
-    })();
-    example.CreatePlayerSystem = CreatePlayerSystem;
-})(example || (example = {}));
-//# sourceMappingURL=CreatePlayerSystem.js.map
-var Systems = entitas.Systems;
-var Pools = example.Pools;
-var GameController = (function () {
-    function GameController() {
-    }
-    GameController.prototype.start = function () {
-        this._systems = this.createSystems(Pools.core);
-        this._systems.initialize();
-    };
-    GameController.prototype.update = function () {
-        this._systems.execute();
-    };
-    GameController.prototype.createSystems = function (pool) {
-        return new Systems()
-            .add(pool.createSystem(example.CreatePlayerSystem))
-            .add(pool.createSystem(example.CreateOpponentsSystem))
-            .add(pool.createSystem(example.CreateFinishLineSystem))
-            .add(pool.createSystem(example.InputSystem))
-            .add(pool.createSystem(example.AccelerateSystem))
-            .add(pool.createSystem(example.MoveSystem))
-            .add(pool.createSystem(example.ReachedFinishSystem))
-            .add(pool.createSystem(example.RemoveViewSystem))
-            .add(pool.createSystem(example.AddViewSystem))
-            .add(pool.createSystem(example.RenderPositionSystem))
-            .add(pool.createSystem(example.DestroySystem));
-    };
-    return GameController;
-})();
-//# sourceMappingURL=GameController.js.map
