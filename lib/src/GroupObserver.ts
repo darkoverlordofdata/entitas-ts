@@ -21,9 +21,8 @@ module entitas {
     public _addEntityCache:Group.GroupChanged;
 
     constructor(groups, eventTypes) {
-
-      this._groups = groups[0] ? groups : [groups];
-      this._eventTypes = eventTypes[0] ? eventTypes : [eventTypes];
+      this._groups = Array.isArray(groups) ? groups : [groups];
+      this._eventTypes = Array.isArray(eventTypes) ? eventTypes : [eventTypes];
 
       if (groups.length !== eventTypes.length) {
         throw new GroupObserverException("Unbalanced count with groups (" + groups.length +
@@ -55,6 +54,9 @@ module entitas {
           group.onEntityAdded.add(this._addEntityCache);
           group.onEntityRemoved.remove(this._addEntityCache);
           group.onEntityRemoved.add(this._addEntityCache);
+
+        } else {
+          throw `Invalid eventType [${typeof eventType}:${eventType}] in GroupObserver::activate`
         }
       }
     }
@@ -78,7 +80,7 @@ module entitas {
       this._collectedEntities = {};
     }
 
-    addEntity(group:Group, entity:Entity, index:number, component:Component) {
+    addEntity = (group:Group, entity:Entity, index:number, component:Component) => {
       var added = !this._collectedEntities[entity.creationIndex];
       if (added) {
         this._collectedEntities[entity.creationIndex] = entity;

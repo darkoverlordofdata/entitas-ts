@@ -23,7 +23,7 @@ module example {
 
     public static assets = {
 
-      finish_png    : 'res/Finish.png',
+      finish_png    : 'res/Finish Line.png',
       opponent_png  : 'res/Opponent.png',
       player_png    : 'res/Player.png',
       square_png    : 'res/Square.png'

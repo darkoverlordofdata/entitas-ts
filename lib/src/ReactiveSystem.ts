@@ -23,14 +23,14 @@ module entitas {
 
     constructor(pool:Pool, subSystem:IReactiveSystem|IMultiReactiveSystem) {
 
-      var triggers:Array<TriggerOnEvent> = subSystem['triggers'] ?  subSystem['triggers'] : [subSystem['trigger']];
+      var triggers:Array<TriggerOnEvent> = 'triggers' in subSystem ?  subSystem['triggers'] : [subSystem['trigger']];
       this._subsystem = subSystem;
 
-      var ensureComponents:IEnsureComponents = <IEnsureComponents>(subSystem['ensureComponents'] ? <any>subSystem : null);
+      var ensureComponents:IEnsureComponents = <IEnsureComponents>('ensureComponents' in subSystem ? <any>subSystem : null);
       if (ensureComponents != null) {
         this._ensureComponents = ensureComponents.ensureComponents;
       }
-      var excludeComponents:IExcludeComponents = <IExcludeComponents>(subSystem['excludeComponents'] ? <any>subSystem : null);
+      var excludeComponents:IExcludeComponents = <IExcludeComponents>('excludeComponents' in subSystem ? <any>subSystem : null);
       if (excludeComponents != null) {
         this._excludeComponents = excludeComponents.excludeComponents;
       }
@@ -76,14 +76,14 @@ module entitas {
             for (var k in collectedEntities) {
               var e = collectedEntities[k];
               if (ensureComponents.matches(e) && !excludeComponents.matches(e)) {
-                buffer.push(e.retain());
+                buffer.push(e.addRef());
               }
             }
           } else {
             for (var k in collectedEntities) {
               var e = collectedEntities[k];
               if (ensureComponents.matches(e)) {
-                buffer.push(e.retain());
+                buffer.push(e.addRef());
               }
             }
           }
@@ -91,13 +91,13 @@ module entitas {
           for (var k in collectedEntities) {
             var e = collectedEntities[k];
             if (!excludeComponents.matches(e)) {
-              buffer.push(e.retain());
+              buffer.push(e.addRef());
             }
           }
         } else {
           for (var k in collectedEntities) {
             var e = collectedEntities[k];
-            buffer.push(e.retain());
+            buffer.push(e.addRef());
           }
         }
 

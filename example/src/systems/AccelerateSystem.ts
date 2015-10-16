@@ -25,7 +25,7 @@ module example {
     }
 
     public execute(entities:Array<entitas.Entity>) {
-      console.log('AccelerateSystem::execute', entities);
+      //console.log('AccelerateSystem::execute', entities);
       if (entities.length !== 1) {
         throw new Exception("Expected exactly one entity but found " + entities.length);
       }

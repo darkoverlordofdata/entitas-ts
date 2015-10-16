@@ -115,7 +115,11 @@ module entitas {
         this.onComponentReplaced.dispatch(this, index, previousComponent, replacement);
 
       } else {
-        this._components[index] = replacement;
+        if (replacement === undefined) {
+          delete this._components[index];
+        } else {
+          this._components[index] = replacement;
+        }
         this._componentsCache = undefined;
         if (replacement === undefined) {
           this._componentIndicesCache = undefined;

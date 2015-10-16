@@ -182,7 +182,7 @@ for Name, pooled of entitas.entities
     name = Name[0].toLowerCase()+Name[1...];
     js.push "  Object.defineProperty(Pool.prototype, '#{name}Entity', {"
     js.push "    get: function() {"
-    js.push "      return this.getGroup(CoreMatcher.#{Name})[0];"
+    js.push "      return this.getGroup(CoreMatcher.#{Name}).getSingleEntity();"
     js.push "    }"
     js.push "  });"
     js.push "  Object.defineProperty(Pool.prototype, 'is#{Name}', {"

@@ -20,7 +20,6 @@
         var e = entities[i];
         var move = e.move;
         var pos = e.position;
-        console.log(i, pos.x, pos.y);
         e.replacePosition(pos.x, pos.y + move.speed, pos.z);
       }
     }

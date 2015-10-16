@@ -67,7 +67,8 @@ module entitas {
           for (var j = i, k = i+1; k < size; j++, k++) {
             listeners[j] = listeners[k];
           }
-          listeners[--this._size] = undefined;
+          delete listeners[--this._size];
+          //listeners[--this._size] = undefined;
           return;
         }
       }

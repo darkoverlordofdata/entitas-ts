@@ -22,7 +22,7 @@ module example {
 
 
     public execute(entities:Array<Entity>) {
-      console.log('RenderPositionSystem::execute', entities);
+      //console.log('RenderPositionSystem::execute', entities);
       for (var i = 0, l = entities.length; i < l; i++) {
         var e = entities[i];
         var pos = e.position;

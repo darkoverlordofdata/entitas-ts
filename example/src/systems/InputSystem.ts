@@ -14,7 +14,6 @@
     }
 
     public execute() {
-      console.log('InputSystem::execute');
       //this._pool.isAccelerating = Input.GetMouseButton(0);
     }
   }

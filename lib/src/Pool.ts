@@ -172,7 +172,6 @@ module entitas {
 
 
     protected updateGroupsComponentReplaced = (entity:Entity, index:number, previousComponent:IComponent, newComponent:IComponent) => {
-      console.log('updateGroupsComponentReplaced', entity.toString(), entity);
       var groups = this._groupsForIndex[index];
       if (groups !== undefined) {
         for (var i = 0, groupsCount = groups.length; i < groupsCount; i++) {
@@ -182,7 +181,6 @@ module entitas {
     };
 
     protected onEntityReleased = (entity:Entity) => {
-      console.log('onEntityReleased', entity);
       if(entity._isEnabled){
         throw new EntityIsNotDestroyedException("Cannot release entity.");
       }
@@ -204,11 +202,12 @@ module entitas {
       }
 
       Pool.setPool(system, this);
-      var reactiveSystem = system['trigger'] ? system : null;
+      var reactiveSystem = 'trigger' in system ? system : null;
+
       if (reactiveSystem != null) {
         return new ReactiveSystem(this, <IReactiveSystem>reactiveSystem);
       }
-      var multiReactiveSystem = system['triggers'] ? system : null;
+      var multiReactiveSystem = 'triggers' in system ? system : null;
       if (multiReactiveSystem != null) {
         return new ReactiveSystem(this, <IMultiReactiveSystem>multiReactiveSystem);
       }
@@ -217,7 +216,7 @@ module entitas {
 
     /** PoolExtension::setPool */
     public static setPool(system:ISystem, pool:Pool) {
-      var poolSystem:ISetPool = <ISetPool>(system['setPool'] ? system : null);
+      var poolSystem:ISetPool = <ISetPool>('setPool' in system ? system : null);
       if (poolSystem != null) {
         poolSystem.setPool(pool);
       }

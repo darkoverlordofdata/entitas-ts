@@ -40,7 +40,7 @@ module example {
     constructor(resources) {
 
       this.stage = new Container();
-      this.sprites = new Container();
+      window['_viewContainer'] = this.sprites = new Container();
       var renderer = this.renderer = PIXI.autoDetectRenderer(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT, {backgroundColor:0x000000});
       switch (Constants.SCALE_TYPE) {
         case ScaleType.FILL:
@@ -60,6 +60,7 @@ module example {
       this.stage.addChild(this.sprites);
 
       this.controller = new GameController();
+      this.controller.start();
       requestAnimationFrame(this.update);
 
     }

@@ -36,18 +36,18 @@ module entitas {
         system = new Klass();
       }
 
-      var reactiveSystem:ReactiveSystem = <ReactiveSystem>(system['trigger'] || system['triggers'] ? system : null);
+      var reactiveSystem:ReactiveSystem = <ReactiveSystem>('trigger' in system || 'triggers' in system ? system : null);
 
       var initializeSystem:IInitializeSystem = <IInitializeSystem>(reactiveSystem != null
-        ? reactiveSystem.subsystem['initialize'] ? reactiveSystem.subsystem : null
-        : system['initialize'] ? system : null);
+        ? 'initialize' in reactiveSystem.subsystem ? reactiveSystem.subsystem : null
+        : 'initialize' in system ? system : null);
 
 
       if (initializeSystem != null) {
         this._initializeSystems.push(initializeSystem);
       }
 
-      var executeSystem:IExecuteSystem = <IExecuteSystem>(system['execute'] ? system : null);
+      var executeSystem:IExecuteSystem = <IExecuteSystem>('execute' in system ? system : null);
       if (executeSystem != null) {
         this._executeSystems.push(executeSystem);
       }

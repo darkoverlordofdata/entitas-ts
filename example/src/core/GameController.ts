@@ -1,7 +1,7 @@
 module example {
 
-  import Systems = entitas.Systems;
   import Pools = example.Pools;
+  import Systems = entitas.Systems;
 
   export class GameController {
 
