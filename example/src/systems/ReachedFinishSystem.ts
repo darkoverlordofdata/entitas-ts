@@ -13,15 +13,14 @@ module example {
     public get trigger():TriggerOnEvent {
       return CoreMatcher.Position.onEntityAdded();
     }
-    _pool:Pool;
+    pool:Pool;
 
     public setPool(pool:Pool) {
-      this._pool = pool;
+      this.pool = pool;
     }
 
     public execute(entities:Array<Entity>) {
-      //console.log('ReachedFinishSystem::execute', entities);
-      var finishLinePosY = this._pool.finishLineEntity.position.y*50;
+      var finishLinePosY = this.pool.finishLineEntity.position.y*50;
       for (var i=0, l=entities.length; i<l; i++) {
         var e = entities[i];
         if (e.position.y > finishLinePosY) {

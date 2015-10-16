@@ -24,18 +24,15 @@
     }
 
     public execute() {
-      //console.log('InputSystem::execute', this._mouseDown);
       this._pool.isAccelerating = this._mouseDown;
     }
 
     private onTouchStart = (event) => {
-      console.log('onTouchStart');
       this._mouseDown = true;
       return true;
     };
 
     private onTouchEnd = (event) => {
-      console.log('onTouchEnd');
       this._mouseDown = false;
     };
 

@@ -7,25 +7,25 @@
     "preserveConstEnums": false,
     "sourceMap": true,
     "experimentalDecorators": true,
-    "outDir": "web/src/entitas"
+    "outDir": "web/src/example"
   },
   "files": [
-    "lib/src/utils/Exceptions.ts",
-    "lib/src/utils/Signal.ts",
-    "lib/src/interfaces/IComponent.ts",
-    "lib/src/interfaces/IMatcher.ts",
-    "lib/src/interfaces/ISystem.ts",
-    "lib/src/interfaces/IExecuteSystem.ts",
-    "lib/src/interfaces/IInitializeSystem.ts",
-    "lib/src/interfaces/IReactiveSystem.ts",
-    "lib/src/matcher/Matcher.ts",
-    "lib/src/matcher/MatcherInterfaces.ts",
-    "lib/src/matcher/TriggerOnEvent.ts",
-    "lib/src/Entity.ts",
-    "lib/src/Group.ts",
-    "lib/src/GroupObserver.ts",
-    "lib/src/Pool.ts",
-    "lib/src/ReactiveSystem.ts",
-    "lib/src/Systems.ts"
+    "example/ext/pixi.js.d.ts",
+    "example/ext/generated.d.ts",
+    "example/src/generated.ts",
+    "example/src/systems/AccelerateSystem.ts",
+    "example/src/systems/AddViewSystem.ts",
+    "example/src/systems/CreateFinishLineSystem.ts",
+    "example/src/systems/CreateOpponentsSystem.ts",
+    "example/src/systems/CreatePlayerSystem.ts",
+    "example/src/systems/DestroySystem.ts",
+    "example/src/systems/InputSystem.ts",
+    "example/src/systems/MoveSystem.ts",
+    "example/src/systems/ReachedFinishSystem.ts",
+    "example/src/systems/RemoveViewSystem.ts",
+    "example/src/systems/RenderPositionSystem.ts",
+    "example/src/core/Constants.ts",
+    "example/src/core/GameController.ts",
+    "example/src/core/Game.ts"
   ]
 }

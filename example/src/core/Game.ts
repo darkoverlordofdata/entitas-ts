@@ -7,6 +7,7 @@
 module example {
 
   declare var Stats;
+  declare var viewContainer;
 
   import Container = PIXI.Container;
   import Sprite = PIXI.Sprite;
@@ -50,7 +51,7 @@ module example {
 
 
       this.stage = new Container();
-      window['_viewContainer'] = this.sprites = new Container();
+      viewContainer = this.sprites = new Container();
       var renderer = this.renderer = PIXI.autoDetectRenderer(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT, {backgroundColor:0x000000});
       switch (Constants.SCALE_TYPE) {
         case ScaleType.FILL:

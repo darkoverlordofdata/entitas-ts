@@ -6,14 +6,14 @@
   import Entity = entitas.Entity;
 
   export class CreateFinishLineSystem implements IInitializeSystem, ISetPool {
-    _pool:Pool;
+    pool:Pool;
 
     public setPool(pool:Pool) {
-      this._pool = pool;
+      this.pool = pool;
     }
 
     public initialize() {
-      this._pool.createEntity()
+      this.pool.createEntity()
         .setFinishLine(true)
         .addResource("Finish Line")
         .addPosition(9, 7, 0);

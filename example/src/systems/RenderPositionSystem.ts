@@ -22,11 +22,9 @@ module example {
 
 
     public execute(entities:Array<Entity>) {
-      //console.log('RenderPositionSystem::execute', entities);
       for (var i = 0, l = entities.length; i < l; i++) {
         var e = entities[i];
         var pos = e.position;
-        //console.log('position', pos.x, pos.y);
         e.view.sprite.position.set(pos.x, pos.y);
       }
     }

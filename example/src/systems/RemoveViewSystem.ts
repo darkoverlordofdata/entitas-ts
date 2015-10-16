@@ -12,6 +12,8 @@ module example {
   import Pool = entitas.Pool;
   import Group = entitas.Group;
 
+  declare var viewContainer;
+
   export class RemoveViewSystem implements IMultiReactiveSystem, ISetPool, IEnsureComponents {
 
     public get triggers():TriggerOnEvent[] {
@@ -30,13 +32,12 @@ module example {
       pool.getGroup(CoreMatcher.View).onEntityRemoved.add(this.onEntityRemoved);
     }
 
-    onEntityRemoved(group:Group, entity:Entity, index:number, component:IComponent) {
-      //var viewComponent = <ViewComponent>component;
-      //Object.Destroy(viewComponent.gameObject);
+    protected onEntityRemoved(group:Group, entity:Entity, index:number, component:IComponent) {
+      viewContainer.removeChild((<ViewComponent>component).sprite);
+
     }
 
     public execute(entities:Array<Entity>) {
-      console.log('RemoveViewSystem::execute', entities);
       for (var i = 0, l = entities.length; i < l; i++) {
         var e = entities[i];
         e.removeView();

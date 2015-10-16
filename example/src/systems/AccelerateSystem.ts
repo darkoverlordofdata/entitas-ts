@@ -16,12 +16,10 @@ module example {
       return CoreMatcher.Accelerating.onEntityAddedOrRemoved();
     }
 
-    private _trigger:TriggerOnEvent;
-    _group:Group;
+    protected group:Group;
 
     public setPool(pool:Pool) {
-      var x = Matcher.allOf(CoreMatcher.Acceleratable, CoreMatcher.Move);
-      this._group = pool.getGroup(x);
+      this.group = pool.getGroup(Matcher.allOf(CoreMatcher.Acceleratable, CoreMatcher.Move));
     }
 
     public execute(entities:Array<entitas.Entity>) {
@@ -29,7 +27,7 @@ module example {
         throw new Exception("Expected exactly one entity but found " + entities.length);
       }
       var accelerate = (<Entity>entities[0]).isAccelerating;
-      var entities = this._group.getEntities();
+      var entities = this.group.getEntities();
       for (var i=0, l=entities.length; i<l; i++) {
         var e:Entity = <Entity>entities[i];
         var move = e.move;

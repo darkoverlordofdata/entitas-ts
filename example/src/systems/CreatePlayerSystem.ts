@@ -6,14 +6,14 @@
 
 
   export class CreatePlayerSystem implements IInitializeSystem, ISetPool {
-    _pool:Pool;
+    pool:Pool;
 
     public setPool(pool:Pool) {
-      this._pool = pool;
+      this.pool = pool;
     }
 
     public initialize() {
-      this._pool.createEntity()
+      this.pool.createEntity()
         .addResource("Player")
         .addPosition(100, 0, 0)
         .addMove(0, 25)

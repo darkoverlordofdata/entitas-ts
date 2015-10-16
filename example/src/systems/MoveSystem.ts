@@ -8,15 +8,14 @@
   import Matcher = entitas.Matcher;
 
   export class MoveSystem implements IExecuteSystem, ISetPool {
-    _group:Group;
+    group:Group;
 
     public setPool(pool:Pool) {
-      this._group = pool.getGroup(Matcher.allOf(CoreMatcher.Move, CoreMatcher.Position));
+      this.group = pool.getGroup(Matcher.allOf(CoreMatcher.Move, CoreMatcher.Position));
     }
 
     public execute() {
-      var entities = this._group.getEntities();
-      console.log('entities', entities.length);
+      var entities = this.group.getEntities();
       for (var i = 0, l = entities.length; i < l; i++) {
         var e = entities[i];
         var move = e.move;

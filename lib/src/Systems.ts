@@ -62,8 +62,9 @@ module entitas {
     }
 
     public execute() {
-      for (var i = 0, exeSysCount = this._executeSystems.length; i < exeSysCount; i++) {
-        this._executeSystems[i].execute();
+      var executeSystems = this._executeSystems;
+      for (var i = 0, exeSysCount = executeSystems.length; i < exeSysCount; i++) {
+        executeSystems[i].execute();
       }
     }
 

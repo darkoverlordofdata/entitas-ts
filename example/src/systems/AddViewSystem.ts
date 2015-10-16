@@ -8,6 +8,8 @@ module example {
   import IReactiveSystem = entitas.IReactiveSystem;
   import Constants = example.Constants;
 
+  declare var viewContainer;
+
   /**
    * Create PIXI sprite and add to the global Stage
    *
@@ -18,7 +20,6 @@ module example {
       return CoreMatcher.Resource.onEntityAdded();
     }
 
-    //window['_viewContainer']
     public execute(entities:Array<Entity>) {
       for (var i = 0, l = entities.length; i < l; i++) {
         var e = entities[i];
@@ -31,7 +32,7 @@ module example {
         if (prefab.rotation) {
           sprite.rotation = prefab.rotation.z;
         }
-        window['_viewContainer'].addChild(sprite);
+        viewContainer.addChild(sprite);
 
         e.addView(sprite);
       }
