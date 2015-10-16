@@ -14,7 +14,7 @@
     "Position": ["x:number","y:number","z:number"],
     "FinishLine": false,
     "Resource": ["name:string"],
-    "View": ["stage:Object"]
+    "View": ["sprite:Object"]
   },
   "systems": {
     "Accelerate":false,

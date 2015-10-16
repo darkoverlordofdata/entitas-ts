@@ -4,8 +4,8 @@ module entitas {
   import ISignal = entitas.ISignal;
   import IComponent = entitas.IComponent;
   import EntityChanged = Entity.EntityChanged;
-  import IEntityChanged = Entity.IEntityChanged;
   import EntityReleased = Entity.EntityReleased;
+  import IEntityChanged = Entity.IEntityChanged;
   import IEntityReleased = Entity.IEntityReleased;
   import ComponentReplaced = Entity.ComponentReplaced;
   import IComponentReplaced = Entity.IComponentReplaced;
@@ -44,6 +44,7 @@ module entitas {
     public onComponentRemoved:IEntityChanged<EntityChanged>;
     public onComponentReplaced:Entity.IComponentReplaced<ComponentReplaced>;
 
+    public name:string;
     public _creationIndex:number=0;
     public _isEnabled:boolean=true;
     public _components;
@@ -87,7 +88,7 @@ module entitas {
       if (!this._isEnabled) {
         throw new EntityIsNotEnabledException("Cannot remove component!");
       }
-      if (this.hasComponent(index)) {
+      if (!this.hasComponent(index)) {
         var errorMsg = "Cannot remove component at index " + index + " from " + this;
         throw new EntityDoesNotHaveComponentException(errorMsg, index);
       }
@@ -115,13 +116,10 @@ module entitas {
         this.onComponentReplaced.dispatch(this, index, previousComponent, replacement);
 
       } else {
-        if (replacement === undefined) {
-          delete this._components[index];
-        } else {
-          this._components[index] = replacement;
-        }
+        this._components[index] = replacement;
         this._componentsCache = undefined;
         if (replacement === undefined) {
+          delete this._components[index];
           this._componentIndicesCache = undefined;
           this._toStringCache = undefined;
           this.onComponentRemoved.dispatch(this, index, previousComponent);

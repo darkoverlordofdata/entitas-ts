@@ -22,7 +22,8 @@
     "google-closure-library": "*"
   },
   "dependencies": {
-    "pixi.js": "~3.0.8"
+    "pixi.js": "~3.0.8",
+    "stats.js": "*"
   },
   "install": {
     "ignore": [
@@ -31,6 +32,7 @@
     ],
     "path": "web/src",
     "sources": {
+      "stats.min.js": "packages/stats.js/build/stats.min.js",
       "pixi.js": "packages/pixi.js/bin/pixi.min.js"
     }
   }

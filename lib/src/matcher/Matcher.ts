@@ -27,9 +27,9 @@ module entitas {
     public get noneOfIndices():number[] {return this._noneOfIndices;}
 
     private _indices:number[];
-    private _allOfIndices:number[];
-    private _anyOfIndices:number[];
-    private _noneOfIndices:number[];
+    public _allOfIndices:number[];
+    public _anyOfIndices:number[];
+    public _noneOfIndices:number[];
     private _toStringCache:string;
     private _id:number;
 

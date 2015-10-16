@@ -15,8 +15,8 @@
     public initialize() {
       this._pool.createEntity()
         .addResource("Player")
-        .addPosition(0, 0, 0)
-        .addMove(0, 0.025)
+        .addPosition(100, 0, 0)
+        .addMove(0, 25)
         .setAcceleratable(true);
     }
   }

@@ -65,7 +65,7 @@ module entitas {
     }
 
     public updateEntity(entity:Entity, index:number, previousComponent:IComponent, newComponent:IComponent) {
-      if (this._entities[entity.creationIndex]) {
+      if (entity.creationIndex in this._entities) {
 
         this.onEntityRemoved.dispatch(this, entity, index, previousComponent);
         this.onEntityAdded.dispatch(this, entity, index, newComponent);
@@ -75,8 +75,7 @@ module entitas {
     }
 
     public addEntitySilently(entity:Entity) {
-      var added = !this._entities[entity.creationIndex];
-      if (added) {
+      if (!(entity.creationIndex in this._entities)) {
         this._entities[entity.creationIndex] = entity;
         this._entitiesCache = undefined;
         this._singleEntityCache = undefined;
@@ -85,8 +84,7 @@ module entitas {
     }
 
     public addEntity(entity:Entity, index:number, component:IComponent) {
-      var added = !this._entities[entity.creationIndex];
-      if (added) {
+      if (!(entity.creationIndex in this._entities)) {
         this._entities[entity.creationIndex] = entity;
         this._entitiesCache = undefined;
         this._singleEntityCache = undefined;
@@ -97,8 +95,7 @@ module entitas {
     }
 
     public removeEntitySilently(entity:Entity) {
-      var removed = !!this._entities[entity.creationIndex];
-      if (removed) {
+      if (entity.creationIndex in this._entities) {
         delete this._entities[entity.creationIndex];
         this._entitiesCache = undefined;
         this._singleEntityCache = undefined;
@@ -107,8 +104,7 @@ module entitas {
     }
 
     public removeEntity(entity:Entity, index:number, component:IComponent) {
-      var removed = !!this._entities[entity.creationIndex];
-      if (removed) {
+      if (entity.creationIndex in this._entities) {
         delete this._entities[entity.creationIndex];
         this._entitiesCache = undefined;
         this._singleEntityCache = undefined;
@@ -118,14 +114,13 @@ module entitas {
     }
 
     public containsEntity(entity:Entity):boolean {
-      return !this._entities[entity.creationIndex];
+      return entity.creationIndex in this._entities;
     }
 
     public getEntities():Entity[] {
       if (this._entitiesCache === undefined) {
         this._entitiesCache = [];
-        for (var k in Object.keys(this._entities)) {
-          if (this._entities[k])
+        for (var k in this._entities) {
             this._entitiesCache.push(this._entities[k]);
         }
       }
@@ -159,7 +154,6 @@ module entitas {
     public createObserver(eventType:GroupEventType = GroupEventType.OnEntityAdded):GroupObserver {
       return new GroupObserver(this, eventType);
     }
-
 
   }
 

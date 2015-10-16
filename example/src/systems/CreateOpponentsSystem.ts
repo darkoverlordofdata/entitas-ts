@@ -14,10 +14,10 @@
     public initialize() {
       const resourceName = "Opponent";
       for (var i = 1; i < 10; i++) {
-        var speed = Math.random() * 0.02;
+        var speed = (Math.random()+.5) * 2;
         this._pool.createEntity()
           .addResource(resourceName)
-          .addPosition(i + i, 0, 0)
+          .addPosition(i*100 + 100, 0, 0)
           .addMove(speed, speed);
       }
     }

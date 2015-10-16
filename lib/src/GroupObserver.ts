@@ -81,8 +81,7 @@ module entitas {
     }
 
     addEntity = (group:Group, entity:Entity, index:number, component:Component) => {
-      var added = !this._collectedEntities[entity.creationIndex];
-      if (added) {
+      if (!(entity.creationIndex in this._collectedEntities)) {
         this._collectedEntities[entity.creationIndex] = entity;
         entity.addRef();
       }

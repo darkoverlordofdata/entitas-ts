@@ -16,11 +16,12 @@
 
     public execute() {
       var entities = this._group.getEntities();
+      console.log('entities', entities.length);
       for (var i = 0, l = entities.length; i < l; i++) {
         var e = entities[i];
         var move = e.move;
         var pos = e.position;
-        e.replacePosition(pos.x, pos.y + move.speed, pos.z);
+        e.replacePosition(pos.x, pos.y + move.speed*.5, pos.z);
       }
     }
   }

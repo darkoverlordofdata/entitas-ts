@@ -19,7 +19,7 @@ module entitas {
      * @param alloc
      */
     constructor(context, alloc:number=16) {
-      this._listeners = [];
+      this._listeners = new Array(alloc);
       this._context = context;
       this._alloc = alloc;
       this._size = 0;
@@ -31,7 +31,7 @@ module entitas {
      */
     dispatch(...args:any[]):void {
       var listeners = this._listeners;
-      var size = listeners.length;
+      var size = this._size;
       var context = this._context;
 
       for (var i = 0; i < size; i++) {
@@ -44,15 +44,14 @@ module entitas {
      * @param listener
      */
     add(listener:T):void {
-      this._listeners.push(listener);
-      //var listeners = this._listeners;
-      //var length = listeners.length;
-      //
-      //if (this._size === length) {
-      //  listeners.length = ~~((length * 3) / 2) + 1;
-      //}
-      //listeners[this._size++] = listener;
-      //
+      var listeners = this._listeners;
+      var length = listeners.length;
+
+      if (this._size === length) {
+        listeners.length = ~~((length * 3) / 2) + 1;
+      }
+      listeners[this._size++] = listener;
+
     }
 
     /**
@@ -61,22 +60,19 @@ module entitas {
      */
     remove(listener:T):void {
       var listeners = this._listeners;
-      var index = listeners.indexOf(listener);
-      if (index !== -1) listeners.splice(index, 1);
+      var size = this._size;
 
-      //var listeners = this._listeners;
-      //var size = this._size;
-      //
-      //for (var i = 0; i < size; i++) {
-      //  if (listener == listeners[i]) {
-      //    for (var j = i, k = i+1; k < size; j++, k++) {
-      //      listeners[j] = listeners[k];
-      //    }
-      //    delete listeners[--this._size];
-      //    //listeners[--this._size] = undefined;
-      //    return;
-      //  }
-      //}
+      for (var i = 0; i < size; i++) {
+        if (listener == listeners[i]) {
+          for (var j = i, k = i+1; k < size; j++, k++) {
+            listeners[j] = listeners[k];
+          }
+          delete listeners[--this._size];
+          //listeners[--this._size] = undefined;
+          return;
+        }
+      }
+
     }
 
     /**
@@ -84,7 +80,7 @@ module entitas {
      */
     clear():void {
       this._listeners.length = 0;
-      //this._listeners.length = this._alloc;
+      this._listeners.length = this._alloc;
     }
   }
 }

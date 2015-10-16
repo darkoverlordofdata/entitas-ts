@@ -248,8 +248,8 @@ declare module entitas {
         static clearViewComponentPool();
         view: any;
         hasView: boolean;
-        addView(stage:Object);
-        replaceView(stage:Object);
+        addView(sprite:Object);
+        replaceView(sprite:Object);
         removeView();
         creationIndex: number;
         onEntityReleased: IEntityReleased<EntityReleased>;

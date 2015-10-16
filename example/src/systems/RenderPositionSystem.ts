@@ -26,7 +26,8 @@ module example {
       for (var i = 0, l = entities.length; i < l; i++) {
         var e = entities[i];
         var pos = e.position;
-        //e.view.gameObject.transform.position = new Vector3(pos.x, pos.y, pos.z);
+        //console.log('position', pos.x, pos.y);
+        e.view.sprite.position.set(pos.x, pos.y);
       }
     }
 

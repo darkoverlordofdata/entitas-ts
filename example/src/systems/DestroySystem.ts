@@ -23,6 +23,7 @@ module example {
     public execute(entities:Array<Entity>) {
       //console.log('DestroySystem::execute', entities);
       for (var i=0, l=entities.length; i<l; i++) {
+        console.log('destroy', entities[i]);
         this._pool.destroyEntity(entities[i]);
       }
     }

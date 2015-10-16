@@ -6,6 +6,8 @@
  */
 module example {
 
+  declare var Stats;
+
   import Container = PIXI.Container;
   import Sprite = PIXI.Sprite;
   import SystemRenderer = PIXI.SystemRenderer;
@@ -21,6 +23,7 @@ module example {
     controller:GameController;
     delta:number;
     previousTime:number;
+    stats;
 
     /**
      * Load assets and start
@@ -39,6 +42,13 @@ module example {
      */
     constructor(resources) {
 
+      var stats = this.stats = new Stats();
+      stats.setMode(0);
+      stats.domElement.style.position = 'absolute';
+      stats.domElement.style.left = '0px';
+      stats.domElement.style.top = '0px';
+
+
       this.stage = new Container();
       window['_viewContainer'] = this.sprites = new Container();
       var renderer = this.renderer = PIXI.autoDetectRenderer(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT, {backgroundColor:0x000000});
@@ -54,7 +64,9 @@ module example {
           break;
       }
 
-      document.body.appendChild(this.renderer.view);
+      document.body.appendChild(renderer.view);
+      document.body.appendChild(stats.domElement);
+
       window.addEventListener('resize', this.resize, true);
       window.onorientationchange = this.resize;
       this.stage.addChild(this.sprites);
@@ -70,10 +82,12 @@ module example {
      * @param time
      */
     update = (time:number) => {
+      this.stats.begin();
       this.delta = this.previousTime || time;
       this.previousTime = time;
       if (this.controller) this.controller.update((time - this.delta) * 0.001);
       this.renderer.render(this.stage);
+      this.stats.end();
       requestAnimationFrame(this.update);
     };
 

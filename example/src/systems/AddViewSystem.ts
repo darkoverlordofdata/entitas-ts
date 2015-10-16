@@ -6,7 +6,7 @@ module example {
   import CoreMatcher = entitas.CoreMatcher;
   import TriggerOnEvent = entitas.TriggerOnEvent;
   import IReactiveSystem = entitas.IReactiveSystem;
-
+  import Constants = example.Constants;
 
   /**
    * Create PIXI sprite and add to the global Stage
@@ -22,8 +22,15 @@ module example {
     public execute(entities:Array<Entity>) {
       for (var i = 0, l = entities.length; i < l; i++) {
         var e = entities[i];
-        console.log('AddView - entity', e.resource.name);
-        var sprite = new Sprite(Texture.fromFrame(`res/${e.resource.name}.png`));
+        var prefab = Constants.resources[e.resource.name];
+
+        var sprite = new Sprite(Texture.fromFrame(prefab.path));
+        if (prefab.scale) {
+          sprite.scale.set(prefab.scale.x, prefab.scale.y);
+        }
+        if (prefab.rotation) {
+          sprite.rotation = prefab.rotation.z;
+        }
         window['_viewContainer'].addChild(sprite);
 
         e.addView(sprite);

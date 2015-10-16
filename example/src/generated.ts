@@ -47,7 +47,7 @@ module example {
     public name:string;
   }
   export class ViewComponent implements IComponent {
-    public stage:Object;
+    public sprite:Object;
   }
 
 

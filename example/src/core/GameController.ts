@@ -21,9 +21,9 @@ module example {
     createSystems(pool) {
       return new Systems()
         // Initialize
+        .add(pool.createSystem(example.CreateFinishLineSystem))
         .add(pool.createSystem(example.CreatePlayerSystem))
         .add(pool.createSystem(example.CreateOpponentsSystem))
-        .add(pool.createSystem(example.CreateFinishLineSystem))
 
         // Input
         .add(pool.createSystem(example.InputSystem))

@@ -82,6 +82,11 @@ for Name, properties of entitas.components
   switch properties
     when false
       js.push "  Entity.#{name}Component = new #{Name}Component();"
+#      js.push "  Object.defineProperty(Entity, '#{name}Component', {"
+#      js.push "    get: function() {"
+#      js.push "      return new #{Name}Component();"
+#      js.push "    }"
+#      js.push "  });"
       js.push "  Object.defineProperty(Entity.prototype, 'is#{Name}', {"
       js.push "    get: function() {"
       js.push "      return this.hasComponent(CoreComponentIds.#{Name});"

@@ -21,7 +21,7 @@ module example {
 
     public execute(entities:Array<Entity>) {
       //console.log('ReachedFinishSystem::execute', entities);
-      var finishLinePosY = this._pool.finishLineEntity.position.y;
+      var finishLinePosY = this._pool.finishLineEntity.position.y*50;
       for (var i=0, l=entities.length; i<l; i++) {
         var e = entities[i];
         if (e.position.y > finishLinePosY) {

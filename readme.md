@@ -28,7 +28,7 @@ Typescript implementation ported from https://github.com/sschmid/Entitas-CSharp
                      |  e     e   |
                      +------------+
     
-Status: testing...
+Status: example works.
 
 generate classes & extensions:
 

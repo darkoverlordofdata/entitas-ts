@@ -47,6 +47,9 @@ module entitas {
     public _reusableEntities:Array<Entity> = [];
     public _retainedEntities = {};
 
+    public static componentsEnum:Object;
+    public static totalComponents:number=0;
+
     private _componentsEnum:Object;
     private _totalComponents:number = 0;
     public _creationIndex:number = 0;
@@ -69,11 +72,37 @@ module entitas {
       this._cachedUpdateGroupsComponentAddedOrRemoved = this.updateGroupsComponentAddedOrRemoved;
       this._cachedUpdateGroupsComponentReplaced = this.updateGroupsComponentReplaced;
       this._cachedOnEntityReleased = this.onEntityReleased;
+
+      Pool.componentsEnum = components;
+      Pool.totalComponents = totalComponents;
+
     }
 
-    public createEntity():Entity {
+    /**
+     * groupDesc
+     *
+     * expand out the group tostring for better debug info
+     *
+     * @param group
+     * @returns {string}
+     */
+    static groupDesc(group:Group):string {
+      var s:string = group.toString();
+      for (var c=Pool.totalComponents; c>-1; c--) {
+        s = s.replace(''+c, Pool.componentsEnum[c]);
+      }
+      return s;
+    }
+
+
+    /**
+     *
+     * @param name
+     */
+    public createEntity(name):Entity {
       var entity = this._reusableEntities.length > 0 ? this._reusableEntities.pop() : new Entity(this._componentsEnum, this._totalComponents);
       entity._isEnabled = true;
+      entity.name = name;
       entity._creationIndex = this._creationIndex++;
       entity.addRef();
       this._entities[entity.creationIndex] = entity;
@@ -87,12 +116,16 @@ module entitas {
       return entity;
     }
 
+    /**
+     *
+     * @param entity
+     */
     public destroyEntity(entity:Entity) {
-      var removed = !!this._entities[entity.creationIndex];
-      if (!removed) {
+      if (!(entity.creationIndex in this._entities)) {
         throw new PoolDoesNotContainEntityException(entity,
           "Could not destroy entity!");
       }
+      delete this._entities[entity.creationIndex];
       this._entitiesCache = undefined;
       this.onEntityWillBeDestroyed.dispatch(this, entity);
       entity.destroy();
@@ -117,7 +150,7 @@ module entitas {
     }
 
     public hasEntity(entity:Entity):boolean {
-      return !!this._entities[entity.creationIndex]
+      return entity.creationIndex in this._entities
     }
 
 
@@ -139,10 +172,11 @@ module entitas {
     public getGroup(matcher:IMatcher) {
       var group:Group;
 
-      if (!!this._groups[matcher.id]) {
+      if (matcher.id in this._groups) {
         group = this._groups[matcher.id];
       } else {
         group = new Group(matcher);
+
         var entities = this.getEntities();
         for (var i = 0, entitiesLength = entities.length; i < entitiesLength; i++) {
           group.handleEntitySilently(entities[i]);
@@ -202,15 +236,17 @@ module entitas {
       }
 
       Pool.setPool(system, this);
-      var reactiveSystem = 'trigger' in system ? system : null;
 
+      var reactiveSystem = 'trigger' in system ? system : null;
       if (reactiveSystem != null) {
         return new ReactiveSystem(this, <IReactiveSystem>reactiveSystem);
       }
+
       var multiReactiveSystem = 'triggers' in system ? system : null;
       if (multiReactiveSystem != null) {
         return new ReactiveSystem(this, <IMultiReactiveSystem>multiReactiveSystem);
       }
+
       return system;
     }
 
