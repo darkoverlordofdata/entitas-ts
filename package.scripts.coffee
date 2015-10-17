@@ -132,7 +132,7 @@ module.exports = (project, options = {}) ->
         cat #{files} | \
           java -jar #{COMPILER_JAR} \
             --compilation_level #{options.compile} \
-            --js_output_file build/#{LIB_NAME}.min,js
+            --js_output_file build/#{LIB_NAME}.min.js
       """
         
     return step

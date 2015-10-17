@@ -68,6 +68,13 @@ systemTemplate = (name, interfaces) ->
     sb.push "  import #{iface} = entitas.#{iface};"
   sb.push ""
   sb.push "  export class #{name} implements #{interfaces.join(', ')} {"
+
+  sb.push ""
+  for iface in interfaces
+    switch iface
+      when 'ISetPool'
+        sb.push "    protected pool:Pool;"
+
   sb.push ""
   for iface in interfaces
     switch iface
@@ -114,6 +121,7 @@ systemTemplate = (name, interfaces) ->
 
       when 'ISetPool'
         sb.push "    public setPool(pool:Pool) {"
+        sb.push "      this.pool = pool;"
         sb.push "    }"
         sb.push "    "
 
