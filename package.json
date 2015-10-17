@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "Entitas ECS",
   "main": "index.js",
+  "bin": {
+    "entitas": "./bin/entitas"
+  },
   "config": {
     "build": []
   },
@@ -20,9 +23,8 @@
     "manifest": "gulp manifest",
     "postbuild": "",
     "postclosure": "cp -f web/asteroids.min.js build/web",
-    "postinstall": "bower install && npm run get",
     "preandroid": "npm run predeploy && npm run transpile && npm run resources && cp -fr web/res ./web/frameworks/runtime-src/proj.android-studio/app/assets",
-    "prebuild": "npm run clean -s",
+    "prebuild": "bower install && npm run get && npm run clean -s",
     "predeploy": "rm -rf ./web/frameworks/runtime-src/proj.android-studio/app/assets/res && rm -rf ./web/frameworks/runtime-src/proj.android-studio/app/assets/src && rm -f ./web/frameworks/runtime-src/proj.android-studio/app/assets/main.js && rm -f ./web/frameworks/runtime-src/proj.android-studio/app/assets/project.json",
     "resources": "",
     "start": "tools/server web",

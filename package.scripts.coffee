@@ -205,12 +205,6 @@ module.exports = (project, options = {}) ->
     cp -f web/asteroids.min.js build/web
   """
     
-  ### get the dependencies ###
-  postinstall: """
-    bower install
-    npm run get
-  """
-
   ### prepare for android build ###
   preandroid: """
     npm run predeploy
@@ -221,6 +215,8 @@ module.exports = (project, options = {}) ->
 
   ### prepare for build ###
   prebuild: """
+    bower install
+    npm run get
     npm run clean -s
   """
 

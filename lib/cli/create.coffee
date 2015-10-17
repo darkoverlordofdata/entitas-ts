@@ -41,6 +41,7 @@ create =
     fs.writeFileSync("#{process.cwd()}/entitas.json", JSON.stringify(config, null, 2))
 
   component:(name, args...) ->
+    args = if args.length is 0 then false else args
     config.components[name] = args
     fs.writeFileSync("#{process.cwd()}/entitas.json", JSON.stringify(config, null, 2))
 
@@ -64,13 +65,13 @@ systemTemplate = (name, interfaces) ->
   sb.push "  import Exception = entitas.Exception;"
   sb.push "  import CoreMatcher = entitas.CoreMatcher;"
   sb.push "  import TriggerOnEvent = entitas.TriggerOnEvent;"
-  for interface in interfaces
-    sb.push "  import #{interface} = entitas.#{interface};"
+  for iface in interfaces
+    sb.push "  import #{iface} = entitas.#{iface};"
   sb.push ""
   sb.push "  export class #{name} implements #{interfaces.join(', ')} {"
   sb.push ""
-  for interface in interfaces
-    switch interface
+  for iface in interfaces
+    switch iface
       when 'IMultiReactiveSystem'
         sb.push "    public get triggers():TriggerOnEvent[] {"
         sb.push "    }"
@@ -121,5 +122,6 @@ systemTemplate = (name, interfaces) ->
   sb.push ""
   sb.push "  }"
   sb.push "}"
+  sb.join('\n')
 
 

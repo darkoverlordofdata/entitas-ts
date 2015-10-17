@@ -7,6 +7,7 @@
  *
 ###
 fs = require('fs')
+path = require('path')
 config = require("#{process.cwd()}/entitas.json")
 
 
@@ -242,17 +243,17 @@ module.exports =
 
     js.push "})();"
 
-    fs = require('fs')
-    fs.writeFileSync(config.output.typescript, ts.join('\n'))
-    fs.writeFileSync(config.output.javascript, js.join('\n'))
+    fs.writeFileSync(path.join(process.cwd(), config.output.typescript), ts.join('\n'))
+    fs.writeFileSync(path.join(process.cwd(), config.output.javascript), js.join('\n'))
 
     def = (dts, className, dd) ->
       i = dts.indexOf(className)+className.length
       dts = dts.substr(0, i) + '\n' + dd.join('\n') + dts.substr(i);
       return dts
 
-    dts = fs.readFileSync(config.entitas, 'utf8')
+
+    dts = fs.readFileSync(path.join(__dirname, 'entitas.d.ts'), 'utf8')
     dts = def(dts, '    class Entity {', d1)
     dts = def(dts, '    class CoreMatcher {', d2)
     dts = def(dts, '    class Pool {', d3)
-    fs.writeFileSync(config.output.declaration, dts)
+    fs.writeFileSync(path.join(process.cwd(), config.output.declaration), dts)

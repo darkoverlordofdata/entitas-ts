@@ -19,7 +19,7 @@ Usage:
 Options:
   -c  [--component] # create a component
   -s  [--system]    # create a system
-  -e  [--entity]    # generate entity
+  -e  [--entity]    # create an entity
 
 """
 switch process.argv[2]
@@ -28,7 +28,7 @@ switch process.argv[2]
 
   when 'create' then entitas.create process.argv.slice(3)...
 
-  when 'generate' then entitas.create process.argv.slice(3)...
+  when 'generate' then entitas.generate process.argv.slice(3)...
 
   when '--version' then console.log "entitas v"+require('../package.json').version
 
