@@ -243,8 +243,8 @@ module.exports =
 
     js.push "})();"
 
-    fs.writeFileSync(path.join(process.cwd(), config.output.typescript), ts.join('\n'))
-    fs.writeFileSync(path.join(process.cwd(), config.output.javascript), js.join('\n'))
+    fs.writeFileSync(path.join(process.cwd(), config.src, config.output.typescript), ts.join('\n'))
+    fs.writeFileSync(path.join(process.cwd(), config.src, config.output.javascript), js.join('\n'))
 
     def = (dts, className, dd) ->
       i = dts.indexOf(className)+className.length
@@ -256,4 +256,4 @@ module.exports =
     dts = def(dts, '    class Entity {', d1)
     dts = def(dts, '    class CoreMatcher {', d2)
     dts = def(dts, '    class Pool {', d3)
-    fs.writeFileSync(path.join(process.cwd(), config.output.declaration), dts)
+    fs.writeFileSync(path.join(process.cwd(), config.src, config.output.declaration), dts)

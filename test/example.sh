@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+#
+# Test project setup
+#
+git clone https://github.com/darkoverlordofdata/template example
+cd example
 
 entitas init example
 entitas create -c Acceleratable
@@ -11,16 +16,21 @@ entitas create -c Resource name:string
 entitas create -c View sprite:Object
 entitas create -e Accelerating
 entitas create -e FinishLine
-entitas create -s Accelerate IReactiveSystem ISetPool
-entitas create -s Destroy  IReactiveSystem ISetPool
-entitas create -s Input IExecuteSystem IInitializeSystem ISetPool
-entitas create -s Move IExecuteSystem ISetPool
-entitas create -s ReachedFinish IReactiveSystem ISetPool
-entitas create -s RenderPosition IReactiveSystem IEnsureComponents
-entitas create -s AddView IReactiveSystem
-entitas create -s RemoveView IMultiReactiveSystem IEnsureComponents ISetPool
+entitas create -s AccelerateSystem IReactiveSystem ISetPool
+entitas create -s DestroySystem  IReactiveSystem ISetPool
+entitas create -s InputSystem IExecuteSystem IInitializeSystem ISetPool
+entitas create -s MoveSystem IExecuteSystem ISetPool
+entitas create -s ReachedFinishSystem IReactiveSystem ISetPool
+entitas create -s RenderPositionSystem IReactiveSystem IEnsureComponents
+entitas create -s AddViewSystem IReactiveSystem
+entitas create -s RemoveViewSystem IMultiReactiveSystem IEnsureComponents ISetPool
 entitas create -s CreatePlayerSystem  IInitializeSystem ISetPool
 entitas create -s CreateOpponentsSystem  IInitializeSystem ISetPool
 entitas create -s CreateFinishLineSystem IInitializeSystem ISetPool
 entitas generate
+
+git clone https://github.com/darkoverlordofdata/template matchone
+cd matchone
+
+entitas init matchone
 

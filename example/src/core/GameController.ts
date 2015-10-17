@@ -5,17 +5,17 @@ module example {
 
   export class GameController {
 
-    _systems:Systems;
+    systems:Systems;
 
     start() {
 
-      this._systems = this.createSystems(Pools.core);
-      this._systems.initialize();
+      this.systems = this.createSystems(Pools.core);
+      this.systems.initialize();
 
     }
 
     update(delta:number) {
-      this._systems.execute();
+      this.systems.execute();
     }
 
     createSystems(pool) {

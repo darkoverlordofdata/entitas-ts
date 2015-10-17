@@ -20,7 +20,7 @@ module.exports =
     template = """
 {
   "namespace":"#{namespace}",
-  "src": "lib/src/systems",
+  "src": "lib/src",
   "output": {
     "javascript": "extensions.js",
     "typescript": "generated.ts",
@@ -28,6 +28,7 @@ module.exports =
   },
   "components": {
   },
+  "systems": {
   },
   "entities": {
   }

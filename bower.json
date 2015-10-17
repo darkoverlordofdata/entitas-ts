@@ -10,7 +10,8 @@
   "ignore": [
     "**/.*",
     "tmp",
-    "build",
+    "build/lib",
+    "build/web",
     "node_modules",
     "packages",
     "src",
