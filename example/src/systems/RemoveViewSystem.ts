@@ -1,17 +1,20 @@
 module example {
 
-  import IMatcher = entitas.IMatcher;
-  import IComponent = entitas.IComponent;
-  import IMultiReactiveSystem = entitas.IMultiReactiveSystem;
-  import ISetPool = entitas.ISetPool;
-  import IEnsureComponents = entitas.IEnsureComponents;
-  import TriggerOnEvent = entitas.TriggerOnEvent;
-  import CoreMatcher = entitas.CoreMatcher;
-  import Matcher = entitas.Matcher;
-  import Entity = entitas.Entity;
   import Pool = entitas.Pool;
   import Group = entitas.Group;
+  import Entity = entitas.Entity;
+  import Matcher = entitas.Matcher;
+  import ISetPool = entitas.ISetPool;
+  import IMatcher = entitas.IMatcher;
+  import IComponent = entitas.IComponent;
+  import CoreMatcher = entitas.CoreMatcher;
+  import TriggerOnEvent = entitas.TriggerOnEvent;
+  import IEnsureComponents = entitas.IEnsureComponents;
+  import IMultiReactiveSystem = entitas.IMultiReactiveSystem;
 
+  /**
+   *
+   */
   declare var viewContainer;
 
   export class RemoveViewSystem implements IMultiReactiveSystem, ISetPool, IEnsureComponents {

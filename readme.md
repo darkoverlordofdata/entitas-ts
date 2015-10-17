@@ -32,8 +32,19 @@ Status: example works.
 
 generate components & extensions:
 
-    bin/entitas
 
+    Usage:
+      entitas init namespace 
+      entitas create -c name field:type... 
+      entitas create -s name path interface...
+      entitas create -e name 
+      entitas generate
+    
+    Options:
+      -c  [--component] # create a component
+      -s  [--system]    # create a system
+      -e  [--entity]    # generate entity
+    
 
 # MIT License
 

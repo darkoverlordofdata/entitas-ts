@@ -1,13 +1,13 @@
 module example {
 
-  import IReactiveSystem = entitas.IReactiveSystem;
-  import IEnsureComponents = entitas.IEnsureComponents;
-  import TriggerOnEvent = entitas.TriggerOnEvent;
+  import Pool = entitas.Pool;
+  import Entity = entitas.Entity;
   import Matcher = entitas.Matcher;
   import IMatcher = entitas.IMatcher;
   import CoreMatcher = entitas.CoreMatcher;
-  import Pool = entitas.Pool;
-  import Entity = entitas.Entity;
+  import TriggerOnEvent = entitas.TriggerOnEvent;
+  import IReactiveSystem = entitas.IReactiveSystem;
+  import IEnsureComponents = entitas.IEnsureComponents;
 
 
   export class RenderPositionSystem implements IReactiveSystem, IEnsureComponents {

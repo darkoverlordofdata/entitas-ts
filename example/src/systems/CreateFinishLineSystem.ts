@@ -1,9 +1,9 @@
 ﻿module example {
 
-  import IInitializeSystem = entitas.IInitializeSystem;
   import Pool = entitas.Pool;
-  import ISetPool = entitas.ISetPool;
   import Entity = entitas.Entity;
+  import ISetPool = entitas.ISetPool;
+  import IInitializeSystem = entitas.IInitializeSystem;
 
   export class CreateFinishLineSystem implements IInitializeSystem, ISetPool {
     pool:Pool;

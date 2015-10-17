@@ -1,12 +1,12 @@
 module example {
 
-  import IComponent = entitas.IComponent;
-  import IReactiveSystem = entitas.IReactiveSystem;
-  import ISetPool = entitas.ISetPool;
-  import TriggerOnEvent = entitas.TriggerOnEvent;
   import Pool = entitas.Pool;
   import Entity = entitas.Entity;
+  import ISetPool = entitas.ISetPool;
+  import IComponent = entitas.IComponent;
   import CoreMatcher = entitas.CoreMatcher;
+  import TriggerOnEvent = entitas.TriggerOnEvent;
+  import IReactiveSystem = entitas.IReactiveSystem;
 
   export class DestroySystem implements IReactiveSystem, ISetPool {
 

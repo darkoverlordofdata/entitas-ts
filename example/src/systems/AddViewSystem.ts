@@ -3,10 +3,10 @@ module example {
   import Sprite = PIXI.Sprite;
   import Entity = entitas.Entity;
   import Texture = PIXI.Texture;
+  import Constants = example.Constants;
   import CoreMatcher = entitas.CoreMatcher;
   import TriggerOnEvent = entitas.TriggerOnEvent;
   import IReactiveSystem = entitas.IReactiveSystem;
-  import Constants = example.Constants;
 
   declare var viewContainer;
 

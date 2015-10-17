@@ -1,8 +1,8 @@
 ﻿module example {
 
-  import IInitializeSystem = entitas.IInitializeSystem;
   import Pool = entitas.Pool;
   import ISetPool = entitas.ISetPool;
+  import IInitializeSystem = entitas.IInitializeSystem;
 
   export class CreateOpponentsSystem implements IInitializeSystem, ISetPool {
     pool:Pool;

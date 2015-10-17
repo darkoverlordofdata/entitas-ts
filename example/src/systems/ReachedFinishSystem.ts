@@ -1,11 +1,11 @@
 module example {
 
-  import IReactiveSystem = entitas.IReactiveSystem;
-  import ISetPool = entitas.ISetPool;
-  import TriggerOnEvent = entitas.TriggerOnEvent;
-  import CoreMatcher = entitas.CoreMatcher;
   import Pool = entitas.Pool;
   import Entity = entitas.Entity;
+  import ISetPool = entitas.ISetPool;
+  import CoreMatcher = entitas.CoreMatcher;
+  import TriggerOnEvent = entitas.TriggerOnEvent;
+  import IReactiveSystem = entitas.IReactiveSystem;
 
 
   export class ReachedFinishSystem implements IReactiveSystem, ISetPool {

@@ -1,11 +1,11 @@
 ﻿module example {
 
-  import IExecuteSystem = entitas.IExecuteSystem;
-  import ISetPool = entitas.ISetPool;
-  import CoreMatcher = entitas.CoreMatcher;
   import Pool = entitas.Pool;
   import Group = entitas.Group;
   import Matcher = entitas.Matcher;
+  import ISetPool = entitas.ISetPool;
+  import CoreMatcher = entitas.CoreMatcher;
+  import IExecuteSystem = entitas.IExecuteSystem;
 
   export class MoveSystem implements IExecuteSystem, ISetPool {
     group:Group;

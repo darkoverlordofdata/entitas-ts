@@ -1,0 +1,36 @@
+{
+  "namespace":"example",
+  "entitas": "web/entitas.d.ts",
+  "output": {
+    "javascript": "web/src/example/extensions.js",
+    "typescript": "example/src/generated.ts",
+    "declaration": "example/ext/generated.d.ts"
+  },
+  "components": {
+    "Acceleratable": false,
+    "Accelerating": false,
+    "Destroy": false,
+    "Move": ["speed:number", "maxSpeed:number"],
+    "Position": ["x:number","y:number","z:number"],
+    "FinishLine": false,
+    "Resource": ["name:string"],
+    "View": ["sprite:Object"]
+  },
+  "systems": {
+    "Accelerate":false,
+    "Destroy":false,
+    "Input":true,
+    "Move":true,
+    "ReachedFinish":false,
+    "RenderPosition":false,
+    "AddView":false,
+    "RemoveView":false,
+    "CreatePlayerSystem": false,
+    "CreateOpponentsSystem": false,
+    "CreateFinishLineSystem": false
+  },
+  "entities": {
+    "Accelerating": true,
+    "FinishLine": true
+  }
+}
