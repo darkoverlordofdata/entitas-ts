@@ -46,11 +46,10 @@ create =
     fs.writeFileSync("#{process.cwd()}/entitas.json", JSON.stringify(config, null, 2))
 
   system:(name, args...) ->
-    path = args.shift()
     config.systems[name] = true
     fs.writeFileSync("#{process.cwd()}/entitas.json", JSON.stringify(config, null, 2))
     template = systemTemplate(name, args)
-    fs.writeFileSync("#{process.cwd()}/#{path}/#{name}.ts", template)
+    fs.writeFileSync("#{process.cwd()}/#{config.src}/#{name}.ts", template)
 
 
 systemTemplate = (name, interfaces) ->
