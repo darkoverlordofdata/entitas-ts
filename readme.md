@@ -45,6 +45,7 @@ generate components & extensions:
       -s  [--system]    # create a system
       -e  [--entity]    # generate entity
     
+Components classes are generated from json configuration, enforcing data oriented design.
 
 # MIT License
 
