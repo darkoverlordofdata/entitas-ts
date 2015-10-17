@@ -34,3 +34,28 @@ cd matchone
 
 entitas init matchone
 
+entitas create -c Movable
+entitas create -c Position x:number y:number
+entitas create -c Destroy
+entitas create -c GameBoardCache grid
+entitas create -c GameBoard columns:number row:number
+entitas create -c GameBoardElement
+entitas create -c Input  x:number y:number
+entitas create -c Interactive
+entitas create -c Resource name:string
+entitas create -c View sprite
+entitas create -c Score value:number
+entitas create -e GameBoardCache
+entitas create -e GameBoard
+entitas create -e Score
+entitas create -s DestroySystem IReactiveSystem ISetPool
+entitas create -s FallSystem IReactiveSystem ISetPool
+entitas create -s FillSystem IReactiveSystem ISetPool
+entitas create -s CreateGameBoardCacheSystem ISetPool
+entitas create -s GameBoardSystem IInitializeSystem IReactiveSystem ISetPool
+entitas create -s ProcessInputSystem IReactiveSystem ISetPool
+entitas create -s RenderPositionSystem IReactiveSystem
+entitas create -s AddViewSystem IReactiveSystem
+entitas create -s RemoveViewSystem IReactiveSystem ISetPool IEnsureComponents
+entitas create -s ScoreSystem IInitializeSystem IReactiveSystem ISetPool
+entitas generate
