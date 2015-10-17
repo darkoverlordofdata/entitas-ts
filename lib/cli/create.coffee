@@ -53,37 +53,73 @@ create =
 
 
 systemTemplate = (name, interfaces) ->
-    """
-module #{config.namespace} {
+  sb = [] # StringBuilder
 
-  import Pool = entitas.Pool;
-  import Group = entitas.Group;
-  import Entity = entitas.Entity;
-  import Matcher = entitas.Matcher;
-  import ISetPool = entitas.ISetPool;
-  import Exception = entitas.Exception;
-  import CoreMatcher = entitas.CoreMatcher;
-  import TriggerOnEvent = entitas.TriggerOnEvent;
-  import IReactiveSystem = entitas.IReactiveSystem;
+  sb.push "module #{config.namespace} {"
+  sb.push ""
+  sb.push "  import Pool = entitas.Pool;"
+  sb.push "  import Group = entitas.Group;"
+  sb.push "  import Entity = entitas.Entity;"
+  sb.push "  import Matcher = entitas.Matcher;"
+  sb.push "  import Exception = entitas.Exception;"
+  sb.push "  import CoreMatcher = entitas.CoreMatcher;"
+  sb.push "  import TriggerOnEvent = entitas.TriggerOnEvent;"
+  for interface in interfaces
+    sb.push "  import #{interface} = entitas.#{interface};"
+  sb.push ""
+  sb.push "  export class #{name} implements #{interfaces.join(', ')} {"
+  sb.push ""
+  for interface in interfaces
+    switch interface
+      when 'IMultiReactiveSystem'
+        sb.push "    public get triggers():TriggerOnEvent[] {"
+        sb.push "    }"
+        sb.push "    "
+        sb.push "    public execute(entities:Array<Entity>) {"
+        sb.push "    }"
+        sb.push "    "
 
-  export class #{name} implements #{interfaces.join(', ')} {
+      when 'IReactiveSystem'
+        sb.push "    public get trigger():TriggerOnEvent {"
+        sb.push "    }"
+        sb.push "    "
+        sb.push "    public execute(entities:Array<Entity>) {"
+        sb.push "    }"
+        sb.push "    "
 
-    public get trigger():TriggerOnEvent {
-    }
+      when 'IExecuteSystem'
+        sb.push "    public execute() {"
+        sb.push "    }"
+        sb.push "    "
 
-    public setPool(pool:Pool) {
-    }
+      when 'IInitializeSystem'
+        sb.push "    public initialize() {"
+        sb.push "    }"
+        sb.push "    "
 
-    public execute(entities:Array<entitas.Entity>) {
-      if (entities.length !== 1) {
-        throw new Exception("Expected exactly one entity but found " + entities.length);
-      }
-      for (var i=0, l=entities.length; i<l; i++) {
-        var e:Entity = <Entity>entities[i];
-      }
-    }
-  }
+      when 'IEnsureComponents'
+        sb.push "    public get ensureComponents():IMatcher {"
+        sb.push "    }"
+        sb.push "    "
 
-}
-"""
+      when 'IExcludeComponents'
+        sb.push "    public get excludeComponents():IMatcher {"
+        sb.push "    }"
+        sb.push "    "
+
+      when 'IClearReactiveSystem'
+        sb.push "    public get clearAfterExecute():boolean {"
+        sb.push "    }"
+        sb.push "    "
+
+      when 'ISetPool'
+        sb.push "    public setPool(pool:Pool) {"
+        sb.push "    }"
+        sb.push "    "
+
+  sb.push ""
+  sb.push ""
+  sb.push "  }"
+  sb.push "}"
+
 
