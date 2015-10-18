@@ -191,6 +191,7 @@ module.exports =
     for Name, pooled of config.entities
       if pooled
         name = Name[0].toLowerCase()+Name[1...];
+        properties = config.components[Name]
         if config.components[Name] is false
           js.push "  Object.defineProperty(Pool.prototype, '#{name}Entity', {"
           js.push "    get: function() {"
@@ -232,32 +233,32 @@ module.exports =
           js.push "      return this.#{name}Entity != undefined;"
           js.push "    }"
           js.push "  });"
-          js.push "  Pool.prototype.set#{Name} = function(newValue) {"
+          js.push "  Pool.prototype.set#{Name} = function(#{properties.join(', ')}) {"
           js.push "    if (this.has#{Name}) {"
           js.push "      throw new SingleEntityException(Matcher.#{Name};"
           js.push "    }"
           js.push "    var entity = this.createEntity();"
-          js.push "    entity.add#{Name}(newValue);"
+          js.push "    entity.add#{Name}(#{params(properties)});"
           js.push "    return entity;"
-          js.push "  }"
-          js.push "  Pool.prototype.replace#{Name} = function(newValue) {"
+          js.push "  };"
+          js.push "  Pool.prototype.replace#{Name} = function(#{properties.join(', ')}) {"
           js.push "    var entity = this.#{name}Entity;"
           js.push "    if (entity == null) {"
-          js.push "      entity = this.set#{Name}(newValue);"
+          js.push "      entity = this.set#{Name}(#{params(properties)});"
           js.push "    } else {"
-          js.push "      entity.replace#{Name}(newValue);"
+          js.push "      entity.replace#{Name}(#{params(properties)});"
           js.push "    }"
-          js.push "  }"
           js.push "    return entity;"
+          js.push "  };"
           js.push "  Pool.prototype.remove#{Name} = function() {"
           js.push "    this.destroyEntity(#{name}Entity);"
-          js.push "  }"
+          js.push "  };"
 
           d3.push "        #{name}Entity: Entity;"
           d3.push "        #{name}: IComponent;"
           d3.push "        has#{Name}: boolean;"
-          d3.push "        set#{Name}(newValue:number): Entity;"
-          d3.push "        replace#{Name}(newValue:number): Entity;"
+          d3.push "        set#{Name}(#{properties.join(', ')}): Entity;"
+          d3.push "        replace#{Name}(#{properties.join(', ')}): Entity;"
           d3.push "        remove#{Name}(): void;"
 
 
@@ -308,7 +309,7 @@ module.exports =
 
     dts = fs.readFileSync(path.join(__dirname, 'entitas.d.ts'), 'utf8')
     dts = def(dts, '    class Entity {', d1)
-    dts = def(dts, '    class Matcher {', d2)
+    dts = def(dts, '    class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {', d2)
     dts = def(dts, '    class Pool {', d3)
     for Name, d0 of ex
       dts = def(dts, "    class #{Name} {", d0)
