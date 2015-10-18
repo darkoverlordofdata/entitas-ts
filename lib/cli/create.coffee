@@ -29,6 +29,9 @@ module.exports =
       when '-s' or '--system'
         create.system(name, args...)
 
+      when '-x' or '--extension'
+        create.extension(name, args...)
+
 
 ###
  *
@@ -50,6 +53,13 @@ create =
     fs.writeFileSync("#{process.cwd()}/entitas.json", JSON.stringify(config, null, 2))
     template = systemTemplate(name, args)
     fs.writeFileSync("#{process.cwd()}/#{config.src}/#{name}.ts", template)
+
+  extension:(name, method, args...) ->
+    config.extensions = config.extensions || {}
+    config.extensions[name] = config.extensions[name] || {}
+    config.extensions[name][method] = args
+    fs.writeFileSync("#{process.cwd()}/entitas.json", JSON.stringify(config, null, 2))
+
 
 
 systemTemplate = (name, interfaces) ->

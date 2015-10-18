@@ -31,6 +31,7 @@ module.exports =
     d1 = [] # StringBuilder for associated *.d.ts file: Entity
     d2 = [] # StringBuilder for associated *.d.ts file: Matcher
     d3 = [] # StringBuilder for associated *.d.ts file: Pool
+    ex = {} # Extensions
     ###
      * Header
     ###
@@ -284,12 +285,20 @@ module.exports =
     ts.push "      return Pools._core;"
     ts.push "    }"
     ts.push "  }"
+    for Name of config.extensions
+      ts.push "  #{config.namespace}.extensions.#{Name}.extend();"
     ts.push "}"
 
     js.push "})();"
 
     fs.writeFileSync(path.join(process.cwd(), config.src, config.output.typescript), ts.join('\n'))
     fs.writeFileSync(path.join(process.cwd(), config.src, config.output.javascript), js.join('\n'))
+
+    for Name, klass of config.extensions
+      ex[Name] = [] # StringBuilder for this extension
+      for method, args of klass
+        [name, type] = method.split(':');
+        ex[Name].push "        #{name}(#{args.join(', ')}):#{type};"
 
     def = (dts, className, dd) ->
       i = dts.indexOf(className)+className.length
@@ -301,4 +310,7 @@ module.exports =
     dts = def(dts, '    class Entity {', d1)
     dts = def(dts, '    class Matcher {', d2)
     dts = def(dts, '    class Pool {', d3)
+    for Name, d0 of ex
+      dts = def(dts, "    class #{Name} {", d0)
+
     fs.writeFileSync(path.join(process.cwd(), config.src, config.output.declaration), dts)

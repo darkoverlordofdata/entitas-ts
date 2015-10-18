@@ -58,4 +58,6 @@ entitas create -s RenderPositionSystem IReactiveSystem
 entitas create -s AddViewSystem IReactiveSystem
 entitas create -s RemoveViewSystem IReactiveSystem ISetPool IEnsureComponents
 entitas create -s ScoreSystem IInitializeSystem IReactiveSystem ISetPool
+entitas create -x Pool createRandomPiece:Entity x:number y:number
+entitas create -x Pool createBlocker:Entity x:number y:number
 entitas generate
