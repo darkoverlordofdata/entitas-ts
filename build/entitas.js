@@ -179,12 +179,6 @@ var entitas;
 var entitas;
 (function (entitas) {
     var MatcherException = entitas.MatcherException;
-    var CoreMatcher = (function () {
-        function CoreMatcher() {
-        }
-        return CoreMatcher;
-    })();
-    entitas.CoreMatcher = CoreMatcher;
     var Matcher = (function () {
         function Matcher() {
             this._id = Matcher.uniqueId++;
