@@ -6,20 +6,19 @@ module example {
   import Group = entitas.Group;
   import Pool = entitas.Pool;
   import Entity = entitas.Entity;
-  import CoreMatcher = entitas.CoreMatcher;
   import Matcher = entitas.Matcher;
   import Exception = entitas.Exception;
 
   export class AccelerateSystem implements IReactiveSystem, ISetPool {
 
     public get trigger():TriggerOnEvent {
-      return CoreMatcher.Accelerating.onEntityAddedOrRemoved();
+      return Matcher.Accelerating.onEntityAddedOrRemoved();
     }
 
     protected group:Group;
 
     public setPool(pool:Pool) {
-      this.group = pool.getGroup(Matcher.allOf(CoreMatcher.Acceleratable, CoreMatcher.Move));
+      this.group = pool.getGroup(Matcher.allOf(Matcher.Acceleratable, Matcher.Move));
     }
 
     public execute(entities:Array<entitas.Entity>) {

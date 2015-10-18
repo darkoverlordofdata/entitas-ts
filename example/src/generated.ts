@@ -11,7 +11,6 @@ module example {
   import ISystem = entitas.ISystem;
   import IMatcher = entitas.IMatcher;
   import IComponent = entitas.IComponent;
-  import CoreMatcher = entitas.CoreMatcher;
 
   export enum CoreComponentIds {
     Acceleratable,

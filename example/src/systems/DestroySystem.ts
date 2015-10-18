@@ -4,14 +4,14 @@ module example {
   import Entity = entitas.Entity;
   import ISetPool = entitas.ISetPool;
   import IComponent = entitas.IComponent;
-  import CoreMatcher = entitas.CoreMatcher;
+  import Matcher = entitas.Matcher;
   import TriggerOnEvent = entitas.TriggerOnEvent;
   import IReactiveSystem = entitas.IReactiveSystem;
 
   export class DestroySystem implements IReactiveSystem, ISetPool {
 
     public get trigger():TriggerOnEvent {
-      return CoreMatcher.Destroy.onEntityAdded();
+      return Matcher.Destroy.onEntityAdded();
     }
 
     pool:Pool;

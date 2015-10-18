@@ -7,7 +7,6 @@ module example {
   import ISetPool = entitas.ISetPool;
   import IMatcher = entitas.IMatcher;
   import IComponent = entitas.IComponent;
-  import CoreMatcher = entitas.CoreMatcher;
   import TriggerOnEvent = entitas.TriggerOnEvent;
   import IEnsureComponents = entitas.IEnsureComponents;
   import IMultiReactiveSystem = entitas.IMultiReactiveSystem;
@@ -21,18 +20,18 @@ module example {
 
     public get triggers():TriggerOnEvent[] {
       return [
-        <TriggerOnEvent>CoreMatcher.Resource.onEntityRemoved(),
-        <TriggerOnEvent>(<Matcher>Matcher.allOf(CoreMatcher.Resource, CoreMatcher.Destroy)).onEntityAdded()
+        <TriggerOnEvent>Matcher.Resource.onEntityRemoved(),
+        <TriggerOnEvent>(<Matcher>Matcher.allOf(Matcher.Resource, Matcher.Destroy)).onEntityAdded()
       ];
     }
 
     public get ensureComponents():IMatcher {
-      return CoreMatcher.View;
+      return Matcher.View;
     }
 
 
     public setPool(pool:Pool) {
-      pool.getGroup(CoreMatcher.View).onEntityRemoved.add(this.onEntityRemoved);
+      pool.getGroup(Matcher.View).onEntityRemoved.add(this.onEntityRemoved);
     }
 
     protected onEntityRemoved(group:Group, entity:Entity, index:number, component:IComponent) {

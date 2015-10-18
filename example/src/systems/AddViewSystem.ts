@@ -4,7 +4,7 @@ module example {
   import Entity = entitas.Entity;
   import Texture = PIXI.Texture;
   import Constants = example.Constants;
-  import CoreMatcher = entitas.CoreMatcher;
+  import Matcher = entitas.Matcher;
   import TriggerOnEvent = entitas.TriggerOnEvent;
   import IReactiveSystem = entitas.IReactiveSystem;
 
@@ -17,7 +17,7 @@ module example {
   export class AddViewSystem implements IReactiveSystem {
 
     public get trigger():TriggerOnEvent {
-      return CoreMatcher.Resource.onEntityAdded();
+      return Matcher.Resource.onEntityAdded();
     }
 
     public execute(entities:Array<Entity>) {

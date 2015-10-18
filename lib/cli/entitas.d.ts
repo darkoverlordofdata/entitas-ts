@@ -99,8 +99,6 @@ declare module entitas {
     import IAllOfMatcher = entitas.IAllOfMatcher;
     import IAnyOfMatcher = entitas.IAnyOfMatcher;
     import INoneOfMatcher = entitas.INoneOfMatcher;
-    class CoreMatcher {
-    }
     class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {
         id: number;
         static uniqueId: number;

@@ -4,14 +4,13 @@
   import Group = entitas.Group;
   import Matcher = entitas.Matcher;
   import ISetPool = entitas.ISetPool;
-  import CoreMatcher = entitas.CoreMatcher;
   import IExecuteSystem = entitas.IExecuteSystem;
 
   export class MoveSystem implements IExecuteSystem, ISetPool {
     group:Group;
 
     public setPool(pool:Pool) {
-      this.group = pool.getGroup(Matcher.allOf(CoreMatcher.Move, CoreMatcher.Position));
+      this.group = pool.getGroup(Matcher.allOf(Matcher.Move, Matcher.Position));
     }
 
     public execute() {

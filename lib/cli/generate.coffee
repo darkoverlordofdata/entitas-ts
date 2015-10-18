@@ -29,7 +29,7 @@ module.exports =
     ts = [] # StringBuilder for generated typescript code
     js = [] # StringBuilder for generated javascript code
     d1 = [] # StringBuilder for associated *.d.ts file: Entity
-    d2 = [] # StringBuilder for associated *.d.ts file: CoreMatcher
+    d2 = [] # StringBuilder for associated *.d.ts file: Matcher
     d3 = [] # StringBuilder for associated *.d.ts file: Pool
     ###
      * Header
@@ -47,7 +47,6 @@ module.exports =
     ts.push "  import ISystem = entitas.ISystem;"
     ts.push "  import IMatcher = entitas.IMatcher;"
     ts.push "  import IComponent = entitas.IComponent;"
-    ts.push "  import CoreMatcher = entitas.CoreMatcher;"
 
     js.push "/**"
     js.push " * Entitas Generated Extensions for #{config.namespace}"
@@ -58,7 +57,7 @@ module.exports =
     js.push "  var Pool = entitas.Pool;"
     js.push "  var Matcher = entitas.Matcher;"
     js.push "  var Entity = entitas.Entity;"
-    js.push "  var CoreMatcher = entitas.CoreMatcher;"
+    js.push "  var Matcher = entitas.Matcher;"
     for Name, properties of config.components
       js.push "  var #{Name}Component = #{config.namespace}.#{Name}Component;"
     js.push "  var CoreComponentIds = #{config.namespace}.CoreComponentIds;"
@@ -170,15 +169,15 @@ module.exports =
     ###
     for Name, properties of config.components
       name = Name[0].toLowerCase()+Name[1...];
-      js.push "  CoreMatcher._matcher#{Name}=null;"
+      js.push "  Matcher._matcher#{Name}=null;"
       js.push "  "
-      js.push "  Object.defineProperty(CoreMatcher, '#{Name}', {"
+      js.push "  Object.defineProperty(Matcher, '#{Name}', {"
       js.push "    get: function() {"
-      js.push "      if (CoreMatcher._matcher#{Name} == null) {"
-      js.push "        CoreMatcher._matcher#{Name} = Matcher.allOf(CoreComponentIds.#{Name});"
+      js.push "      if (Matcher._matcher#{Name} == null) {"
+      js.push "        Matcher._matcher#{Name} = Matcher.allOf(CoreComponentIds.#{Name});"
       js.push "      }"
       js.push "      "
-      js.push "      return CoreMatcher._matcher#{Name};"
+      js.push "      return Matcher._matcher#{Name};"
       js.push "    }"
       js.push "  });"
 
@@ -194,7 +193,7 @@ module.exports =
         if config.components[Name] is false
           js.push "  Object.defineProperty(Pool.prototype, '#{name}Entity', {"
           js.push "    get: function() {"
-          js.push "      return this.getGroup(CoreMatcher.#{Name}).getSingleEntity();"
+          js.push "      return this.getGroup(Matcher.#{Name}).getSingleEntity();"
           js.push "    }"
           js.push "  });"
           js.push "  Object.defineProperty(Pool.prototype, 'is#{Name}', {"
@@ -219,7 +218,7 @@ module.exports =
         else
           js.push "  Object.defineProperty(Pool.prototype, '#{name}Entity', {"
           js.push "    get: function() {"
-          js.push "      return this.getGroup(CoreMatcher.#{Name}).getSingleEntity();"
+          js.push "      return this.getGroup(Matcher.#{Name}).getSingleEntity();"
           js.push "    }"
           js.push "  });"
           js.push "  Object.defineProperty(Pool.prototype, '#{name}', {"
@@ -300,6 +299,6 @@ module.exports =
 
     dts = fs.readFileSync(path.join(__dirname, 'entitas.d.ts'), 'utf8')
     dts = def(dts, '    class Entity {', d1)
-    dts = def(dts, '    class CoreMatcher {', d2)
+    dts = def(dts, '    class Matcher {', d2)
     dts = def(dts, '    class Pool {', d3)
     fs.writeFileSync(path.join(process.cwd(), config.src, config.output.declaration), dts)

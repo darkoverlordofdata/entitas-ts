@@ -62,7 +62,6 @@ systemTemplate = (name, interfaces) ->
   sb.push "  import Entity = entitas.Entity;"
   sb.push "  import Matcher = entitas.Matcher;"
   sb.push "  import Exception = entitas.Exception;"
-  sb.push "  import CoreMatcher = entitas.CoreMatcher;"
   sb.push "  import TriggerOnEvent = entitas.TriggerOnEvent;"
   for iface in interfaces
     sb.push "  import #{iface} = entitas.#{iface};"

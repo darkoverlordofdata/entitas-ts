@@ -3,7 +3,7 @@ module example {
   import Pool = entitas.Pool;
   import Entity = entitas.Entity;
   import ISetPool = entitas.ISetPool;
-  import CoreMatcher = entitas.CoreMatcher;
+  import Matcher = entitas.Matcher;
   import TriggerOnEvent = entitas.TriggerOnEvent;
   import IReactiveSystem = entitas.IReactiveSystem;
 
@@ -11,7 +11,7 @@ module example {
   export class ReachedFinishSystem implements IReactiveSystem, ISetPool {
 
     public get trigger():TriggerOnEvent {
-      return CoreMatcher.Position.onEntityAdded();
+      return Matcher.Position.onEntityAdded();
     }
     pool:Pool;
 
