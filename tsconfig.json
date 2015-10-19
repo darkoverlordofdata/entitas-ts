@@ -26,6 +26,10 @@
     "lib/entitas/GroupObserver.ts",
     "lib/entitas/Pool.ts",
     "lib/entitas/ReactiveSystem.ts",
-    "lib/entitas/Systems.ts"
+    "lib/entitas/Systems.ts",
+    "lib/entitas/extensions/CollectionExtension.ts",
+    "lib/entitas/extensions/GroupExtension.ts",
+    "lib/entitas/extensions/MatcherExtension.ts",
+    "lib/entitas/extensions/PoolExtension.ts"
   ]
 }

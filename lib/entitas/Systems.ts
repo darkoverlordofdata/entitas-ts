@@ -28,6 +28,9 @@ module entitas {
     constructor() {
       this._initializeSystems = [];
       this._executeSystems = [];
+      /**
+       * Load Extensions
+       */
     }
 
     public add(system:ISystem);

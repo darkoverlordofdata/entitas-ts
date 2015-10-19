@@ -7,6 +7,9 @@ module entitas {
   import INoneOfMatcher = entitas.INoneOfMatcher;
   import MatcherException = entitas.MatcherException;
 
+  export module Matcher {
+
+  }
   export class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {
 
     public get id():number {return this._id;}
@@ -210,21 +213,23 @@ module entitas {
       sb.push(")");
     }
 
-
     /** MatcherExtension::onEntityAdded */
-    public onEntityAdded():TriggerOnEvent {
-      return new TriggerOnEvent(this, GroupEventType.OnEntityAdded);
-    }
+    public onEntityAdded():TriggerOnEvent;
+    //public onEntityAdded():TriggerOnEvent {
+    //  return new TriggerOnEvent(this, GroupEventType.OnEntityAdded);
+    //}
 
     /** MatcherExtension::onEntityRemoved */
-    public onEntityRemoved():TriggerOnEvent {
-      return new TriggerOnEvent(this, GroupEventType.OnEntityRemoved);
-    }
+    public onEntityRemoved():TriggerOnEvent;
+    //public onEntityRemoved():TriggerOnEvent {
+    //  return new TriggerOnEvent(this, GroupEventType.OnEntityRemoved);
+    //}
 
     /** MatcherExtension::onEntityAddedOrRemoved */
-    public onEntityAddedOrRemoved():TriggerOnEvent {
-      return new TriggerOnEvent(this, GroupEventType.OnEntityAddedOrRemoved);
-    }
+    public onEntityAddedOrRemoved():TriggerOnEvent;
+    //public onEntityAddedOrRemoved():TriggerOnEvent {
+    //  return new TriggerOnEvent(this, GroupEventType.OnEntityAddedOrRemoved);
+    //}
 
   }
 }

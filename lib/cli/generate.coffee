@@ -286,8 +286,6 @@ module.exports =
     ts.push "      return Pools._core;"
     ts.push "    }"
     ts.push "  }"
-    for Name of config.extensions
-      ts.push "  #{config.namespace}.extensions.#{Name}.extend();"
     ts.push "}"
 
     js.push "})();"

@@ -35,8 +35,8 @@ module entitas {
     public get count():number {return Object.keys(this._entities).length;}
     public get matcher():IMatcher {return this._matcher;}
 
-    private _matcher:IMatcher;
-    private _entities = {};
+    public _matcher:IMatcher;
+    public _entities = {};
     public _entitiesCache:Entity[];
     public _singleEntityCache:Entity;
     public _toStringCache:string;
@@ -151,9 +151,10 @@ module entitas {
     }
 
     /** GroupExtension::createObserver */
-    public createObserver(eventType:GroupEventType = GroupEventType.OnEntityAdded):GroupObserver {
-      return new GroupObserver(this, eventType);
-    }
+    //public createObserver(eventType:GroupEventType = GroupEventType.OnEntityAdded):GroupObserver {
+    //  return new GroupObserver(this, eventType);
+    //}
+    public createObserver(eventType:GroupEventType):GroupObserver;
 
   }
 

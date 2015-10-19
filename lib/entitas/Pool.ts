@@ -13,9 +13,9 @@ module entitas {
   import EntityIsNotDestroyedException = entitas.EntityIsNotDestroyedException;
   import PoolDoesNotContainEntityException = entitas.PoolDoesNotContainEntityException;
 
-  function as(obj, method1:string) {
-    return method1 in obj ? obj : null;
-  }
+  //function as(obj, method1:string) {
+  //  return method1 in obj ? obj : null;
+  //}
   /**
    * event delegate boilerplate:
    */
@@ -53,8 +53,8 @@ module entitas {
     public static componentsEnum:Object;
     public static totalComponents:number=0;
 
-    private _componentsEnum:Object;
-    private _totalComponents:number = 0;
+    public _componentsEnum:Object;
+    public _totalComponents:number = 0;
     public _creationIndex:number = 0;
     public _entitiesCache:Array<Entity>;
 
@@ -157,20 +157,32 @@ module entitas {
     }
 
 
-    public getEntities(matcher?:IMatcher):Entity[] {
-      if (matcher) {
-        /** PoolExtension::getEntities */
-        return this.getGroup(matcher).getEntities();
-      } else {
-        if (this._entitiesCache === undefined) {
-          this._entitiesCache = [];
-          for (var k in Object.keys(this._entities)) {
-            this._entitiesCache.push(this._entities[k]);
-          }
+    public getEntities(matcher:IMatcher):Entity[];
+    public getEntities():Entity[];
+
+    public getEntities():Entity[] {
+      if (this._entitiesCache === undefined) {
+        this._entitiesCache = [];
+        for (var k in Object.keys(this._entities)) {
+          this._entitiesCache.push(this._entities[k]);
         }
-        return this._entitiesCache;
       }
+      return this._entitiesCache;
     }
+    //public getEntities(matcher?:IMatcher):Entity[] {
+    //  if (matcher) {
+    //    /** PoolExtension::getEntities */
+    //    return this.getGroup(matcher).getEntities();
+    //  } else {
+    //    if (this._entitiesCache === undefined) {
+    //      this._entitiesCache = [];
+    //      for (var k in Object.keys(this._entities)) {
+    //        this._entitiesCache.push(this._entities[k]);
+    //      }
+    //    }
+    //    return this._entitiesCache;
+    //  }
+    //}
 
     public getGroup(matcher:IMatcher) {
       var group:Group;
@@ -198,7 +210,7 @@ module entitas {
       return group;
     }
 
-    protected updateGroupsComponentAddedOrRemoved = (entity:Entity, index:number, component:IComponent) => {
+    public updateGroupsComponentAddedOrRemoved = (entity:Entity, index:number, component:IComponent) => {
       var groups = this._groupsForIndex[index];
       if (groups !== undefined) {
         for (var i = 0, groupsCount = groups.length; i < groupsCount; i++) {
@@ -208,7 +220,7 @@ module entitas {
     };
 
 
-    protected updateGroupsComponentReplaced = (entity:Entity, index:number, previousComponent:IComponent, newComponent:IComponent) => {
+    public updateGroupsComponentReplaced = (entity:Entity, index:number, previousComponent:IComponent, newComponent:IComponent) => {
       var groups = this._groupsForIndex[index];
       if (groups !== undefined) {
         for (var i = 0, groupsCount = groups.length; i < groupsCount; i++) {
@@ -217,7 +229,7 @@ module entitas {
       }
     };
 
-    protected onEntityReleased = (entity:Entity) => {
+    public onEntityReleased = (entity:Entity) => {
       if(entity._isEnabled){
         throw new EntityIsNotDestroyedException("Cannot release entity.");
       }
@@ -232,36 +244,37 @@ module entitas {
     public createSystem(system:ISystem);
     public createSystem(system:Function);
 
-    public createSystem(system) {
-      if ('function' === typeof system) {
-        var Klass:any = system;
-        system = new Klass();
-      }
-
-      Pool.setPool(system, this);
-
-      //    return method1 in obj ? obj : null;
-
-      var reactiveSystem = as(system, 'trigger');
-      if (reactiveSystem != null) {
-        return new ReactiveSystem(this, reactiveSystem);
-      }
-      var multiReactiveSystem = as(system, 'triggers');
-      if (multiReactiveSystem != null) {
-        return new ReactiveSystem(this, multiReactiveSystem);
-      }
-
-      return system;
-    }
+    //public createSystem(system) {
+    //  if ('function' === typeof system) {
+    //    var Klass:any = system;
+    //    system = new Klass();
+    //  }
+    //
+    //  Pool.setPool(system, this);
+    //
+    //  //    return method1 in obj ? obj : null;
+    //
+    //  var reactiveSystem = as(system, 'trigger');
+    //  if (reactiveSystem != null) {
+    //    return new ReactiveSystem(this, reactiveSystem);
+    //  }
+    //  var multiReactiveSystem = as(system, 'triggers');
+    //  if (multiReactiveSystem != null) {
+    //    return new ReactiveSystem(this, multiReactiveSystem);
+    //  }
+    //
+    //  return system;
+    //}
 
     /** PoolExtension::setPool */
-    public static setPool(system:ISystem, pool:Pool) {
-      var poolSystem = as(system, 'setPool');
-      if (poolSystem != null) {
-        poolSystem.setPool(pool);
-      }
-
-    }
+    public static setPool(system:ISystem, pool:Pool);
+    //public static setPool(system:ISystem, pool:Pool) {
+    //  var poolSystem = as(system, 'setPool');
+    //  if (poolSystem != null) {
+    //    poolSystem.setPool(pool);
+    //  }
+    //
+    //}
 
   }
 }
