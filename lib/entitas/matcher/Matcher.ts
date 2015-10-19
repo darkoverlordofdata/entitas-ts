@@ -34,6 +34,11 @@ module entitas {
     private _toStringCache:string;
     private _id:number;
 
+    /** Extension Points */
+    public onEntityAdded():TriggerOnEvent;
+    public onEntityRemoved():TriggerOnEvent;
+    public onEntityAddedOrRemoved():TriggerOnEvent;
+
     constructor() {
       this._id = Matcher.uniqueId++;
     }
@@ -213,20 +218,14 @@ module entitas {
       sb.push(")");
     }
 
-    /** MatcherExtension::onEntityAdded */
-    public onEntityAdded():TriggerOnEvent;
     //public onEntityAdded():TriggerOnEvent {
     //  return new TriggerOnEvent(this, GroupEventType.OnEntityAdded);
     //}
 
-    /** MatcherExtension::onEntityRemoved */
-    public onEntityRemoved():TriggerOnEvent;
     //public onEntityRemoved():TriggerOnEvent {
     //  return new TriggerOnEvent(this, GroupEventType.OnEntityRemoved);
     //}
 
-    /** MatcherExtension::onEntityAddedOrRemoved */
-    public onEntityAddedOrRemoved():TriggerOnEvent;
     //public onEntityAddedOrRemoved():TriggerOnEvent {
     //  return new TriggerOnEvent(this, GroupEventType.OnEntityAddedOrRemoved);
     //}

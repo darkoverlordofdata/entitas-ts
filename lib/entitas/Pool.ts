@@ -62,6 +62,14 @@ module entitas {
     public _cachedUpdateGroupsComponentReplaced:Entity.ComponentReplaced;
     public _cachedOnEntityReleased:Entity.EntityReleased;
 
+    /** Extension Points */
+    public getEntities(matcher:IMatcher):Entity[];
+    public getEntities():Entity[];
+    public createSystem(system:ISystem);
+    public createSystem(system:Function);
+    public static setPool(system:ISystem, pool:Pool);
+
+
     constructor(components:{}, totalComponents:number, startCreationIndex:number=0) {
       this.onGroupCreated = new Signal<GroupChanged>(this);
       this.onEntityCreated = new Signal<PoolChanged>(this);
@@ -157,9 +165,6 @@ module entitas {
     }
 
 
-    public getEntities(matcher:IMatcher):Entity[];
-    public getEntities():Entity[];
-
     public getEntities():Entity[] {
       if (this._entitiesCache === undefined) {
         this._entitiesCache = [];
@@ -240,9 +245,6 @@ module entitas {
 
 
 
-    /** PoolExtension::createSystem */
-    public createSystem(system:ISystem);
-    public createSystem(system:Function);
 
     //public createSystem(system) {
     //  if ('function' === typeof system) {
@@ -266,8 +268,6 @@ module entitas {
     //  return system;
     //}
 
-    /** PoolExtension::setPool */
-    public static setPool(system:ISystem, pool:Pool);
     //public static setPool(system:ISystem, pool:Pool) {
     //  var poolSystem = as(system, 'setPool');
     //  if (poolSystem != null) {

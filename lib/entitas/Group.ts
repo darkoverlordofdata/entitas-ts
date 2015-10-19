@@ -41,6 +41,9 @@ module entitas {
     public _singleEntityCache:Entity;
     public _toStringCache:string;
 
+    /** Extension Points */
+    public createObserver(eventType:GroupEventType):GroupObserver;
+
     constructor(matcher:IMatcher) {
       this.onEntityAdded = new Signal<GroupChanged>(this);
       this.onEntityRemoved = new Signal<GroupChanged>(this);
@@ -150,11 +153,9 @@ module entitas {
       return this._toStringCache;
     }
 
-    /** GroupExtension::createObserver */
     //public createObserver(eventType:GroupEventType = GroupEventType.OnEntityAdded):GroupObserver {
     //  return new GroupObserver(this, eventType);
     //}
-    public createObserver(eventType:GroupEventType):GroupObserver;
 
   }
 

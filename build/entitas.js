@@ -375,18 +375,6 @@ var entitas;
             }
             sb.push(")");
         };
-        /** MatcherExtension::onEntityAdded */
-        Matcher.prototype.onEntityAdded = function () {
-            return new entitas.TriggerOnEvent(this, entitas.GroupEventType.OnEntityAdded);
-        };
-        /** MatcherExtension::onEntityRemoved */
-        Matcher.prototype.onEntityRemoved = function () {
-            return new entitas.TriggerOnEvent(this, entitas.GroupEventType.OnEntityRemoved);
-        };
-        /** MatcherExtension::onEntityAddedOrRemoved */
-        Matcher.prototype.onEntityAddedOrRemoved = function () {
-            return new entitas.TriggerOnEvent(this, entitas.GroupEventType.OnEntityAddedOrRemoved);
-        };
         Matcher.uniqueId = 0;
         return Matcher;
     })();
@@ -594,7 +582,6 @@ var entitas;
 var entitas;
 (function (entitas) {
     var Signal = entitas.Signal;
-    var GroupEventType = entitas.GroupEventType;
     var SingleEntityException = entitas.SingleEntityException;
     var Group = (function () {
         function Group(matcher) {
@@ -704,11 +691,6 @@ var entitas;
                 this._toStringCache = "Group(" + this._matcher + ")";
             }
             return this._toStringCache;
-        };
-        /** GroupExtension::createObserver */
-        Group.prototype.createObserver = function (eventType) {
-            if (eventType === void 0) { eventType = GroupEventType.OnEntityAdded; }
-            return new entitas.GroupObserver(this, eventType);
         };
         return Group;
     })();
@@ -931,21 +913,29 @@ var entitas;
         Pool.prototype.hasEntity = function (entity) {
             return entity.creationIndex in this._entities;
         };
-        Pool.prototype.getEntities = function (matcher) {
-            if (matcher) {
-                /** PoolExtension::getEntities */
-                return this.getGroup(matcher).getEntities();
-            }
-            else {
-                if (this._entitiesCache === undefined) {
-                    this._entitiesCache = [];
-                    for (var k in Object.keys(this._entities)) {
-                        this._entitiesCache.push(this._entities[k]);
-                    }
+        Pool.prototype.getEntities = function () {
+            if (this._entitiesCache === undefined) {
+                this._entitiesCache = [];
+                for (var k in Object.keys(this._entities)) {
+                    this._entitiesCache.push(this._entities[k]);
                 }
-                return this._entitiesCache;
             }
+            return this._entitiesCache;
         };
+        //public getEntities(matcher?:IMatcher):Entity[] {
+        //  if (matcher) {
+        //    /** PoolExtension::getEntities */
+        //    return this.getGroup(matcher).getEntities();
+        //  } else {
+        //    if (this._entitiesCache === undefined) {
+        //      this._entitiesCache = [];
+        //      for (var k in Object.keys(this._entities)) {
+        //        this._entitiesCache.push(this._entities[k]);
+        //      }
+        //    }
+        //    return this._entitiesCache;
+        //  }
+        //}
         Pool.prototype.getGroup = function (matcher) {
             var group;
             if (matcher.id in this._groups) {
@@ -969,29 +959,6 @@ var entitas;
             }
             return group;
         };
-        Pool.prototype.createSystem = function (system) {
-            if ('function' === typeof system) {
-                var Klass = system;
-                system = new Klass();
-            }
-            Pool.setPool(system, this);
-            var reactiveSystem = 'trigger' in system ? system : null;
-            if (reactiveSystem != null) {
-                return new entitas.ReactiveSystem(this, reactiveSystem);
-            }
-            var multiReactiveSystem = 'triggers' in system ? system : null;
-            if (multiReactiveSystem != null) {
-                return new entitas.ReactiveSystem(this, multiReactiveSystem);
-            }
-            return system;
-        };
-        /** PoolExtension::setPool */
-        Pool.setPool = function (system, pool) {
-            var poolSystem = ('setPool' in system ? system : null);
-            if (poolSystem != null) {
-                poolSystem.setPool(pool);
-            }
-        };
         Pool.totalComponents = 0;
         return Pool;
     })();
@@ -1001,19 +968,22 @@ var entitas;
 var entitas;
 (function (entitas) {
     var GroupObserver = entitas.GroupObserver;
+    function as(obj, method1) {
+        return method1 in obj ? obj : null;
+    }
     var ReactiveSystem = (function () {
         function ReactiveSystem(pool, subSystem) {
             var triggers = 'triggers' in subSystem ? subSystem['triggers'] : [subSystem['trigger']];
             this._subsystem = subSystem;
-            var ensureComponents = ('ensureComponents' in subSystem ? subSystem : null);
+            var ensureComponents = as(subSystem, 'ensureComponents');
             if (ensureComponents != null) {
                 this._ensureComponents = ensureComponents.ensureComponents;
             }
-            var excludeComponents = ('excludeComponents' in subSystem ? subSystem : null);
+            var excludeComponents = as(subSystem, 'excludeComponents');
             if (excludeComponents != null) {
                 this._excludeComponents = excludeComponents.excludeComponents;
             }
-            this._clearAfterExecute = subSystem['clearAfterExecute'];
+            this._clearAfterExecute = as(subSystem, 'clearAfterExecute') != null;
             var triggersLength = triggers.length;
             var groups = new Array(triggersLength);
             var eventTypes = new Array(triggersLength);
@@ -1097,6 +1067,9 @@ var entitas;
 //# sourceMappingURL=ReactiveSystem.js.map
 var entitas;
 (function (entitas) {
+    function as(obj, method1) {
+        return method1 in obj ? obj : null;
+    }
     (function (SystemType) {
         SystemType[SystemType["IInitializeSystem"] = 1] = "IInitializeSystem";
         SystemType[SystemType["IExecuteSystem"] = 2] = "IExecuteSystem";
@@ -1112,20 +1085,23 @@ var entitas;
         function Systems() {
             this._initializeSystems = [];
             this._executeSystems = [];
+            /**
+             * Load Extensions
+             */
         }
         Systems.prototype.add = function (system) {
             if ('function' === typeof system) {
                 var Klass = system;
                 system = new Klass();
             }
-            var reactiveSystem = ('trigger' in system || 'triggers' in system ? system : null);
-            var initializeSystem = (reactiveSystem != null
-                ? 'initialize' in reactiveSystem.subsystem ? reactiveSystem.subsystem : null
-                : 'initialize' in system ? system : null);
+            var reactiveSystem = as(system, 'subsystem');
+            var initializeSystem = reactiveSystem != null
+                ? as(reactiveSystem.subsystem, 'initialize')
+                : as(system, 'initialize');
             if (initializeSystem != null) {
                 this._initializeSystems.push(initializeSystem);
             }
-            var executeSystem = ('execute' in system ? system : null);
+            var executeSystem = as(system, 'execute');
             if (executeSystem != null) {
                 this._executeSystems.push(executeSystem);
             }
@@ -1144,11 +1120,11 @@ var entitas;
         };
         Systems.prototype.clearReactiveSystems = function () {
             for (var i = 0, exeSysCount = this._executeSystems.length; i < exeSysCount; i++) {
-                var reactiveSystem = this._executeSystems[i];
+                var reactiveSystem = as(this._executeSystems[i], 'subsystem');
                 if (reactiveSystem != null) {
                     reactiveSystem.clear();
                 }
-                var nestedSystems = this._executeSystems[i];
+                var nestedSystems = as(this._executeSystems[i], 'clearReactiveSystems');
                 if (nestedSystems != null) {
                     nestedSystems.clearReactiveSystems();
                 }
@@ -1159,3 +1135,109 @@ var entitas;
     entitas.Systems = Systems;
 })(entitas || (entitas = {}));
 //# sourceMappingURL=Systems.js.map
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var entitas;
+(function (entitas) {
+    var extensions;
+    (function (extensions) {
+        var Exception = entitas.Exception;
+        var Collection = (function (_super) {
+            __extends(Collection, _super);
+            function Collection($0) {
+                _super.call(this, $0);
+            }
+            Collection.prototype.singleEntity = function () {
+                if (this.length !== 1) {
+                    throw new Exception("Expected exactly one entity but found " + this.length);
+                }
+                return this[0];
+            };
+            return Collection;
+        })(Array);
+        extensions.Collection = Collection;
+    })(extensions = entitas.extensions || (entitas.extensions = {}));
+})(entitas || (entitas = {}));
+//# sourceMappingURL=CollectionExtension.js.map
+var entitas;
+(function (entitas) {
+    var extensions;
+    (function (extensions) {
+        var GroupEventType = entitas.GroupEventType;
+        var GroupObserver = entitas.GroupObserver;
+        entitas.Group.prototype.createObserver = function (eventType) {
+            if (eventType === void 0) { eventType = GroupEventType.OnEntityAdded; }
+            return new GroupObserver(this, eventType);
+        };
+    })(extensions = entitas.extensions || (entitas.extensions = {}));
+})(entitas || (entitas = {}));
+//# sourceMappingURL=GroupExtension.js.map
+var entitas;
+(function (entitas) {
+    var extensions;
+    (function (extensions) {
+        var Matcher = entitas.Matcher;
+        var GroupEventType = entitas.GroupEventType;
+        var TriggerOnEvent = entitas.TriggerOnEvent;
+        Matcher.prototype.onEntityAdded = function () {
+            return new TriggerOnEvent(this, GroupEventType.OnEntityAdded);
+        };
+        Matcher.prototype.onEntityRemoved = function () {
+            return new TriggerOnEvent(this, GroupEventType.OnEntityRemoved);
+        };
+        Matcher.prototype.onEntityAddedOrRemoved = function () {
+            return new TriggerOnEvent(this, GroupEventType.OnEntityAddedOrRemoved);
+        };
+    })(extensions = entitas.extensions || (entitas.extensions = {}));
+})(entitas || (entitas = {}));
+//# sourceMappingURL=MatcherExtension.js.map
+var entitas;
+(function (entitas) {
+    var extensions;
+    (function (extensions) {
+        function as(obj, method1) {
+            return method1 in obj ? obj : null;
+        }
+        entitas.Pool.prototype.getEntities = function (matcher) {
+            if (matcher) {
+                /** PoolExtension::getEntities */
+                return this.getGroup(matcher).getEntities();
+            }
+            else {
+                if (this._entitiesCache === undefined) {
+                    this._entitiesCache = [];
+                    for (var k in Object.keys(this._entities)) {
+                        this._entitiesCache.push(this._entities[k]);
+                    }
+                }
+                return this._entitiesCache;
+            }
+        };
+        entitas.Pool.prototype.createSystem = function (system) {
+            if ('function' === typeof system) {
+                var Klass = system;
+                system = new Klass();
+            }
+            entitas.Pool.setPool(system, this);
+            var reactiveSystem = as(system, 'trigger');
+            if (reactiveSystem != null) {
+                return new entitas.ReactiveSystem(this, reactiveSystem);
+            }
+            var multiReactiveSystem = as(system, 'triggers');
+            if (multiReactiveSystem != null) {
+                return new entitas.ReactiveSystem(this, multiReactiveSystem);
+            }
+            return system;
+        };
+        entitas.Pool.setPool = function (system, pool) {
+            var poolSystem = as(system, 'setPool');
+            if (poolSystem != null) {
+                poolSystem.setPool(pool);
+            }
+        };
+    })(extensions = entitas.extensions || (entitas.extensions = {}));
+})(entitas || (entitas = {}));
+//# sourceMappingURL=PoolExtension.js.map

@@ -16,6 +16,11 @@
     "web/src/entitas/GroupObserver.js",
     "web/src/entitas/Pool.js",
     "web/src/entitas/ReactiveSystem.js",
-    "web/src/entitas/Systems.js"
+    "web/src/entitas/Systems.js",
+    "web/src/entitas/extensions/CollectionExtension.js",
+    "web/src/entitas/extensions/GroupExtension.js",
+    "web/src/entitas/extensions/MatcherExtension.js",
+    "web/src/entitas/extensions/PoolExtension.js"
+
   ]
 }
