@@ -7,25 +7,25 @@
     "preserveConstEnums": false,
     "sourceMap": true,
     "experimentalDecorators": true,
-    "outDir": "web/src/example"
+    "outDir": "web/src/entitas"
   },
   "files": [
-    "example/ext/pixi.js.d.ts",
-    "example/ext/generated.d.ts",
-    "example/src/generated.ts",
-    "example/src/systems/AccelerateSystem.ts",
-    "example/src/systems/AddViewSystem.ts",
-    "example/src/systems/CreateFinishLineSystem.ts",
-    "example/src/systems/CreateOpponentsSystem.ts",
-    "example/src/systems/CreatePlayerSystem.ts",
-    "example/src/systems/DestroySystem.ts",
-    "example/src/systems/InputSystem.ts",
-    "example/src/systems/MoveSystem.ts",
-    "example/src/systems/ReachedFinishSystem.ts",
-    "example/src/systems/RemoveViewSystem.ts",
-    "example/src/systems/RenderPositionSystem.ts",
-    "example/src/core/Constants.ts",
-    "example/src/core/GameController.ts",
-    "example/src/core/Game.ts"
+    "lib/entitas/utils/Exceptions.ts",
+    "lib/entitas/utils/Signal.ts",
+    "lib/entitas/interfaces/IComponent.ts",
+    "lib/entitas/interfaces/IMatcher.ts",
+    "lib/entitas/interfaces/ISystem.ts",
+    "lib/entitas/interfaces/IExecuteSystem.ts",
+    "lib/entitas/interfaces/IInitializeSystem.ts",
+    "lib/entitas/interfaces/IReactiveSystem.ts",
+    "lib/entitas/matcher/Matcher.ts",
+    "lib/entitas/matcher/MatcherInterfaces.ts",
+    "lib/entitas/matcher/TriggerOnEvent.ts",
+    "lib/entitas/Entity.ts",
+    "lib/entitas/Group.ts",
+    "lib/entitas/GroupObserver.ts",
+    "lib/entitas/Pool.ts",
+    "lib/entitas/ReactiveSystem.ts",
+    "lib/entitas/Systems.ts"
   ]
 }

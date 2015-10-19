@@ -5,6 +5,10 @@ module entitas {
   import IExecuteSystem = entitas.IExecuteSystem;
   import IInitializeSystem = entitas.IInitializeSystem;
 
+  function as(obj, method1:string) {
+    return method1 in obj ? obj : null;
+  }
+
   export enum SystemType {
     IInitializeSystem=1,          //  ::initialize()
     IExecuteSystem=2,             //  ::execute()
@@ -36,18 +40,16 @@ module entitas {
         system = new Klass();
       }
 
-      var reactiveSystem:ReactiveSystem = <ReactiveSystem>('trigger' in system || 'triggers' in system ? system : null);
-
-      var initializeSystem:IInitializeSystem = <IInitializeSystem>(reactiveSystem != null
-        ? 'initialize' in reactiveSystem.subsystem ? reactiveSystem.subsystem : null
-        : 'initialize' in system ? system : null);
-
+      var reactiveSystem = as(system, 'subsystem');
+      var initializeSystem = reactiveSystem != null
+          ? as(reactiveSystem.subsystem, 'initialize')
+          : as(system, 'initialize');
 
       if (initializeSystem != null) {
         this._initializeSystems.push(initializeSystem);
       }
 
-      var executeSystem:IExecuteSystem = <IExecuteSystem>('execute' in system ? system : null);
+      var executeSystem:IExecuteSystem = as(system, 'execute');
       if (executeSystem != null) {
         this._executeSystems.push(executeSystem);
       }
@@ -71,12 +73,12 @@ module entitas {
 
     public clearReactiveSystems() {
       for (var i = 0, exeSysCount = this._executeSystems.length; i < exeSysCount; i++) {
-        var reactiveSystem:ReactiveSystem = <ReactiveSystem>this._executeSystems[i];
+        var reactiveSystem = as(this._executeSystems[i], 'subsystem');
         if (reactiveSystem != null) {
           reactiveSystem.clear();
         }
 
-        var nestedSystems:Systems = <Systems>this._executeSystems[i];
+        var nestedSystems:Systems = as(this._executeSystems[i], 'clearReactiveSystems');
         if (nestedSystems != null) {
           nestedSystems.clearReactiveSystems();
         }

@@ -11,6 +11,10 @@ module entitas {
   import IClearReactiveSystem = entitas.IClearReactiveSystem;
   import IReactiveExecuteSystem = entitas.IReactiveExecuteSystem;
 
+  function as(obj, method1:string) {
+    return method1 in obj ? obj : null;
+  }
+
   export class ReactiveSystem implements IExecuteSystem {
     public get subsystem():entitas.IReactiveExecuteSystem {return this._subsystem;}
 
@@ -26,16 +30,16 @@ module entitas {
       var triggers:Array<TriggerOnEvent> = 'triggers' in subSystem ?  subSystem['triggers'] : [subSystem['trigger']];
       this._subsystem = subSystem;
 
-      var ensureComponents:IEnsureComponents = <IEnsureComponents>('ensureComponents' in subSystem ? <any>subSystem : null);
+      var ensureComponents = as(subSystem, 'ensureComponents');
       if (ensureComponents != null) {
         this._ensureComponents = ensureComponents.ensureComponents;
       }
-      var excludeComponents:IExcludeComponents = <IExcludeComponents>('excludeComponents' in subSystem ? <any>subSystem : null);
+      var excludeComponents = as(subSystem, 'excludeComponents');
       if (excludeComponents != null) {
         this._excludeComponents = excludeComponents.excludeComponents;
       }
 
-      this._clearAfterExecute = subSystem['clearAfterExecute'];
+      this._clearAfterExecute = as(subSystem, 'clearAfterExecute') != null;
 
       var triggersLength = triggers.length;
       var groups = new Array(triggersLength);

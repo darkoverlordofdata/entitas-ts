@@ -13,6 +13,9 @@ module entitas {
   import EntityIsNotDestroyedException = entitas.EntityIsNotDestroyedException;
   import PoolDoesNotContainEntityException = entitas.PoolDoesNotContainEntityException;
 
+  function as(obj, method1:string) {
+    return method1 in obj ? obj : null;
+  }
   /**
    * event delegate boilerplate:
    */
@@ -237,14 +240,15 @@ module entitas {
 
       Pool.setPool(system, this);
 
-      var reactiveSystem = 'trigger' in system ? system : null;
-      if (reactiveSystem != null) {
-        return new ReactiveSystem(this, <IReactiveSystem>reactiveSystem);
-      }
+      //    return method1 in obj ? obj : null;
 
-      var multiReactiveSystem = 'triggers' in system ? system : null;
+      var reactiveSystem = as(system, 'trigger');
+      if (reactiveSystem != null) {
+        return new ReactiveSystem(this, reactiveSystem);
+      }
+      var multiReactiveSystem = as(system, 'triggers');
       if (multiReactiveSystem != null) {
-        return new ReactiveSystem(this, <IMultiReactiveSystem>multiReactiveSystem);
+        return new ReactiveSystem(this, multiReactiveSystem);
       }
 
       return system;
@@ -252,7 +256,7 @@ module entitas {
 
     /** PoolExtension::setPool */
     public static setPool(system:ISystem, pool:Pool) {
-      var poolSystem:ISetPool = <ISetPool>('setPool' in system ? system : null);
+      var poolSystem = as(system, 'setPool');
       if (poolSystem != null) {
         poolSystem.setPool(pool);
       }
