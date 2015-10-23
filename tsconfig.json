@@ -12,6 +12,7 @@
   "files": [
     "lib/entitas/utils/Exceptions.ts",
     "lib/entitas/utils/Signal.ts",
+    "lib/entitas/utils/Stopwatch.ts",
     "lib/entitas/interfaces/IComponent.ts",
     "lib/entitas/interfaces/IMatcher.ts",
     "lib/entitas/interfaces/ISystem.ts",
@@ -30,6 +31,7 @@
     "lib/entitas/extensions/CollectionExtension.ts",
     "lib/entitas/extensions/GroupExtension.ts",
     "lib/entitas/extensions/MatcherExtension.ts",
-    "lib/entitas/extensions/PoolExtension.ts"
+    "lib/entitas/extensions/PoolExtension.ts",
+    "lib/entitas/bosco/VisualDebugging.ts"
   ]
 }

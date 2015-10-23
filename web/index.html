@@ -37,7 +37,7 @@
         body {
             padding:0;
             margin: 0;
-            background: #000;
+            background: #ffffff;
         }
         body, canvas, div {
             -moz-user-select: none;
@@ -49,11 +49,13 @@
     </style>
 </head>
 <body></body>
+<script src="dat.gui.min.js"></script>
 <script src="src/stats.js/stats.min.js"></script>
 <script src="src/pixi.js/pixi.min.js"></script>
 
 <script src="src/entitas/utils/Exceptions.js"></script>
 <script src="src/entitas/utils/Signal.js"></script>
+<script src="src/entitas/utils/Stopwatch.js"></script>
 <script src="src/entitas/interfaces/IComponent.js"></script>
 <script src="src/entitas/interfaces/IMatcher.js"></script>
 <script src="src/entitas/interfaces/ISystem.js"></script>
@@ -91,5 +93,6 @@
 <script src="src/example/core/GameController.js"></script>
 <script src="src/example/core/Game.js"></script>
 <script src="main.js"></script>
+<script src="src/entitas/bosco/VisualDebugging.js"></script>
 
 </html>

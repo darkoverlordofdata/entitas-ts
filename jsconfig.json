@@ -2,6 +2,7 @@
   "files": [
     "web/src/entitas/utils/Exceptions.js",
     "web/src/entitas/utils/Signal.js",
+    "web/src/entitas/utils/Stopwatch.js",
     "web/src/entitas/interfaces/IComponent.js",
     "web/src/entitas/interfaces/IMatcher.js",
     "web/src/entitas/interfaces/ISystem.js",
@@ -20,7 +21,8 @@
     "web/src/entitas/extensions/CollectionExtension.js",
     "web/src/entitas/extensions/GroupExtension.js",
     "web/src/entitas/extensions/MatcherExtension.js",
-    "web/src/entitas/extensions/PoolExtension.js"
+    "web/src/entitas/extensions/PoolExtension.js",
+    "web/src/entitas/bosco/VisualDebugging.js"
 
   ]
 }

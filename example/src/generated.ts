@@ -66,6 +66,7 @@ module example {
     static get core():Pool {
       if (Pools._core == null) {
         Pools._core = new Pool(CoreComponentIds, CoreComponentIds.TotalComponents);
+        entitas.bosco.VisualDebugging.init(Pools._core);
       }
     
       return Pools._core;

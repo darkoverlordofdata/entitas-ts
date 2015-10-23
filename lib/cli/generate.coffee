@@ -281,6 +281,7 @@ module.exports =
     ts.push "    static get pool():Pool {"
     ts.push "      if (Pools._pool == null) {"
     ts.push "        Pools._pool = new Pool(CoreComponentIds, CoreComponentIds.TotalComponents);"
+    ts.push "        entitas.bosco.VisualDebugging.init(Pools._pool);"
     ts.push "      }"
     ts.push "    "
     ts.push "      return Pools._pool;"
