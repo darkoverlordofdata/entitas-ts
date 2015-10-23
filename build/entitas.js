@@ -1304,7 +1304,7 @@ var entitas;
         var VisualDebugging = (function () {
             function VisualDebugging() {
             }
-            VisualDebugging.prototype.init = function (pool) {
+            VisualDebugging.init = function (pool) {
                 if (window['dat']) {
                     browser.gui = new dat.GUI({ height: 5 * 32 - 1, width: 300 });
                     VisualDebugging._controllers = [];

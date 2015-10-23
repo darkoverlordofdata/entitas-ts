@@ -489,7 +489,7 @@ declare module entitas.browser {
         static _entities: any;
         static _pools: any;
         static _systems: any;
-        init(pool: Pool): void;
+        static init(pool: Pool): void;
     }
     /**
      * Profiler

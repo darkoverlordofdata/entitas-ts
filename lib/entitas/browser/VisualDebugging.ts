@@ -14,7 +14,7 @@ module entitas.browser {
     public static _pools;
     public static _systems;
 
-    public init(pool:Pool) {
+    public static init(pool:Pool) {
       if (window['dat']) {
 
 
