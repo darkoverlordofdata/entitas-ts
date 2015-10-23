@@ -61,3 +61,24 @@ entitas create -s ScoreSystem IInitializeSystem IReactiveSystem ISetPool
 entitas create -x Pool createRandomPiece:Entity x:number y:number
 entitas create -x Pool createBlocker:Entity x:number y:number
 entitas generate
+
+git clone https://github.com/darkoverlordofdata/template monkeydance
+cd monkeydance
+
+entitas init monkeydance
+
+entitas create -c Movable
+entitas create -c Position x:number y:number
+entitas create -c Destroy
+entitas create -c Input x:number y:number
+entitas create -c Interactive
+entitas create -c Resource name:string
+entitas create -c View sprite
+entitas create -c Score value:number
+entitas create -e Score
+entitas create -s DestroySystem IReactiveSystem ISetPool
+entitas create -s ProcessInputSystem IReactiveSystem ISetPool
+entitas create -s RenderPositionSystem IReactiveSystem
+entitas create -s AddViewSystem IReactiveSystem
+entitas create -s RemoveViewSystem IReactiveSystem ISetPool IEnsureComponents
+entitas create -s ScoreSystem IInitializeSystem IReactiveSystem ISetPool

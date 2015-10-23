@@ -402,7 +402,7 @@ var entitas;
     var EntityAlreadyHasComponentException = entitas.EntityAlreadyHasComponentException;
     var EntityDoesNotHaveComponentException = entitas.EntityDoesNotHaveComponentException;
     var Entity = (function () {
-        function Entity(totalComponents) {
+        function Entity(componentsEnum, totalComponents) {
             if (totalComponents === void 0) { totalComponents = 16; }
             this._creationIndex = 0;
             this._isEnabled = true;
@@ -411,6 +411,7 @@ var entitas;
             this.onComponentAdded = new Signal(this);
             this.onComponentRemoved = new Signal(this);
             this.onComponentReplaced = new Signal(this);
+            this._componentsEnum = componentsEnum;
             this._components = new Array(totalComponents);
         }
         Object.defineProperty(Entity.prototype, "creationIndex", {
@@ -868,7 +869,7 @@ var entitas;
          * @param name
          */
         Pool.prototype.createEntity = function (name) {
-            var entity = this._reusableEntities.length > 0 ? this._reusableEntities.pop() : new Entity(this._totalComponents);
+            var entity = this._reusableEntities.length > 0 ? this._reusableEntities.pop() : new Entity(this._componentsEnum, this._totalComponents);
             entity._isEnabled = true;
             entity.name = name;
             entity._creationIndex = this._creationIndex++;

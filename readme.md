@@ -43,7 +43,8 @@ generate components & extensions:
     Options:
       -c  [--component] # create a component
       -s  [--system]    # create a system
-      -e  [--entity]    # generate entity
+      -e  [--entity]    # create entity
+      -x  [--extension] # create an extension
     
 Components classes are generated from json configuration, enforcing data oriented design.
 
