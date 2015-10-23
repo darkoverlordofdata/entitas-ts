@@ -22,7 +22,7 @@
     "web/src/entitas/extensions/GroupExtension.js",
     "web/src/entitas/extensions/MatcherExtension.js",
     "web/src/entitas/extensions/PoolExtension.js",
-    "web/src/entitas/bosco/VisualDebugging.js"
+    "web/src/entitas/browser/VisualDebugging.js"
 
   ]
 }

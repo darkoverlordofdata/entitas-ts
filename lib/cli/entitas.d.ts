@@ -36,17 +36,55 @@ declare module entitas {
     interface ISignal<T> {
         dispatch(...args: any[]): void;
         add(listener: T): void;
-        remove(listener: T): void;
         clear(): void;
+        remove(listener: T): void;
     }
     class Signal<T> implements ISignal<T> {
         private _listeners;
         private _context;
-        constructor(context: any);
+        private _size;
+        private _alloc;
+        /**
+         *
+         * @param context
+         * @param alloc
+         */
+        constructor(context: any, alloc?: number);
+        /**
+         * Dispatch event
+         * @param args
+         */
         dispatch(...args: any[]): void;
+        /**
+         * Add event listener
+         * @param listener
+         */
         add(listener: T): void;
+        /**
+         * Remove event listener
+         * @param listener
+         */
         remove(listener: T): void;
+        /**
+         * Clear and reset to original alloc
+         */
         clear(): void;
+    }
+}
+declare module entitas {
+    class Stopwatch {
+        isRunning: boolean;
+        startTimeStamp: number;
+        elapsed: number;
+        static isHighRes: boolean;
+        private _elapsed;
+        private _startTimeStamp;
+        private _isRunning;
+        constructor();
+        start(): void;
+        stop(): void;
+        reset(): void;
+        static getTimeStamp(): number;
     }
 }
 declare module entitas {
@@ -61,7 +99,11 @@ declare module entitas {
     }
 }
 declare module entitas {
+    import Pool = entitas.Pool;
     interface ISystem {
+    }
+    interface ISetPool {
+        setPool(pool: Pool): any;
     }
 }
 declare module entitas {
@@ -99,6 +141,8 @@ declare module entitas {
     import IAllOfMatcher = entitas.IAllOfMatcher;
     import IAnyOfMatcher = entitas.IAnyOfMatcher;
     import INoneOfMatcher = entitas.INoneOfMatcher;
+    module Matcher {
+    }
     class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {
         id: number;
         static uniqueId: number;
@@ -107,11 +151,15 @@ declare module entitas {
         anyOfIndices: number[];
         noneOfIndices: number[];
         private _indices;
-        private _allOfIndices;
-        private _anyOfIndices;
-        private _noneOfIndices;
+        _allOfIndices: number[];
+        _anyOfIndices: number[];
+        _noneOfIndices: number[];
         private _toStringCache;
         private _id;
+        /** Extension Points */
+        onEntityAdded(): TriggerOnEvent;
+        onEntityRemoved(): TriggerOnEvent;
+        onEntityAddedOrRemoved(): TriggerOnEvent;
         constructor();
         anyOf(...args: Array<IMatcher>): IAnyOfMatcher;
         anyOf(...args: number[]): IAnyOfMatcher;
@@ -129,12 +177,6 @@ declare module entitas {
         static anyOf(...args: number[]): IAnyOfMatcher;
         static anyOf(...args: Array<IMatcher>): IAnyOfMatcher;
         private static appendIndices(sb, prefix, indexArray);
-        /** MatcherExtension::onEntityAdded */
-        onEntityAdded(): TriggerOnEvent;
-        /** MatcherExtension::onEntityRemoved */
-        onEntityRemoved(): TriggerOnEvent;
-        /** MatcherExtension::onEntityAddedOrRemoved */
-        onEntityAddedOrRemoved(): TriggerOnEvent;
     }
 }
 declare module entitas {
@@ -165,8 +207,8 @@ declare module entitas {
     import ISignal = entitas.ISignal;
     import IComponent = entitas.IComponent;
     import EntityChanged = Entity.EntityChanged;
-    import IEntityChanged = Entity.IEntityChanged;
     import EntityReleased = Entity.EntityReleased;
+    import IEntityChanged = Entity.IEntityChanged;
     import IEntityReleased = Entity.IEntityReleased;
     import ComponentReplaced = Entity.ComponentReplaced;
     /**
@@ -198,6 +240,7 @@ declare module entitas {
         onComponentAdded: IEntityChanged<EntityChanged>;
         onComponentRemoved: IEntityChanged<EntityChanged>;
         onComponentReplaced: Entity.IComponentReplaced<ComponentReplaced>;
+        name: string;
         _creationIndex: number;
         _isEnabled: boolean;
         _components: any;
@@ -206,7 +249,7 @@ declare module entitas {
         _componentIndicesCache: number[];
         _toStringCache: string;
         _refCount: number;
-        constructor(componentsEnum: {}, totalComponents?: number);
+        constructor(componentsEnum: any, totalComponents?: number);
         addComponent(index: number, component: IComponent): Entity;
         removeComponent(index: number): Entity;
         replaceComponent(index: number, component: IComponent): Entity;
@@ -226,6 +269,7 @@ declare module entitas {
 }
 declare module entitas {
     import Entity = entitas.Entity;
+    import ISignal = entitas.ISignal;
     import IMatcher = entitas.IMatcher;
     import IComponent = entitas.IComponent;
     import GroupChanged = Group.GroupChanged;
@@ -238,13 +282,13 @@ declare module entitas {
         interface GroupChanged {
             (group: Group, entity: Entity, index: number, component: IComponent): void;
         }
-        interface IGroupChanged<T> extends entitas.ISignal<T> {
+        interface IGroupChanged<T> extends ISignal<T> {
             dispatch(group: Group, entity: Entity, index: number, component: IComponent): void;
         }
         interface GroupUpdated {
             (group: Group, entity: Entity, index: number, component: IComponent, newComponent: IComponent): void;
         }
-        interface IGroupUpdated<T> extends entitas.ISignal<T> {
+        interface IGroupUpdated<T> extends ISignal<T> {
             dispatch(group: Group, entity: Entity, index: number, component: IComponent, newComponent: IComponent): void;
         }
     }
@@ -254,11 +298,13 @@ declare module entitas {
         onEntityUpdated: Group.IGroupUpdated<GroupUpdated>;
         count: number;
         matcher: IMatcher;
-        private _matcher;
-        private _entities;
+        _matcher: IMatcher;
+        _entities: {};
         _entitiesCache: Entity[];
         _singleEntityCache: Entity;
         _toStringCache: string;
+        /** Extension Points */
+        createObserver(eventType: GroupEventType): GroupObserver;
         constructor(matcher: IMatcher);
         handleEntitySilently(entity: Entity): void;
         handleEntity(entity: Entity, index: number, component: IComponent): void;
@@ -271,8 +317,6 @@ declare module entitas {
         getEntities(): Entity[];
         getSingleEntity(): Entity;
         toString(): string;
-        /** GroupExtension::createObserver */
-        createObserver(eventType?: GroupEventType): GroupObserver;
     }
 }
 declare module entitas {
@@ -294,12 +338,13 @@ declare module entitas {
         activate(): void;
         deactivate(): void;
         clearCollectedEntities(): void;
-        addEntity(group: Group, entity: Entity, index: number, component: Component): void;
+        addEntity: (group: Group, entity: Entity, index: number, component: Component) => void;
     }
 }
 declare module entitas {
-    import Entity = entitas.Entity;
     import Group = entitas.Group;
+    import Entity = entitas.Entity;
+    import ISignal = entitas.ISignal;
     import IMatcher = entitas.IMatcher;
     import PoolChanged = Pool.PoolChanged;
     import IComponent = entitas.IComponent;
@@ -311,18 +356,15 @@ declare module entitas {
         interface PoolChanged {
             (pool: Pool, entity: Entity): void;
         }
-        interface IPoolChanged<T> extends entitas.ISignal<T> {
+        interface IPoolChanged<T> extends ISignal<T> {
             dispatch(pool: Pool, entity: Entity): void;
         }
         interface GroupChanged {
             (pool: Pool, group: Group): void;
         }
-        interface IGroupChanged<T> extends entitas.ISignal<T> {
+        interface IGroupChanged<T> extends ISignal<T> {
             dispatch(pool: Pool, group: Group): void;
         }
-    }
-    interface ISetPool {
-        setPool(pool: Pool): any;
     }
     class Pool {
         totalComponents: number;
@@ -338,28 +380,47 @@ declare module entitas {
         _groupsForIndex: Array<Array<Group>>;
         _reusableEntities: Array<Entity>;
         _retainedEntities: {};
-        private _componentsEnum;
-        private _totalComponents;
+        static componentsEnum: Object;
+        static totalComponents: number;
+        _componentsEnum: Object;
+        _totalComponents: number;
         _creationIndex: number;
         _entitiesCache: Array<Entity>;
         _cachedUpdateGroupsComponentAddedOrRemoved: Entity.EntityChanged;
         _cachedUpdateGroupsComponentReplaced: Entity.ComponentReplaced;
         _cachedOnEntityReleased: Entity.EntityReleased;
+        /** Extension Points */
+        getEntities(matcher: IMatcher): Entity[];
+        getEntities(): Entity[];
+        createSystem(system: ISystem): any;
+        createSystem(system: Function): any;
+        static setPool(system: ISystem, pool: Pool): any;
         constructor(components: {}, totalComponents: number, startCreationIndex?: number);
-        createEntity(): Entity;
+        /**
+         * groupDesc
+         *
+         * expand out the group tostring for better debug info
+         *
+         * @param group
+         * @returns {string}
+         */
+        static groupDesc(group: Group): string;
+        /**
+         *
+         * @param name
+         */
+        createEntity(name: any): Entity;
+        /**
+         *
+         * @param entity
+         */
         destroyEntity(entity: Entity): void;
         destroyAllEntities(): void;
         hasEntity(entity: Entity): boolean;
-        getEntities(matcher?: IMatcher): Entity[];
         getGroup(matcher: IMatcher): Group;
-        protected updateGroupsComponentAddedOrRemoved: (entity: Entity, index: number, component: IComponent) => void;
-        protected updateGroupsComponentReplaced: (entity: Entity, index: number, previousComponent: IComponent, newComponent: IComponent) => void;
-        protected onEntityReleased: (entity: Entity) => void;
-        /** PoolExtension::createSystem */
-        createSystem(system: ISystem): any;
-        createSystem(system: Function): any;
-        /** PoolExtension::setPool */
-        static setPool(system: ISystem, pool: Pool): void;
+        updateGroupsComponentAddedOrRemoved: (entity: Entity, index: number, component: IComponent) => void;
+        updateGroupsComponentReplaced: (entity: Entity, index: number, previousComponent: IComponent, newComponent: IComponent) => void;
+        onEntityReleased: (entity: Entity) => void;
     }
 }
 declare module entitas {
@@ -405,5 +466,46 @@ declare module entitas {
         initialize(): void;
         execute(): void;
         clearReactiveSystems(): void;
+    }
+}
+declare module entitas.extensions {
+    import Entity = entitas.Entity;
+    class Collection extends Array {
+        constructor($0: any);
+        singleEntity(): Entity;
+    }
+}
+declare module entitas.extensions {
+}
+declare module entitas.extensions {
+}
+declare module entitas.extensions {
+}
+declare module entitas.browser {
+    import Pool = entitas.Pool;
+    var gui: any;
+    class VisualDebugging {
+        static _controllers: any;
+        static _entities: any;
+        static _pools: any;
+        static _systems: any;
+        init(pool: Pool): void;
+    }
+    /**
+     * Profiler
+     */
+    class EntityBehavior {
+        protected obj: any;
+        name: string;
+        refCount: number;
+        private _name;
+        constructor(obj: any);
+    }
+    class PoolObserver {
+        protected _pool: any;
+        name: string;
+        Pool: string;
+        protected _groups: any;
+        constructor(_pool: any);
     }
 }

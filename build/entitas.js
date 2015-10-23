@@ -170,6 +170,60 @@ var entitas;
     entitas.Signal = Signal;
 })(entitas || (entitas = {}));
 //# sourceMappingURL=Signal.js.map
+var entitas;
+(function (entitas) {
+    var Stopwatch = (function () {
+        function Stopwatch() {
+            Stopwatch.isHighRes = performance ? true : false;
+            this.reset();
+        }
+        Object.defineProperty(Stopwatch.prototype, "isRunning", {
+            get: function () {
+                return this._isRunning;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Stopwatch.prototype, "startTimeStamp", {
+            get: function () {
+                return this._startTimeStamp;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Stopwatch.prototype, "elapsed", {
+            get: function () {
+                return this._elapsed;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Stopwatch.prototype.start = function () {
+            if (!this._isRunning) {
+                this._startTimeStamp = Stopwatch.getTimeStamp();
+                this._isRunning = true;
+            }
+        };
+        Stopwatch.prototype.stop = function () {
+            if (this._isRunning) {
+                this._elapsed += (Stopwatch.getTimeStamp() - this._startTimeStamp);
+                this._isRunning = false;
+            }
+        };
+        Stopwatch.prototype.reset = function () {
+            this._elapsed = 0;
+            this._startTimeStamp = 0;
+            this._isRunning = false;
+        };
+        Stopwatch.getTimeStamp = function () {
+            return Stopwatch.isHighRes ? performance.now() : Date.now();
+        };
+        Stopwatch.isHighRes = false;
+        return Stopwatch;
+    })();
+    entitas.Stopwatch = Stopwatch;
+})(entitas || (entitas = {}));
+//# sourceMappingURL=Stopwatch.js.map
 //# sourceMappingURL=IComponent.js.map
 //# sourceMappingURL=IMatcher.js.map
 //# sourceMappingURL=ISystem.js.map
@@ -1242,3 +1296,105 @@ var entitas;
     })(extensions = entitas.extensions || (entitas.extensions = {}));
 })(entitas || (entitas = {}));
 //# sourceMappingURL=PoolExtension.js.map
+var entitas;
+(function (entitas) {
+    var browser;
+    (function (browser) {
+        var Systems = entitas.Systems;
+        var VisualDebugging = (function () {
+            function VisualDebugging() {
+            }
+            VisualDebugging.prototype.init = function (pool) {
+                if (window['dat']) {
+                    browser.gui = new dat.GUI({ height: 5 * 32 - 1, width: 300 });
+                    VisualDebugging._controllers = [];
+                    var observer = new PoolObserver(pool);
+                    VisualDebugging._pools = browser.gui.add(observer, observer.name);
+                    VisualDebugging._entities = browser.gui.addFolder('Entities');
+                    pool.onEntityCreated.add(function (pool, entity) {
+                        var proxy = new EntityBehavior(entity);
+                        VisualDebugging._controllers[entity.creationIndex] = VisualDebugging._entities.add(proxy, proxy.name).listen();
+                    });
+                    pool.onEntityDestroyed.add(function (pool, entity) {
+                        var controller = VisualDebugging._controllers[entity.creationIndex];
+                        delete VisualDebugging._controllers[entity.creationIndex];
+                        VisualDebugging._entities.remove(controller);
+                    });
+                    Systems.prototype.initialize = function () {
+                        for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
+                            this._initializeSystems[i].initialize();
+                        }
+                        VisualDebugging._entities = browser.gui.addFolder(this, "Systems");
+                    };
+                    function get_Systems() {
+                        return "Systems " + " (" +
+                            this._initializeSystems.length + " init, " +
+                            this._executeSystems.length + " exe ";
+                    }
+                    Object.defineProperty(Systems.prototype, 'name', { get: function () { return 'Systems'; } });
+                    Object.defineProperty(Systems.prototype, 'Systems', { get: get_Systems });
+                }
+            };
+            return VisualDebugging;
+        })();
+        browser.VisualDebugging = VisualDebugging;
+        /**
+         * Profiler
+         */
+        var EntityBehavior = (function () {
+            function EntityBehavior(obj) {
+                var _this = this;
+                this.obj = obj;
+                if (this.obj.name) {
+                    this._name = this.obj.name;
+                }
+                else {
+                    this._name = "Entity_" + this.obj._creationIndex;
+                }
+                Object.defineProperty(this, this._name, { get: function () { return _this.obj.toString(); } });
+            }
+            Object.defineProperty(EntityBehavior.prototype, "name", {
+                get: function () {
+                    return this._name;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(EntityBehavior.prototype, "refCount", {
+                get: function () {
+                    return this.obj._refCount;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return EntityBehavior;
+        })();
+        browser.EntityBehavior = EntityBehavior;
+        var PoolObserver = (function () {
+            function PoolObserver(_pool) {
+                this._pool = _pool;
+                this._groups = this._pool._groups;
+            }
+            Object.defineProperty(PoolObserver.prototype, "name", {
+                get: function () {
+                    return "Pool";
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(PoolObserver.prototype, "Pool", {
+                get: function () {
+                    return "Pool " + " (" +
+                        this._pool.count + " entities, " +
+                        this._pool.reusableEntitiesCount + " reusable, " +
+                        Object.keys(this._groups).length + " groups)";
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return PoolObserver;
+        })();
+        browser.PoolObserver = PoolObserver;
+    })(browser = entitas.browser || (entitas.browser = {}));
+})(entitas || (entitas = {}));
+//# sourceMappingURL=VisualDebugging.js.map

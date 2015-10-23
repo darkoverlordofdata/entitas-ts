@@ -32,6 +32,6 @@
     "lib/entitas/extensions/GroupExtension.ts",
     "lib/entitas/extensions/MatcherExtension.ts",
     "lib/entitas/extensions/PoolExtension.ts",
-    "lib/entitas/bosco/VisualDebugging.ts"
+    "lib/entitas/browser/VisualDebugging.ts"
   ]
 }
