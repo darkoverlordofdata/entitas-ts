@@ -1309,8 +1309,10 @@ var entitas;
                     browser.gui = new dat.GUI({ height: 5 * 32 - 1, width: 300 });
                     VisualDebugging._controllers = [];
                     var observer = new PoolObserver(pool);
-                    VisualDebugging._pools = browser.gui.add(observer, observer.name);
+                    VisualDebugging._pools = browser.gui.addFolder('Pools');
+                    VisualDebugging._pools.add(observer, observer.name);
                     VisualDebugging._entities = browser.gui.addFolder('Entities');
+                    VisualDebugging._systems = browser.gui.addFolder('Systems');
                     pool.onEntityCreated.add(function (pool, entity) {
                         var proxy = new EntityBehavior(entity);
                         VisualDebugging._controllers[entity.creationIndex] = VisualDebugging._entities.add(proxy, proxy.name).listen();
@@ -1324,7 +1326,7 @@ var entitas;
                         for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
                             this._initializeSystems[i].initialize();
                         }
-                        VisualDebugging._entities = browser.gui.addFolder(this, "Systems");
+                        VisualDebugging._systems.add(this, "Systems");
                     };
                     function get_Systems() {
                         return "Systems " + " (" +

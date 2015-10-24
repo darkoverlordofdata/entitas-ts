@@ -22,8 +22,10 @@ module entitas.browser {
 
         VisualDebugging._controllers = [];
         var observer = new PoolObserver(pool);
-        VisualDebugging._pools = gui.add(observer, observer.name);
+        VisualDebugging._pools = gui.addFolder('Pools');
+        VisualDebugging._pools.add(observer, observer.name);
         VisualDebugging._entities = gui.addFolder('Entities');
+        VisualDebugging._systems = gui.addFolder('Systems');
 
 
 
@@ -42,7 +44,7 @@ module entitas.browser {
           for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
             this._initializeSystems[i].initialize();
           }
-          VisualDebugging._entities = gui.addFolder(this, "Systems");
+          VisualDebugging._systems.add(this, "Systems");
         };
 
         function get_Systems() {
