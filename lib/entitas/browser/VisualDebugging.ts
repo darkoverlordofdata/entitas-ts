@@ -1,3 +1,6 @@
+/**
+ * Inspired by Unity
+ */
 module entitas.browser {
 
   declare var dat;
@@ -6,6 +9,7 @@ module entitas.browser {
   import Pool = entitas.Pool;
   import Systems = entitas.Systems;
   import Stopwatch = entitas.Stopwatch;
+  /** todo: SystemObserver track time spent in ms by system */
 
   export var gui;
   export class VisualDebugging {
@@ -16,12 +20,11 @@ module entitas.browser {
 
     public static init(pool:Pool) {
       if (window['dat']) {
-
-
         gui = new dat.GUI({height: 5*32-1, width: 300});
 
-        VisualDebugging._controllers = [];
         var observer = new PoolObserver(pool);
+
+        VisualDebugging._controllers = [];
         VisualDebugging._entities = gui.addFolder('Entities');
         VisualDebugging._pools = gui.addFolder('Pools');
         VisualDebugging._systems = gui.addFolder('Systems');
@@ -65,8 +68,9 @@ module entitas.browser {
       }
     }
   }
+
   /**
-   * Profiler
+   * Profiler class for Entities
    */
   export class EntityBehavior {
     public get name():string {
@@ -84,6 +88,9 @@ module entitas.browser {
     }
   }
 
+  /**
+   * Profiler class for Systems
+   */
   export class SystemObserver {
     public get name():string {
       return "Systems";
@@ -104,6 +111,10 @@ module entitas.browser {
     }
     constructor(protected _systems) {}
   }
+
+  /**
+   * Profiler class for Pools
+   */
   export class PoolObserver {
     public get name():string {
       return "Pool";

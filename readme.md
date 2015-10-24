@@ -36,7 +36,7 @@ Include dat.gui, and entitas-ts will display live stats for entities, pools, and
  * http://code.google.com/p/dat-gui
 
 ### Entitas cli
-use entitas cli to generate components & extensions:
+use entitas cli to generate empty components & extensions:
 
 
     Usage:
