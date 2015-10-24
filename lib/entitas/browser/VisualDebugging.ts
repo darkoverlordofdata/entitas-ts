@@ -26,6 +26,10 @@ module entitas.browser {
         VisualDebugging._pools = gui.addFolder('Pools');
         VisualDebugging._systems = gui.addFolder('Systems');
 
+        VisualDebugging._entities.open();
+        VisualDebugging._pools.open();
+        VisualDebugging._systems.open();
+
         VisualDebugging._pools.add(observer, 'entities').listen();
         VisualDebugging._pools.add(observer, 'reusable').listen();
 

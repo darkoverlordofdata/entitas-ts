@@ -1312,6 +1312,9 @@ var entitas;
                     VisualDebugging._entities = browser.gui.addFolder('Entities');
                     VisualDebugging._pools = browser.gui.addFolder('Pools');
                     VisualDebugging._systems = browser.gui.addFolder('Systems');
+                    VisualDebugging._entities.open();
+                    VisualDebugging._pools.open();
+                    VisualDebugging._systems.open();
                     VisualDebugging._pools.add(observer, 'entities').listen();
                     VisualDebugging._pools.add(observer, 'reusable').listen();
                     pool.onEntityCreated.add(function (pool, entity) {
