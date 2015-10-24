@@ -48,7 +48,6 @@ module entitas.browser {
           for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
             this._initializeSystems[i].initialize();
           }
-          //VisualDebugging._systems.add(this, "Systems").listen();
 
           var sys = new SystemObserver(this);
           VisualDebugging._systems.add(sys, 'initialize').listen();

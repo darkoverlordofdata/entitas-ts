@@ -28,9 +28,15 @@ Typescript implementation ported from https://github.com/sschmid/Entitas-CSharp
                      |  e     e   |
                      +------------+
     
-Status: example works.
+### Live Demo
+https://darkoverlordofdata.com/entitas-ts-example/
 
-generate components & extensions:
+### Visual Debugging
+Include dat.gui, and entitas-ts will display live stats for entities, pools, and systems.
+ * http://code.google.com/p/dat-gui
+
+### Entitas cli
+use entitas cli to generate components & extensions:
 
 
     Usage:
