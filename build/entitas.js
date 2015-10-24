@@ -1311,10 +1311,9 @@ var entitas;
                     var observer = new PoolObserver(pool);
                     VisualDebugging._entities = browser.gui.addFolder('Entities');
                     VisualDebugging._pools = browser.gui.addFolder('Pools');
-                    //VisualDebugging._pools.add(observer, observer.name).listen();
                     VisualDebugging._systems = browser.gui.addFolder('Systems');
-                    VisualDebugging._pools.add(pool, 'entities').listen();
-                    VisualDebugging._pools.add(pool, 'reusable').listen();
+                    VisualDebugging._pools.add(observer, 'entities').listen();
+                    VisualDebugging._pools.add(observer, 'reusable').listen();
                     pool.onEntityCreated.add(function (pool, entity) {
                         var proxy = new EntityBehavior(entity);
                         VisualDebugging._controllers[entity.creationIndex] = VisualDebugging._entities.add(proxy, proxy.name).listen();

@@ -24,11 +24,10 @@ module entitas.browser {
         var observer = new PoolObserver(pool);
         VisualDebugging._entities = gui.addFolder('Entities');
         VisualDebugging._pools = gui.addFolder('Pools');
-        //VisualDebugging._pools.add(observer, observer.name).listen();
         VisualDebugging._systems = gui.addFolder('Systems');
 
-        VisualDebugging._pools.add(pool, 'entities').listen();
-        VisualDebugging._pools.add(pool, 'reusable').listen();
+        VisualDebugging._pools.add(observer, 'entities').listen();
+        VisualDebugging._pools.add(observer, 'reusable').listen();
 
         pool.onEntityCreated.add((pool, entity:Entity) => {
           var proxy = new EntityBehavior(entity);
