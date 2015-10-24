@@ -599,9 +599,9 @@ var entitas;
         Entity.prototype.toString = function () {
             if (this._toStringCache === undefined) {
                 var sb = [];
-                sb.push("Entity_");
-                sb.push(this._creationIndex);
-                sb.push("(");
+                //sb.push("Entity_");
+                //sb.push(this._creationIndex);
+                //sb.push("(");
                 var seperator = ", ";
                 var components = this.getComponents();
                 var lastSeperator = components.length - 1;
@@ -611,7 +611,7 @@ var entitas;
                         sb.push(seperator);
                     }
                 }
-                sb.push(")");
+                //sb.push(")");
                 this._toStringCache = sb.join('');
             }
             return this._toStringCache;
@@ -1309,10 +1309,12 @@ var entitas;
                     browser.gui = new dat.GUI({ height: 5 * 32 - 1, width: 300 });
                     VisualDebugging._controllers = [];
                     var observer = new PoolObserver(pool);
-                    VisualDebugging._pools = browser.gui.addFolder('Pools');
-                    VisualDebugging._pools.add(observer, observer.name);
                     VisualDebugging._entities = browser.gui.addFolder('Entities');
+                    VisualDebugging._pools = browser.gui.addFolder('Pools');
+                    //VisualDebugging._pools.add(observer, observer.name).listen();
                     VisualDebugging._systems = browser.gui.addFolder('Systems');
+                    VisualDebugging._pools.add(pool, 'entities').listen();
+                    VisualDebugging._pools.add(pool, 'reusable').listen();
                     pool.onEntityCreated.add(function (pool, entity) {
                         var proxy = new EntityBehavior(entity);
                         VisualDebugging._controllers[entity.creationIndex] = VisualDebugging._entities.add(proxy, proxy.name).listen();
@@ -1326,7 +1328,10 @@ var entitas;
                         for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
                             this._initializeSystems[i].initialize();
                         }
-                        VisualDebugging._systems.add(this, "Systems");
+                        //VisualDebugging._systems.add(this, "Systems").listen();
+                        var sys = new SystemObserver(this);
+                        VisualDebugging._systems.add(sys, 'initialize').listen();
+                        VisualDebugging._systems.add(sys, 'execute').listen();
                     };
                     function get_Systems() {
                         return "Systems " + " (" +
@@ -1362,16 +1367,46 @@ var entitas;
                 enumerable: true,
                 configurable: true
             });
-            Object.defineProperty(EntityBehavior.prototype, "refCount", {
+            return EntityBehavior;
+        })();
+        browser.EntityBehavior = EntityBehavior;
+        var SystemObserver = (function () {
+            function SystemObserver(_systems) {
+                this._systems = _systems;
+            }
+            Object.defineProperty(SystemObserver.prototype, "name", {
                 get: function () {
-                    return this.obj._refCount;
+                    return "Systems";
                 },
                 enumerable: true,
                 configurable: true
             });
-            return EntityBehavior;
+            Object.defineProperty(SystemObserver.prototype, "Systems", {
+                get: function () {
+                    return "Systems " + " (" +
+                        this._systems._initializeSystems.length + " init, " +
+                        this._systems._executeSystems.length + " exe ";
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(SystemObserver.prototype, "initialize", {
+                get: function () {
+                    return this._systems._initializeSystems.length;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(SystemObserver.prototype, "execute", {
+                get: function () {
+                    return this._systems._executeSystems.length;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return SystemObserver;
         })();
-        browser.EntityBehavior = EntityBehavior;
+        browser.SystemObserver = SystemObserver;
         var PoolObserver = (function () {
             function PoolObserver(_pool) {
                 this._pool = _pool;
@@ -1390,6 +1425,20 @@ var entitas;
                         this._pool.count + " entities, " +
                         this._pool.reusableEntitiesCount + " reusable, " +
                         Object.keys(this._groups).length + " groups)";
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(PoolObserver.prototype, "entities", {
+                get: function () {
+                    return this._pool.count;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(PoolObserver.prototype, "reusable", {
+                get: function () {
+                    return this._pool.reusableEntitiesCount;
                 },
                 enumerable: true,
                 configurable: true

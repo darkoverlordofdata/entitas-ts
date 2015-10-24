@@ -22,12 +22,13 @@ module entitas.browser {
 
         VisualDebugging._controllers = [];
         var observer = new PoolObserver(pool);
-        VisualDebugging._pools = gui.addFolder('Pools');
-        VisualDebugging._pools.add(observer, observer.name);
         VisualDebugging._entities = gui.addFolder('Entities');
+        VisualDebugging._pools = gui.addFolder('Pools');
+        //VisualDebugging._pools.add(observer, observer.name).listen();
         VisualDebugging._systems = gui.addFolder('Systems');
 
-
+        VisualDebugging._pools.add(pool, 'entities').listen();
+        VisualDebugging._pools.add(pool, 'reusable').listen();
 
         pool.onEntityCreated.add((pool, entity:Entity) => {
           var proxy = new EntityBehavior(entity);
@@ -44,7 +45,11 @@ module entitas.browser {
           for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
             this._initializeSystems[i].initialize();
           }
-          VisualDebugging._systems.add(this, "Systems");
+          //VisualDebugging._systems.add(this, "Systems").listen();
+
+          var sys = new SystemObserver(this);
+          VisualDebugging._systems.add(sys, 'initialize').listen();
+          VisualDebugging._systems.add(sys, 'execute').listen();
         };
 
         function get_Systems() {
@@ -55,10 +60,7 @@ module entitas.browser {
 
         Object.defineProperty(Systems.prototype, 'name', {get: () => 'Systems'});
         Object.defineProperty(Systems.prototype, 'Systems', {get: get_Systems});
-
-
       }
-
     }
   }
   /**
@@ -68,10 +70,6 @@ module entitas.browser {
     public get name():string {
       return this._name;
     }
-    public get refCount():number {
-      return this.obj._refCount;
-    }
-
     private _name:string;
 
     constructor(protected obj) {
@@ -84,6 +82,26 @@ module entitas.browser {
     }
   }
 
+  export class SystemObserver {
+    public get name():string {
+      return "Systems";
+    }
+
+    public get Systems():string {
+      return "Systems " + " (" +
+        this._systems._initializeSystems.length + " init, " +
+        this._systems._executeSystems.length + " exe ";
+
+    }
+    public get initialize():string {
+      return this._systems._initializeSystems.length;
+    }
+
+    public get execute():string {
+      return this._systems._executeSystems.length;
+    }
+    constructor(protected _systems) {}
+  }
   export class PoolObserver {
     public get name():string {
       return "Pool";
@@ -95,6 +113,12 @@ module entitas.browser {
         this._pool.reusableEntitiesCount + " reusable, " +
         Object.keys(this._groups).length + " groups)";
 
+    }
+    public get entities():string {
+      return this._pool.count;
+    }
+    public get reusable():string {
+      return this._pool.reusableEntitiesCount;
     }
     protected _groups;
 

@@ -217,9 +217,9 @@ module entitas {
     public toString() {
       if (this._toStringCache === undefined) {
         var sb = [];
-        sb.push("Entity_");
-        sb.push(this._creationIndex);
-        sb.push("(");
+        //sb.push("Entity_");
+        //sb.push(this._creationIndex);
+        //sb.push("(");
 
         const seperator = ", ";
         var components = this.getComponents();
@@ -231,7 +231,7 @@ module entitas {
           }
         }
 
-        sb.push(")");
+        //sb.push(")");
         this._toStringCache = sb.join('');
       }
 
