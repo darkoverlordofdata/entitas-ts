@@ -7,27 +7,10 @@
     "declaration": "lib/ext/{{ namespace }}.d.ts"
   },
   "components": {
-    "Background": [
-      "filter:Object"
-    ],
-    "Bounds": [
-      "radius:number"
-    ],
-    "Enemy": false,
-    "Expires": [
-      "delay:number"
-    ],
-    "Health": [
-      "health:number",
-      "maximumHealth:number"
-    ],
     "Player": false,
     "Position": [
       "x:number",
       "y:number"
-    ],
-    "SoundEffect": [
-      "effect:number"
     ],
     "View": [
       "sprite:Object"
