@@ -51,5 +51,8 @@
     "morgan": "^1.6.1",
     "walker": "^1.0.7"
   },
-  "dependencies": {}
+  "dependencies": {
+    "liquid.coffee": "^0.1.1",
+    "mkdirp": "^0.5.1"
+  }
 }

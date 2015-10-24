@@ -8,6 +8,7 @@
 ###
 fs = require('fs')
 path = require('path')
+mkdirp = require('mkdirp')
 config = require("#{process.cwd()}/entitas.json")
 
 
@@ -32,6 +33,10 @@ module.exports =
     d2 = [] # StringBuilder for associated *.d.ts file: Matcher
     d3 = [] # StringBuilder for associated *.d.ts file: Pool
     ex = {} # Extensions
+
+    d1.push "/** Entity Extensions for #{config.namespace} */"
+    d2.push "/** Matcher Extensions for #{config.namespace} */"
+    d3.push "/** Pool Extensions for #{config.namespace} */"
     ###
      * Header
     ###
@@ -291,11 +296,16 @@ module.exports =
 
     js.push "})();"
 
-    fs.writeFileSync(path.join(process.cwd(), config.src, config.output.typescript), ts.join('\n'))
-    fs.writeFileSync(path.join(process.cwd(), config.src, config.output.javascript), js.join('\n'))
+    mkdirp.sync path.dirname(path.join(process.cwd(), config.output.typescript))
+    fs.writeFileSync(path.join(process.cwd(), config.output.typescript), ts.join('\n'))
+
+
+    mkdirp.sync path.dirname(path.join(process.cwd(), config.output.javascript))
+    fs.writeFileSync(path.join(process.cwd(), config.output.javascript), js.join('\n'))
 
     for Name, klass of config.extensions
       ex[Name] = [] # StringBuilder for this extension
+      ex[Name].push "/*** Extensions for #{config.namespace}.#{Name} */"
       for method, args of klass
         [name, type] = method.split(':');
         ex[Name].push "        #{name}(#{args.join(', ')}):#{type};"
@@ -313,4 +323,11 @@ module.exports =
     for Name, d0 of ex
       dts = def(dts, "    class #{Name} {", d0)
 
-    fs.writeFileSync(path.join(process.cwd(), config.src, config.output.declaration), dts)
+    dts = """
+/**
+ * Entitas-ECS definitions for #{config.namespace}
+ */
+#{dts}
+"""
+    mkdirp.sync path.dirname(path.join(process.cwd(), config.output.declaration))
+    fs.writeFileSync(path.join(process.cwd(), config.output.declaration), dts)

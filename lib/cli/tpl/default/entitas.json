@@ -1,0 +1,64 @@
+{
+  "namespace": "{{ namespace }}",
+  "src": "lib/src",
+  "output": {
+    "javascript": "web/src/{{ namespace }}/generatedExtensions.js",
+    "typescript": "lib/src/generatedComponents.ts",
+    "declaration": "lib/ext/{{ namespace }}.d.ts"
+  },
+  "components": {
+    "Background": [
+      "filter:Object"
+    ],
+    "Bounds": [
+      "radius:number"
+    ],
+    "Enemy": false,
+    "Expires": [
+      "delay:number"
+    ],
+    "Health": [
+      "health:number",
+      "maximumHealth:number"
+    ],
+    "Player": false,
+    "Position": [
+      "x:number",
+      "y:number"
+    ],
+    "SoundEffect": [
+      "effect:number"
+    ],
+    "View": [
+      "sprite:Object"
+    ],
+    "Velocity": [
+      "x:number",
+      "y:number"
+    ],
+    "Movable": false,
+    "Destroy": false,
+    "Input": [
+      "x:number",
+      "y:number"
+    ],
+    "Interactive": false,
+    "Resource": [
+      "name:string"
+    ],
+    "Score": [
+      "value:number"
+    ]
+  },
+  "systems": {
+    "DestroySystem": true,
+    "ProcessInputSystem": true,
+    "RenderPositionSystem": true,
+    "AddViewSystem": true,
+    "RemoveViewSystem": true,
+    "ScoreSystem": true
+  },
+  "entities": {
+    "Score": true
+  }
+}

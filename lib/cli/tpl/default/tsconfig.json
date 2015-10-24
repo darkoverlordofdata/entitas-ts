@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "commonjs",
+    "noImplicitAny": false,
+    "removeComments": false,
+    "preserveConstEnums": false,
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "outDir": "web/src/{{ namespace }}"
+  },
+  "files": [
+    "controllers/GameController.ts.tpl",
+    "controllers/InputController.ts.tpl",
+    "controllers/ScoreLabelController.ts.tpl",
+    "systems/AddViewSystem.ts.tpl",
+    "systems/DestroySystem.ts.tpl",
+    "systems/ProcessInputSystem.ts.tpl",
+    "systems/RemoveViewSystem.ts.tpl",
+    "systems/RenderPositionSystem.ts.tpl",
+    "systems/ScoreSystem.ts.tpl"
+  ]
+}

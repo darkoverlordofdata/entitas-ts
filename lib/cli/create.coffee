@@ -7,6 +7,7 @@
  *
 ###
 fs = require('fs')
+mkdirp = require('mkdirp')
 config = require("#{process.cwd()}/entitas.json")
 
 module.exports =
@@ -52,7 +53,14 @@ create =
     config.systems[name] = true
     fs.writeFileSync("#{process.cwd()}/entitas.json", JSON.stringify(config, null, 2))
     template = systemTemplate(name, args)
-    fs.writeFileSync("#{process.cwd()}/#{config.src}/#{name}.ts", template)
+    mkdirp.sync "#{process.cwd()}/#{config.src}/systems"
+    fs.writeFileSync("#{process.cwd()}/#{config.src}/systems/#{name}.ts", template)
+
+    # update the project
+    tsconfig = JSON.parse(fs.readFileSync("#{process.cwd()}/tsconfig.json", 'utf8'))
+    if tsconfig.files.indexOf("#{config.src}/systems/#{name}.ts") is -1
+      tsconfig.files.push "#{config.src}/systems/#{name}.ts"
+      fs.writeFileSync("#{process.cwd()}/tsconfig.json", JSON.stringify(tsconfig, null, 2))
 
   extension:(name, method, args...) ->
     config.extensions = config.extensions || {}

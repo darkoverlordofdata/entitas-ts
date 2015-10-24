@@ -10,21 +10,24 @@ entitas = require("../lib/cli")
 
 $usage = """
 Usage:
-  entitas init namespace 
+  entitas init namespace [-t name]
   entitas create -c name field:type... 
-  entitas create -s name path interface...
+  entitas create -s name interface...
   entitas create -e name 
+  entitas create -x class name field:type...
   entitas generate
 
 Options:
+  -t  [--template]  # template name
   -c  [--component] # create a component
   -s  [--system]    # create a system
   -e  [--entity]    # create an entity
+  -x  [--extension] # extend a class
 
 """
 switch process.argv[2]
 
-  when 'init' then entitas.init process.argv.slice(3)
+  when 'init' then entitas.init process.argv.slice(3)...
 
   when 'create' then entitas.create process.argv.slice(3)...
 
