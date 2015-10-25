@@ -88,7 +88,6 @@ var entitas;
     })(Exception);
     entitas.MatcherException = MatcherException;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Exceptions.js.map
 var entitas;
 (function (entitas) {
     var Signal = (function () {
@@ -169,7 +168,6 @@ var entitas;
     })();
     entitas.Signal = Signal;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Signal.js.map
 var entitas;
 (function (entitas) {
     var Stopwatch = (function () {
@@ -223,13 +221,6 @@ var entitas;
     })();
     entitas.Stopwatch = Stopwatch;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Stopwatch.js.map
-//# sourceMappingURL=IComponent.js.map
-//# sourceMappingURL=IMatcher.js.map
-//# sourceMappingURL=ISystem.js.map
-//# sourceMappingURL=IExecuteSystem.js.map
-//# sourceMappingURL=IInitializeSystem.js.map
-//# sourceMappingURL=IReactiveSystem.js.map
 var entitas;
 (function (entitas) {
     var MatcherException = entitas.MatcherException;
@@ -434,8 +425,6 @@ var entitas;
     })();
     entitas.Matcher = Matcher;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Matcher.js.map
-//# sourceMappingURL=MatcherInterfaces.js.map
 var entitas;
 (function (entitas) {
     var TriggerOnEvent = (function () {
@@ -447,7 +436,6 @@ var entitas;
     })();
     entitas.TriggerOnEvent = TriggerOnEvent;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=TriggerOnEvent.js.map
 var entitas;
 (function (entitas) {
     var Signal = entitas.Signal;
@@ -606,7 +594,7 @@ var entitas;
                 var components = this.getComponents();
                 var lastSeperator = components.length - 1;
                 for (var i = 0, componentsLength = components.length; i < componentsLength; i++) {
-                    sb.push(this._componentsEnum[i]);
+                    sb.push(components[i].constructor['name'].replace('Component', '') || i + '');
                     if (i < lastSeperator) {
                         sb.push(seperator);
                     }
@@ -633,7 +621,6 @@ var entitas;
     })();
     entitas.Entity = Entity;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Entity.js.map
 var entitas;
 (function (entitas) {
     var Signal = entitas.Signal;
@@ -751,7 +738,6 @@ var entitas;
     })();
     entitas.Group = Group;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Group.js.map
 var entitas;
 (function (entitas) {
     var GroupObserverException = entitas.GroupObserverException;
@@ -828,7 +814,6 @@ var entitas;
     })();
     entitas.GroupObserver = GroupObserver;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=GroupObserver.js.map
 var entitas;
 (function (entitas) {
     var Group = entitas.Group;
@@ -1019,7 +1004,6 @@ var entitas;
     })();
     entitas.Pool = Pool;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Pool.js.map
 var entitas;
 (function (entitas) {
     var GroupObserver = entitas.GroupObserver;
@@ -1119,7 +1103,6 @@ var entitas;
     })();
     entitas.ReactiveSystem = ReactiveSystem;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=ReactiveSystem.js.map
 var entitas;
 (function (entitas) {
     function as(obj, method1) {
@@ -1189,12 +1172,6 @@ var entitas;
     })();
     entitas.Systems = Systems;
 })(entitas || (entitas = {}));
-//# sourceMappingURL=Systems.js.map
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 var entitas;
 (function (entitas) {
     var extensions;
@@ -1216,7 +1193,6 @@ var entitas;
         extensions.Collection = Collection;
     })(extensions = entitas.extensions || (entitas.extensions = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=CollectionExtension.js.map
 var entitas;
 (function (entitas) {
     var extensions;
@@ -1229,7 +1205,6 @@ var entitas;
         };
     })(extensions = entitas.extensions || (entitas.extensions = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=GroupExtension.js.map
 var entitas;
 (function (entitas) {
     var extensions;
@@ -1248,7 +1223,6 @@ var entitas;
         };
     })(extensions = entitas.extensions || (entitas.extensions = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=MatcherExtension.js.map
 var entitas;
 (function (entitas) {
     var extensions;
@@ -1295,7 +1269,9 @@ var entitas;
         };
     })(extensions = entitas.extensions || (entitas.extensions = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=PoolExtension.js.map
+/**
+ * Inspired by Unity
+ */
 var entitas;
 (function (entitas) {
     var browser;
@@ -1307,8 +1283,8 @@ var entitas;
             VisualDebugging.init = function (pool) {
                 if (window['dat']) {
                     browser.gui = new dat.GUI({ height: 5 * 32 - 1, width: 300 });
-                    VisualDebugging._controllers = [];
                     var observer = new PoolObserver(pool);
+                    VisualDebugging._controllers = [];
                     VisualDebugging._entities = browser.gui.addFolder('Entities');
                     VisualDebugging._pools = browser.gui.addFolder('Pools');
                     VisualDebugging._systems = browser.gui.addFolder('Systems');
@@ -1330,7 +1306,6 @@ var entitas;
                         for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
                             this._initializeSystems[i].initialize();
                         }
-                        //VisualDebugging._systems.add(this, "Systems").listen();
                         var sys = new SystemObserver(this);
                         VisualDebugging._systems.add(sys, 'initialize').listen();
                         VisualDebugging._systems.add(sys, 'execute').listen();
@@ -1348,7 +1323,7 @@ var entitas;
         })();
         browser.VisualDebugging = VisualDebugging;
         /**
-         * Profiler
+         * Profiler class for Entities
          */
         var EntityBehavior = (function () {
             function EntityBehavior(obj) {
@@ -1372,6 +1347,9 @@ var entitas;
             return EntityBehavior;
         })();
         browser.EntityBehavior = EntityBehavior;
+        /**
+         * Profiler class for Systems
+         */
         var SystemObserver = (function () {
             function SystemObserver(_systems) {
                 this._systems = _systems;
@@ -1409,6 +1387,9 @@ var entitas;
             return SystemObserver;
         })();
         browser.SystemObserver = SystemObserver;
+        /**
+         * Profiler class for Pools
+         */
         var PoolObserver = (function () {
             function PoolObserver(_pool) {
                 this._pool = _pool;
@@ -1450,4 +1431,4 @@ var entitas;
         browser.PoolObserver = PoolObserver;
     })(browser = entitas.browser || (entitas.browser = {}));
 })(entitas || (entitas = {}));
-//# sourceMappingURL=VisualDebugging.js.map
+//# sourceMappingURL=entitas.js.map
