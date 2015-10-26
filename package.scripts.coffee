@@ -121,20 +121,31 @@ module.exports = (project, options = {}) ->
             --compilation_level #{options.compile} \
             --js_output_file build/#{LIB_NAME}.min.js
       """
-      
+
+    else if projectType is TypeScript
+      ###
+      # Build with tsc, then compress
+      ###
+      step.push """
+        tsc -p . --outFile build/#{LIB_NAME}.js -d
+        cat build/#{LIB_NAME}.js | \
+          java -jar #{COMPILER_JAR} \
+            --compilation_level #{options.compile} \
+            --js_output_file build/#{LIB_NAME}.min.js
+      """
+
     else
       ###
-      # Build directly from the raw transpiled javascript
+      # Build directly from the raw javascript
       ###
       files = require(JSCONFIG).files.join(" LF ")
       step.push """
-        cat #{files} > build/#{LIB_NAME}.js 
+        cat #{files} > build/#{LIB_NAME}.js
         cat #{files} | \
           java -jar #{COMPILER_JAR} \
             --compilation_level #{options.compile} \
             --js_output_file build/#{LIB_NAME}.min.js
       """
-        
     return step
       
   ### delete the prior build items ###

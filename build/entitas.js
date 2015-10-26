@@ -1281,7 +1281,7 @@ var entitas;
             function VisualDebugging() {
             }
             VisualDebugging.init = function (pool) {
-                if (window['dat']) {
+                if (location.search === "?debug=true" && window['dat']) {
                     browser.gui = new dat.GUI({ height: 5 * 32 - 1, width: 300 });
                     var observer = new PoolObserver(pool);
                     VisualDebugging._controllers = [];
