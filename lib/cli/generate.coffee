@@ -123,6 +123,11 @@ module.exports =
 
         else
           js.push "  Entity._#{name}ComponentPool = new Bag();"
+          js.push "  (function() {"
+          js.push "    for (var i=0; i<64; i++) {"
+          js.push "      Entity._#{name}ComponentPool.add(new #{Name}Component());"
+          js.push "    }"
+          js.push "  })();"
           js.push "  Entity.clear#{Name}ComponentPool = function() {"
           js.push "    Entity._#{name}ComponentPool.clear();"
           js.push "  };"
