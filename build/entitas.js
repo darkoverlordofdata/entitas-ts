@@ -20,8 +20,9 @@ var entitas;
          */
         function Bag(capacity) {
             if (capacity === void 0) { capacity = 64; }
-            _super.call(this, capacity);
+            _super.call(this);
             this.size_ = 0;
+            this.length = capacity;
         }
         /**
          * Removes the element at the specified position in this Bag. does this by
