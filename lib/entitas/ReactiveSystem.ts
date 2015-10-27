@@ -72,6 +72,7 @@ module entitas {
       var ensureComponents = this._ensureComponents;
       var excludeComponents = this._excludeComponents;
       var buffer = this._buffer;
+      var j = buffer.length;
 
 
       if (Object.keys(collectedEntities).length != 0) {
@@ -80,14 +81,14 @@ module entitas {
             for (var k in collectedEntities) {
               var e = collectedEntities[k];
               if (ensureComponents.matches(e) && !excludeComponents.matches(e)) {
-                buffer.push(e.addRef());
+                buffer[j++] = e.addRef();
               }
             }
           } else {
             for (var k in collectedEntities) {
               var e = collectedEntities[k];
               if (ensureComponents.matches(e)) {
-                buffer.push(e.addRef());
+                buffer[j++] = e.addRef();
               }
             }
           }
@@ -95,13 +96,13 @@ module entitas {
           for (var k in collectedEntities) {
             var e = collectedEntities[k];
             if (!excludeComponents.matches(e)) {
-              buffer.push(e.addRef());
+              buffer[j++] = e.addRef();
             }
           }
         } else {
           for (var k in collectedEntities) {
             var e = collectedEntities[k];
-            buffer.push(e.addRef());
+            buffer[j++] = e.addRef();
           }
         }
 

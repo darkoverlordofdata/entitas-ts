@@ -17,9 +17,13 @@ module entitas.extensions {
       return this.getGroup(matcher).getEntities();
     } else {
       if (this._entitiesCache === undefined) {
-        this._entitiesCache = [];
-        for (var k in Object.keys(this._entities)) {
-          this._entitiesCache.push(this._entities[k]);
+        var entities = this._entities;
+        var keys = Object.keys(entities);
+        var length = keys.length;
+        var entitiesCache = this._entitiesCache = new Array(length);
+
+        for (var i=0; i<length; i++) {
+          entitiesCache[i] = entities[keys[i]]
         }
       }
       return this._entitiesCache;

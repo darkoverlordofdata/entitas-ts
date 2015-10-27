@@ -1,5 +1,7 @@
 {
   "files": [
+    "web/src/entitas/utils/ImmutableBag.js",
+    "web/src/entitas/utils/Bag.js",
     "web/src/entitas/utils/Exceptions.js",
     "web/src/entitas/utils/Signal.js",
     "web/src/entitas/utils/Stopwatch.js",

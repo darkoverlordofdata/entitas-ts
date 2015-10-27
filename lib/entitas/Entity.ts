@@ -111,15 +111,16 @@ module entitas {
     }
 
     protected _replaceComponent(index:number, replacement:IComponent) {
-      var previousComponent = this._components[index];
+      var components = this._components;
+      var previousComponent = components[index];
       if (previousComponent === replacement) {
         this.onComponentReplaced.dispatch(this, index, previousComponent, replacement);
 
       } else {
-        this._components[index] = replacement;
+        components[index] = replacement;
         this._componentsCache = undefined;
         if (replacement === undefined) {
-          delete this._components[index];
+          delete components[index];
           this._componentIndicesCache = undefined;
           this._toStringCache = undefined;
           this.onComponentRemoved.dispatch(this, index, previousComponent);
@@ -142,10 +143,11 @@ module entitas {
     public getComponents():IComponent[] {
       if (this._componentsCache === undefined) {
         var components = [];
-        for (var i = 0, componentsLength = this._components.length; i < componentsLength; i++) {
-          var component = this._components[i];
+        var _components = this._components;
+        for (var i = 0, j = 0, componentsLength = _components.length; i < componentsLength; i++) {
+          var component = _components[i];
           if (component !== undefined) {
-            components.push(component);
+            components[j++] = component;
           }
         }
 
@@ -159,9 +161,10 @@ module entitas {
     public getComponentIndices():number[] {
       if (this._componentIndicesCache === undefined) {
         var indices = [];
-        for (var i = 0, componentsLength = this._components.length; i < componentsLength; i++) {
-          if (this._components[i] !== undefined) {
-            indices.push(i);
+        var _components = this._components;
+        for (var i = 0, j = 0, componentsLength = _components.length; i < componentsLength; i++) {
+          if (_components[i] !== undefined) {
+            indices[j++] = i;
           }
         }
 
@@ -177,8 +180,9 @@ module entitas {
     }
 
     public hasComponents(indices:number[]):boolean {
+      var _components = this._components;
       for (var i = 0, indicesLength = indices.length; i < indicesLength; i++) {
-        if (this._components[indices[i]] === undefined) {
+        if (_components[indices[i]] === undefined) {
           return false;
         }
       }
@@ -187,8 +191,9 @@ module entitas {
     }
 
     public hasAnyComponent(indices:number[]):boolean {
+      var _components = this._components;
       for (var i = 0, indicesLength = indices.length; i < indicesLength; i++) {
-        if (this._components[indices[i]] !== undefined) {
+        if (_components[indices[i]] !== undefined) {
           return true;
         }
       }
@@ -198,8 +203,9 @@ module entitas {
 
     public removeAllComponents() {
       this._toStringCache = undefined;
-      for (var i = 0, componentsLength = this._components.length; i < componentsLength; i++) {
-        if (this._components[i] !== undefined) {
+      var _components = this._components;
+      for (var i = 0, componentsLength = _components.length; i < componentsLength; i++) {
+        if (_components[i] !== undefined) {
           this._replaceComponent(i, undefined);
         }
       }
@@ -217,21 +223,16 @@ module entitas {
     public toString() {
       if (this._toStringCache === undefined) {
         var sb = [];
-        //sb.push("Entity_");
-        //sb.push(this._creationIndex);
-        //sb.push("(");
-
         const seperator = ", ";
         var components = this.getComponents();
         var lastSeperator = components.length - 1 ;
-        for (var i = 0, componentsLength = components.length; i < componentsLength; i++) {
-          sb.push(components[i].constructor['name'].replace('Component', '') || i+'');
+        for (var i = 0, j=0, componentsLength = components.length; i < componentsLength; i++) {
+          sb[j++] = components[i].constructor['name'].replace('Component', '') || i+'';
           if (i < lastSeperator) {
-            sb.push(seperator);
+            sb[j++] = seperator;
           }
         }
 
-        //sb.push(")");
         this._toStringCache = sb.join('');
       }
 

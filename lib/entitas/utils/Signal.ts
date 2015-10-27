@@ -1,5 +1,7 @@
 module entitas {
 
+  import Bag = entitas.Bag;
+
   export interface ISignal<T> {
     dispatch(...args:any[]):void;
     add(listener:T):void;
@@ -8,7 +10,7 @@ module entitas {
   }
 
   export class Signal<T> implements ISignal<T> {
-    private _listeners;
+    private _listeners:Bag<T>;
     private _context;
     private _size:number;
     private _alloc:number;
@@ -19,7 +21,7 @@ module entitas {
      * @param alloc
      */
     constructor(context, alloc:number=16) {
-      this._listeners = [];
+      this._listeners = new Bag<T>();
       this._context = context;
       this._alloc = alloc;
       this._size = 0;
@@ -30,8 +32,8 @@ module entitas {
      * @param args
      */
     dispatch(...args:any[]):void {
-      var listeners = this._listeners;
-      var size = listeners.length;
+      var listeners:Bag<T> = this._listeners;
+      var size = listeners.size();
       var context = this._context;
 
       for (var i = 0; i < size; i++) {
@@ -44,15 +46,7 @@ module entitas {
      * @param listener
      */
     add(listener:T):void {
-      this._listeners.push(listener);
-      //var listeners = this._listeners;
-      //var length = listeners.length;
-      //
-      //if (this._size === length) {
-      //  listeners.length = ~~((length * 3) / 2) + 1;
-      //}
-      //listeners[this._size++] = listener;
-      //
+      this._listeners.add(listener);
     }
 
     /**
@@ -60,31 +54,18 @@ module entitas {
      * @param listener
      */
     remove(listener:T):void {
-      var listeners = this._listeners;
-      var index = listeners.indexOf(listener);
-      if (index !== -1) listeners.splice(index, 1);
-
       //var listeners = this._listeners;
-      //var size = this._size;
-      //
-      //for (var i = 0; i < size; i++) {
-      //  if (listener == listeners[i]) {
-      //    for (var j = i, k = i+1; k < size; j++, k++) {
-      //      listeners[j] = listeners[k];
-      //    }
-      //    delete listeners[--this._size];
-      //    //listeners[--this._size] = undefined;
-      //    return;
-      //  }
-      //}
+      //var index = listeners.indexOf(listener);
+      //if (index !== -1) listeners.splice(index, 1);
+
+      this._listeners.remove(listener);
     }
 
     /**
      * Clear and reset to original alloc
      */
     clear():void {
-      this._listeners.length = 0;
-      //this._listeners.length = this._alloc;
+      this._listeners.clear();
     }
   }
 }

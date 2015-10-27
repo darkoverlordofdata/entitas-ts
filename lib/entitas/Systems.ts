@@ -49,12 +49,14 @@ module entitas {
           : as(system, 'initialize');
 
       if (initializeSystem != null) {
-        this._initializeSystems.push(initializeSystem);
+        var _initializeSystems = this._initializeSystems;
+        _initializeSystems[_initializeSystems.length] = initializeSystem;
       }
 
       var executeSystem:IExecuteSystem = as(system, 'execute');
       if (executeSystem != null) {
-        this._executeSystems.push(executeSystem);
+        var _executeSystems = this._executeSystems;
+        _executeSystems[_executeSystems.length] = executeSystem;
       }
 
       return this;

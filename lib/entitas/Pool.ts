@@ -1,5 +1,8 @@
 module entitas {
 
+  import Bag = entitas.Bag;
+  import ImmutableBag = entitas.ImmutableBag;
+
   import Group = entitas.Group;
   import Entity = entitas.Entity;
   import ISignal = entitas.ISignal;
@@ -36,7 +39,7 @@ module entitas {
 
     public get totalComponents():number {return this._totalComponents;}
     public get count():number {return Object.keys(this._entities).length;}
-    public get reusableEntitiesCount():number {return this._reusableEntities.length;}
+    public get reusableEntitiesCount():number {return this._reusableEntities.size();}
     public get retainedEntitiesCount():number {return Object.keys(this._retainedEntities).length;}
 
     public onEntityCreated:Pool.IPoolChanged<PoolChanged>;
@@ -46,8 +49,8 @@ module entitas {
 
     public _entities = {};
     public _groups = {};
-    public _groupsForIndex:Array<Array<Group>>;
-    public _reusableEntities:Array<Entity> = [];
+    public _groupsForIndex:Bag<Bag<Group>>;
+    public _reusableEntities:Bag<Entity> = new Bag<Entity>();
     public _retainedEntities = {};
 
     public static componentsEnum:Object;
@@ -79,7 +82,7 @@ module entitas {
       this._componentsEnum = components;
       this._totalComponents = totalComponents;
       this._creationIndex = startCreationIndex;
-      this._groupsForIndex = [];
+      this._groupsForIndex = new Bag<Bag<Group>>();
       this._cachedUpdateGroupsComponentAddedOrRemoved = this.updateGroupsComponentAddedOrRemoved;
       this._cachedUpdateGroupsComponentReplaced = this.updateGroupsComponentReplaced;
       this._cachedOnEntityReleased = this.onEntityReleased;
@@ -111,7 +114,7 @@ module entitas {
      * @param name
      */
     public createEntity(name):Entity {
-      var entity = this._reusableEntities.length > 0 ? this._reusableEntities.pop() : new Entity(this._componentsEnum, this._totalComponents);
+      var entity = this._reusableEntities.size() > 0 ? this._reusableEntities.removeLast() : new Entity(this._componentsEnum, this._totalComponents);
       entity._isEnabled = true;
       entity.name = name;
       entity._creationIndex = this._creationIndex++;
@@ -145,7 +148,7 @@ module entitas {
 
       if (entity._refCount === 1) {
         entity.onEntityReleased.remove(this._cachedOnEntityReleased);
-        this._reusableEntities.push(entity);
+        this._reusableEntities.add(entity);
       } else {
         this._retainedEntities[entity.creationIndex] = entity;
       }
@@ -167,27 +170,19 @@ module entitas {
 
     public getEntities():Entity[] {
       if (this._entitiesCache === undefined) {
-        this._entitiesCache = [];
-        for (var k in Object.keys(this._entities)) {
-          this._entitiesCache.push(this._entities[k]);
+
+        var entities = this._entities;
+        var keys = Object.keys(entities);
+        var length = keys.length;
+        var entitiesCache = this._entitiesCache = new Array(length);
+
+        for (var i=0; i<length; i++) {
+          var k = keys[i];
+          entitiesCache[i] = entities[k];
         }
       }
-      return this._entitiesCache;
+      return entitiesCache;
     }
-    //public getEntities(matcher?:IMatcher):Entity[] {
-    //  if (matcher) {
-    //    /** PoolExtension::getEntities */
-    //    return this.getGroup(matcher).getEntities();
-    //  } else {
-    //    if (this._entitiesCache === undefined) {
-    //      this._entitiesCache = [];
-    //      for (var k in Object.keys(this._entities)) {
-    //        this._entitiesCache.push(this._entities[k]);
-    //      }
-    //    }
-    //    return this._entitiesCache;
-    //  }
-    //}
 
     public getGroup(matcher:IMatcher) {
       var group:Group;
@@ -206,9 +201,9 @@ module entitas {
         for (var i = 0, indicesLength = matcher.indices.length; i < indicesLength; i++) {
           var index = matcher.indices[i];
           if (this._groupsForIndex[index] === undefined) {
-            this._groupsForIndex[index] = [];
+            this._groupsForIndex[index] = new Bag();
           }
-          this._groupsForIndex[index].push(group);
+          this._groupsForIndex[index].add(group);
         }
           this.onGroupCreated.dispatch(this, group);
       }
@@ -218,7 +213,7 @@ module entitas {
     public updateGroupsComponentAddedOrRemoved = (entity:Entity, index:number, component:IComponent) => {
       var groups = this._groupsForIndex[index];
       if (groups !== undefined) {
-        for (var i = 0, groupsCount = groups.length; i < groupsCount; i++) {
+        for (var i = 0, groupsCount = groups.size(); i < groupsCount; i++) {
           groups[i].handleEntity(entity, index, component);
         }
       }
@@ -228,7 +223,7 @@ module entitas {
     public updateGroupsComponentReplaced = (entity:Entity, index:number, previousComponent:IComponent, newComponent:IComponent) => {
       var groups = this._groupsForIndex[index];
       if (groups !== undefined) {
-        for (var i = 0, groupsCount = groups.length; i < groupsCount; i++) {
+        for (var i = 0, groupsCount = groups.size(); i < groupsCount; i++) {
           groups[i].updateEntity(entity, index, previousComponent, newComponent);
         }
       }
@@ -240,7 +235,7 @@ module entitas {
       }
       entity.onEntityReleased.remove(this._cachedOnEntityReleased);
       delete this._retainedEntities[entity.creationIndex];
-      this._reusableEntities.push(entity);
+      this._reusableEntities.add(entity);
     };
 
 

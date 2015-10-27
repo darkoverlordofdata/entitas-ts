@@ -37,7 +37,7 @@ module entitas {
 
     public _matcher:IMatcher;
     public _entities = {};
-    public _entitiesCache:Entity[];
+    public _entitiesCache:Array<Entity>;
     public _singleEntityCache:Entity;
     public _toStringCache:string;
 
@@ -122,10 +122,16 @@ module entitas {
 
     public getEntities():Entity[] {
       if (this._entitiesCache === undefined) {
-        this._entitiesCache = [];
-        for (var k in this._entities) {
-          this._entitiesCache.push(this._entities[k]);
+        var entities = this._entities;
+        var keys = Object.keys(entities);
+        var length = keys.length;
+        var entitiesCache = this._entitiesCache = new Array(length);
+        for (var i=0; i<length; i++) {
+          entitiesCache[i] = entities[keys[i]];
         }
+        //for (var k in this._entities) {
+        //  this._entitiesCache.push(this._entities[k]);
+        //}
       }
       return this._entitiesCache;
     }

@@ -1,4 +1,144 @@
 declare module entitas {
+    interface ImmutableBag<E> {
+        get(index: number): E;
+        size(): number;
+        isEmpty(): boolean;
+        contains(e: E): boolean;
+    }
+}
+declare module entitas {
+    /**
+     * Collection type a bit like ArrayList but does not preserve the order of its
+     * entities, speedwise it is very good, especially suited for games.
+     */
+    class Bag<E> extends Array implements ImmutableBag<E> {
+        private size_;
+        /**
+         * Constructs an empty Bag with the specified initial capacity.
+         * Constructs an empty Bag with an initial capacity of 64.
+         *
+         * @param capacity
+         *            the initial capacity of Bag
+         */
+        constructor(capacity?: number);
+        /**
+         * Removes the element at the specified position in this Bag. does this by
+         * overwriting it was last element then removing last element
+         *
+         * @param index
+         *            the index of element to be removed
+         * @return element that was removed from the Bag
+         */
+        removeAt(index: number): E;
+        /**
+         * Removes the first occurrence of the specified element from this Bag, if
+         * it is present. If the Bag does not contain the element, it is unchanged.
+         * does this by overwriting it was last element then removing last element
+         *
+         * @param e
+         *            element to be removed from this list, if present
+         * @return <tt>true</tt> if this list contained the specified element
+         */
+        remove(e: E): boolean;
+        /**
+         * Remove and return the last object in the bag.
+         *
+         * @return the last object in the bag, null if empty.
+         */
+        removeLast(): E;
+        /**
+         * Check if bag contains this element.
+         *
+         * @param e
+         * @return
+         */
+        contains(e: E): boolean;
+        /**
+         * Removes from this Bag all of its elements that are contained in the
+         * specified Bag.
+         *
+         * @param bag
+         *            Bag containing elements to be removed from this Bag
+         * @return {@code true} if this Bag changed as a result of the call
+         */
+        removeAll(bag: ImmutableBag<E>): boolean;
+        /**
+         * Returns the element at the specified position in Bag.
+         *
+         * @param index
+         *            index of the element to return
+         * @return the element at the specified position in bag
+         *
+         * @throws ArrayIndexOutOfBoundsException
+         */
+        get(index: number): E;
+        /**
+         * Returns the element at the specified position in Bag. This method
+         * ensures that the bag grows if the requested index is outside the bounds
+         * of the current backing array.
+         *
+         * @param index
+         *      index of the element to return
+         *
+         * @return the element at the specified position in bag
+         *
+         */
+        safeGet(index: number): E;
+        /**
+         * Returns the number of elements in this bag.
+         *
+         * @return the number of elements in this bag
+         */
+        size(): number;
+        /**
+         * Returns the number of elements the bag can hold without growing.
+         *
+         * @return the number of elements the bag can hold without growing.
+         */
+        getCapacity(): number;
+        /**
+         * Checks if the internal storage supports this index.
+         *
+         * @param index
+         * @return
+         */
+        isIndexWithinBounds(index: number): boolean;
+        /**
+         * Returns true if this list contains no elements.
+         *
+         * @return true if this list contains no elements
+         */
+        isEmpty(): boolean;
+        /**
+         * Adds the specified element to the end of this bag. if needed also
+         * increases the capacity of the bag.
+         *
+         * @param e
+         *            element to be added to this list
+         */
+        add(e: E): void;
+        /**
+         * Set element at specified index in the bag.
+         *
+         * @param index position of element
+         * @param e the element
+         */
+        set(index: number, e: E): void;
+        grow(newCapacity?: number): void;
+        ensureCapacity(index: number): void;
+        /**
+         * Removes all of the elements from this bag. The bag will be empty after
+         * this call returns.
+         */
+        clear(): void;
+        /**
+         * Add all items into this bag.
+         * @param items
+         */
+        addAll(items: ImmutableBag<E>): void;
+    }
+}
+declare module entitas {
     class Exception {
         message: string;
         constructor(message: any);
@@ -300,7 +440,7 @@ declare module entitas {
         matcher: IMatcher;
         _matcher: IMatcher;
         _entities: {};
-        _entitiesCache: Entity[];
+        _entitiesCache: Array<Entity>;
         _singleEntityCache: Entity;
         _toStringCache: string;
         /** Extension Points */
@@ -342,6 +482,7 @@ declare module entitas {
     }
 }
 declare module entitas {
+    import Bag = entitas.Bag;
     import Group = entitas.Group;
     import Entity = entitas.Entity;
     import ISignal = entitas.ISignal;
@@ -377,8 +518,8 @@ declare module entitas {
         onGroupCreated: Pool.IGroupChanged<GroupChanged>;
         _entities: {};
         _groups: {};
-        _groupsForIndex: Array<Array<Group>>;
-        _reusableEntities: Array<Entity>;
+        _groupsForIndex: Bag<Bag<Group>>;
+        _reusableEntities: Bag<Entity>;
         _retainedEntities: {};
         static componentsEnum: Object;
         static totalComponents: number;

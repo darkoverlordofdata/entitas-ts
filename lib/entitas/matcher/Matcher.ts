@@ -105,7 +105,7 @@ module entitas {
         }
         if (this._anyOfIndices !== undefined) {
           if (this._allOfIndices !== undefined) {
-            sb.push(".");
+            sb[sb.length] = '.';
           }
           Matcher.appendIndices(sb, "AnyOf", this._anyOfIndices);
         }
@@ -206,16 +206,17 @@ module entitas {
 
     private static appendIndices(sb:string[], prefix:string, indexArray:number[]) {
       const SEPERATOR = ", ";
-      sb.push(prefix);
-      sb.push("(");
+      var j = sb.length;
+      sb[j++] = prefix;
+      sb[j++] = '(';
       var lastSeperator = indexArray.length - 1;
       for (var i = 0, indicesLength = indexArray.length; i < indicesLength; i++) {
-        sb.push(''+indexArray[i]);
+        sb[j++] = ''+indexArray[i];
         if (i < lastSeperator) {
-          sb.push(SEPERATOR);
+          sb[j++] = SEPERATOR;
         }
       }
-      sb.push(")");
+      sb[j++] = ')';
     }
 
     //public onEntityAdded():TriggerOnEvent {

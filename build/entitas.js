@@ -5,6 +5,249 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var entitas;
 (function (entitas) {
+    /**
+     * Collection type a bit like ArrayList but does not preserve the order of its
+     * entities, speedwise it is very good, especially suited for games.
+     */
+    var Bag = (function (_super) {
+        __extends(Bag, _super);
+        /**
+         * Constructs an empty Bag with the specified initial capacity.
+         * Constructs an empty Bag with an initial capacity of 64.
+         *
+         * @param capacity
+         *            the initial capacity of Bag
+         */
+        function Bag(capacity) {
+            if (capacity === void 0) { capacity = 64; }
+            _super.call(this, capacity);
+            this.size_ = 0;
+        }
+        /**
+         * Removes the element at the specified position in this Bag. does this by
+         * overwriting it was last element then removing last element
+         *
+         * @param index
+         *            the index of element to be removed
+         * @return element that was removed from the Bag
+         */
+        Bag.prototype.removeAt = function (index) {
+            var e = this[index]; // make copy of element to remove so it can be returned
+            this[index] = this[--this.size_]; // overwrite item to remove with last element
+            this[this.size_] = null; // null last element, so gc can do its work
+            return e;
+        };
+        /**
+         * Removes the first occurrence of the specified element from this Bag, if
+         * it is present. If the Bag does not contain the element, it is unchanged.
+         * does this by overwriting it was last element then removing last element
+         *
+         * @param e
+         *            element to be removed from this list, if present
+         * @return <tt>true</tt> if this list contained the specified element
+         */
+        Bag.prototype.remove = function (e) {
+            var i;
+            var e2;
+            var size = this.size_;
+            for (i = 0; i < size; i++) {
+                e2 = this[i];
+                if (e == e2) {
+                    this[i] = this[--this.size_]; // overwrite item to remove with last element
+                    this[this.size_] = null; // null last element, so gc can do its work
+                    return true;
+                }
+            }
+            return false;
+        };
+        /**
+         * Remove and return the last object in the bag.
+         *
+         * @return the last object in the bag, null if empty.
+         */
+        Bag.prototype.removeLast = function () {
+            if (this.size_ > 0) {
+                var e = this[--this.size_];
+                this[this.size_] = null;
+                return e;
+            }
+            return null;
+        };
+        /**
+         * Check if bag contains this element.
+         *
+         * @param e
+         * @return
+         */
+        Bag.prototype.contains = function (e) {
+            var i;
+            var size;
+            for (i = 0, size = this.size_; size > i; i++) {
+                if (e === this[i]) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        /**
+         * Removes from this Bag all of its elements that are contained in the
+         * specified Bag.
+         *
+         * @param bag
+         *            Bag containing elements to be removed from this Bag
+         * @return {@code true} if this Bag changed as a result of the call
+         */
+        Bag.prototype.removeAll = function (bag) {
+            var modified = false;
+            var i;
+            var j;
+            var l;
+            var e1;
+            var e2;
+            for (i = 0, l = bag.size(); i < l; i++) {
+                e1 = bag.get(i);
+                for (j = 0; j < this.size_; j++) {
+                    e2 = this[j];
+                    if (e1 === e2) {
+                        this.removeAt(j);
+                        j--;
+                        modified = true;
+                        break;
+                    }
+                }
+            }
+            return modified;
+        };
+        /**
+         * Returns the element at the specified position in Bag.
+         *
+         * @param index
+         *            index of the element to return
+         * @return the element at the specified position in bag
+         *
+         * @throws ArrayIndexOutOfBoundsException
+         */
+        Bag.prototype.get = function (index) {
+            if (index >= this.length) {
+                throw new Error('ArrayIndexOutOfBoundsException');
+            }
+            return this[index];
+        };
+        /**
+         * Returns the element at the specified position in Bag. This method
+         * ensures that the bag grows if the requested index is outside the bounds
+         * of the current backing array.
+         *
+         * @param index
+         *      index of the element to return
+         *
+         * @return the element at the specified position in bag
+         *
+         */
+        Bag.prototype.safeGet = function (index) {
+            if (index >= this.length) {
+                this.grow((index * 7) / 4 + 1);
+            }
+            return this[index];
+        };
+        /**
+         * Returns the number of elements in this bag.
+         *
+         * @return the number of elements in this bag
+         */
+        Bag.prototype.size = function () {
+            return this.size_;
+        };
+        /**
+         * Returns the number of elements the bag can hold without growing.
+         *
+         * @return the number of elements the bag can hold without growing.
+         */
+        Bag.prototype.getCapacity = function () {
+            return this.length;
+        };
+        /**
+         * Checks if the internal storage supports this index.
+         *
+         * @param index
+         * @return
+         */
+        Bag.prototype.isIndexWithinBounds = function (index) {
+            return index < this.getCapacity();
+        };
+        /**
+         * Returns true if this list contains no elements.
+         *
+         * @return true if this list contains no elements
+         */
+        Bag.prototype.isEmpty = function () {
+            return this.size_ == 0;
+        };
+        /**
+         * Adds the specified element to the end of this bag. if needed also
+         * increases the capacity of the bag.
+         *
+         * @param e
+         *            element to be added to this list
+         */
+        Bag.prototype.add = function (e) {
+            // is size greater than capacity increase capacity
+            if (this.size_ === this.length) {
+                this.grow();
+            }
+            this[this.size_++] = e;
+        };
+        /**
+         * Set element at specified index in the bag.
+         *
+         * @param index position of element
+         * @param e the element
+         */
+        Bag.prototype.set = function (index, e) {
+            if (index >= this.length) {
+                this.grow(index * 2);
+            }
+            this.size_ = index + 1;
+            this[index] = e;
+        };
+        Bag.prototype.grow = function (newCapacity) {
+            if (newCapacity === void 0) { newCapacity = ~~((this.length * 3) / 2) + 1; }
+            this.length = ~~newCapacity;
+        };
+        Bag.prototype.ensureCapacity = function (index) {
+            if (index >= this.length) {
+                this.grow(index * 2);
+            }
+        };
+        /**
+         * Removes all of the elements from this bag. The bag will be empty after
+         * this call returns.
+         */
+        Bag.prototype.clear = function () {
+            var i;
+            var size;
+            // null all elements so gc can clean up
+            for (i = 0, size = this.size_; i < size; i++) {
+                this[i] = null;
+            }
+            this.size_ = 0;
+        };
+        /**
+         * Add all items into this bag.
+         * @param items
+         */
+        Bag.prototype.addAll = function (items) {
+            var i;
+            for (i = 0; items.size() > i; i++) {
+                this.add(items.get(i));
+            }
+        };
+        return Bag;
+    })(Array);
+    entitas.Bag = Bag;
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
     var Exception = (function () {
         function Exception(message) {
             this.message = message;
@@ -90,6 +333,7 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
+    var Bag = entitas.Bag;
     var Signal = (function () {
         /**
          *
@@ -98,7 +342,7 @@ var entitas;
          */
         function Signal(context, alloc) {
             if (alloc === void 0) { alloc = 16; }
-            this._listeners = [];
+            this._listeners = new Bag();
             this._context = context;
             this._alloc = alloc;
             this._size = 0;
@@ -113,7 +357,7 @@ var entitas;
                 args[_i - 0] = arguments[_i];
             }
             var listeners = this._listeners;
-            var size = listeners.length;
+            var size = listeners.size();
             var context = this._context;
             for (var i = 0; i < size; i++) {
                 listeners[i].apply(context, args);
@@ -124,45 +368,23 @@ var entitas;
          * @param listener
          */
         Signal.prototype.add = function (listener) {
-            this._listeners.push(listener);
-            //var listeners = this._listeners;
-            //var length = listeners.length;
-            //
-            //if (this._size === length) {
-            //  listeners.length = ~~((length * 3) / 2) + 1;
-            //}
-            //listeners[this._size++] = listener;
-            //
+            this._listeners.add(listener);
         };
         /**
          * Remove event listener
          * @param listener
          */
         Signal.prototype.remove = function (listener) {
-            var listeners = this._listeners;
-            var index = listeners.indexOf(listener);
-            if (index !== -1)
-                listeners.splice(index, 1);
             //var listeners = this._listeners;
-            //var size = this._size;
-            //
-            //for (var i = 0; i < size; i++) {
-            //  if (listener == listeners[i]) {
-            //    for (var j = i, k = i+1; k < size; j++, k++) {
-            //      listeners[j] = listeners[k];
-            //    }
-            //    delete listeners[--this._size];
-            //    //listeners[--this._size] = undefined;
-            //    return;
-            //  }
-            //}
+            //var index = listeners.indexOf(listener);
+            //if (index !== -1) listeners.splice(index, 1);
+            this._listeners.remove(listener);
         };
         /**
          * Clear and reset to original alloc
          */
         Signal.prototype.clear = function () {
-            this._listeners.length = 0;
-            //this._listeners.length = this._alloc;
+            this._listeners.clear();
         };
         return Signal;
     })();
@@ -316,7 +538,7 @@ var entitas;
                 }
                 if (this._anyOfIndices !== undefined) {
                     if (this._allOfIndices !== undefined) {
-                        sb.push(".");
+                        sb[sb.length] = '.';
                     }
                     Matcher.appendIndices(sb, "AnyOf", this._anyOfIndices);
                 }
@@ -409,16 +631,17 @@ var entitas;
         };
         Matcher.appendIndices = function (sb, prefix, indexArray) {
             var SEPERATOR = ", ";
-            sb.push(prefix);
-            sb.push("(");
+            var j = sb.length;
+            sb[j++] = prefix;
+            sb[j++] = '(';
             var lastSeperator = indexArray.length - 1;
             for (var i = 0, indicesLength = indexArray.length; i < indicesLength; i++) {
-                sb.push('' + indexArray[i]);
+                sb[j++] = '' + indexArray[i];
                 if (i < lastSeperator) {
-                    sb.push(SEPERATOR);
+                    sb[j++] = SEPERATOR;
                 }
             }
-            sb.push(")");
+            sb[j++] = ')';
         };
         Matcher.uniqueId = 0;
         return Matcher;
@@ -500,15 +723,16 @@ var entitas;
             return this;
         };
         Entity.prototype._replaceComponent = function (index, replacement) {
-            var previousComponent = this._components[index];
+            var components = this._components;
+            var previousComponent = components[index];
             if (previousComponent === replacement) {
                 this.onComponentReplaced.dispatch(this, index, previousComponent, replacement);
             }
             else {
-                this._components[index] = replacement;
+                components[index] = replacement;
                 this._componentsCache = undefined;
                 if (replacement === undefined) {
-                    delete this._components[index];
+                    delete components[index];
                     this._componentIndicesCache = undefined;
                     this._toStringCache = undefined;
                     this.onComponentRemoved.dispatch(this, index, previousComponent);
@@ -528,10 +752,11 @@ var entitas;
         Entity.prototype.getComponents = function () {
             if (this._componentsCache === undefined) {
                 var components = [];
-                for (var i = 0, componentsLength = this._components.length; i < componentsLength; i++) {
-                    var component = this._components[i];
+                var _components = this._components;
+                for (var i = 0, j = 0, componentsLength = _components.length; i < componentsLength; i++) {
+                    var component = _components[i];
                     if (component !== undefined) {
-                        components.push(component);
+                        components[j++] = component;
                     }
                 }
                 this._componentsCache = components;
@@ -541,9 +766,10 @@ var entitas;
         Entity.prototype.getComponentIndices = function () {
             if (this._componentIndicesCache === undefined) {
                 var indices = [];
-                for (var i = 0, componentsLength = this._components.length; i < componentsLength; i++) {
-                    if (this._components[i] !== undefined) {
-                        indices.push(i);
+                var _components = this._components;
+                for (var i = 0, j = 0, componentsLength = _components.length; i < componentsLength; i++) {
+                    if (_components[i] !== undefined) {
+                        indices[j++] = i;
                     }
                 }
                 this._componentIndicesCache = indices;
@@ -554,16 +780,18 @@ var entitas;
             return this._components[index] !== undefined;
         };
         Entity.prototype.hasComponents = function (indices) {
+            var _components = this._components;
             for (var i = 0, indicesLength = indices.length; i < indicesLength; i++) {
-                if (this._components[indices[i]] === undefined) {
+                if (_components[indices[i]] === undefined) {
                     return false;
                 }
             }
             return true;
         };
         Entity.prototype.hasAnyComponent = function (indices) {
+            var _components = this._components;
             for (var i = 0, indicesLength = indices.length; i < indicesLength; i++) {
-                if (this._components[indices[i]] !== undefined) {
+                if (_components[indices[i]] !== undefined) {
                     return true;
                 }
             }
@@ -571,8 +799,9 @@ var entitas;
         };
         Entity.prototype.removeAllComponents = function () {
             this._toStringCache = undefined;
-            for (var i = 0, componentsLength = this._components.length; i < componentsLength; i++) {
-                if (this._components[i] !== undefined) {
+            var _components = this._components;
+            for (var i = 0, componentsLength = _components.length; i < componentsLength; i++) {
+                if (_components[i] !== undefined) {
                     this._replaceComponent(i, undefined);
                 }
             }
@@ -587,19 +816,15 @@ var entitas;
         Entity.prototype.toString = function () {
             if (this._toStringCache === undefined) {
                 var sb = [];
-                //sb.push("Entity_");
-                //sb.push(this._creationIndex);
-                //sb.push("(");
                 var seperator = ", ";
                 var components = this.getComponents();
                 var lastSeperator = components.length - 1;
-                for (var i = 0, componentsLength = components.length; i < componentsLength; i++) {
-                    sb.push(components[i].constructor['name'].replace('Component', '') || i + '');
+                for (var i = 0, j = 0, componentsLength = components.length; i < componentsLength; i++) {
+                    sb[j++] = components[i].constructor['name'].replace('Component', '') || i + '';
                     if (i < lastSeperator) {
-                        sb.push(seperator);
+                        sb[j++] = seperator;
                     }
                 }
-                //sb.push(")");
                 this._toStringCache = sb.join('');
             }
             return this._toStringCache;
@@ -705,9 +930,12 @@ var entitas;
         };
         Group.prototype.getEntities = function () {
             if (this._entitiesCache === undefined) {
-                this._entitiesCache = [];
-                for (var k in this._entities) {
-                    this._entitiesCache.push(this._entities[k]);
+                var entities = this._entities;
+                var keys = Object.keys(entities);
+                var length = keys.length;
+                var entitiesCache = this._entitiesCache = new Array(length);
+                for (var i = 0; i < length; i++) {
+                    entitiesCache[i] = entities[keys[i]];
                 }
             }
             return this._entitiesCache;
@@ -816,6 +1044,7 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
+    var Bag = entitas.Bag;
     var Group = entitas.Group;
     var Entity = entitas.Entity;
     var EntityIsNotDestroyedException = entitas.EntityIsNotDestroyedException;
@@ -826,14 +1055,14 @@ var entitas;
             if (startCreationIndex === void 0) { startCreationIndex = 0; }
             this._entities = {};
             this._groups = {};
-            this._reusableEntities = [];
+            this._reusableEntities = new Bag();
             this._retainedEntities = {};
             this._totalComponents = 0;
             this._creationIndex = 0;
             this.updateGroupsComponentAddedOrRemoved = function (entity, index, component) {
                 var groups = _this._groupsForIndex[index];
                 if (groups !== undefined) {
-                    for (var i = 0, groupsCount = groups.length; i < groupsCount; i++) {
+                    for (var i = 0, groupsCount = groups.size(); i < groupsCount; i++) {
                         groups[i].handleEntity(entity, index, component);
                     }
                 }
@@ -841,7 +1070,7 @@ var entitas;
             this.updateGroupsComponentReplaced = function (entity, index, previousComponent, newComponent) {
                 var groups = _this._groupsForIndex[index];
                 if (groups !== undefined) {
-                    for (var i = 0, groupsCount = groups.length; i < groupsCount; i++) {
+                    for (var i = 0, groupsCount = groups.size(); i < groupsCount; i++) {
                         groups[i].updateEntity(entity, index, previousComponent, newComponent);
                     }
                 }
@@ -852,7 +1081,7 @@ var entitas;
                 }
                 entity.onEntityReleased.remove(_this._cachedOnEntityReleased);
                 delete _this._retainedEntities[entity.creationIndex];
-                _this._reusableEntities.push(entity);
+                _this._reusableEntities.add(entity);
             };
             this.onGroupCreated = new entitas.Signal(this);
             this.onEntityCreated = new entitas.Signal(this);
@@ -861,7 +1090,7 @@ var entitas;
             this._componentsEnum = components;
             this._totalComponents = totalComponents;
             this._creationIndex = startCreationIndex;
-            this._groupsForIndex = [];
+            this._groupsForIndex = new Bag();
             this._cachedUpdateGroupsComponentAddedOrRemoved = this.updateGroupsComponentAddedOrRemoved;
             this._cachedUpdateGroupsComponentReplaced = this.updateGroupsComponentReplaced;
             this._cachedOnEntityReleased = this.onEntityReleased;
@@ -879,7 +1108,7 @@ var entitas;
             configurable: true
         });
         Object.defineProperty(Pool.prototype, "reusableEntitiesCount", {
-            get: function () { return this._reusableEntities.length; },
+            get: function () { return this._reusableEntities.size(); },
             enumerable: true,
             configurable: true
         });
@@ -908,7 +1137,7 @@ var entitas;
          * @param name
          */
         Pool.prototype.createEntity = function (name) {
-            var entity = this._reusableEntities.length > 0 ? this._reusableEntities.pop() : new Entity(this._componentsEnum, this._totalComponents);
+            var entity = this._reusableEntities.size() > 0 ? this._reusableEntities.removeLast() : new Entity(this._componentsEnum, this._totalComponents);
             entity._isEnabled = true;
             entity.name = name;
             entity._creationIndex = this._creationIndex++;
@@ -937,7 +1166,7 @@ var entitas;
             this.onEntityDestroyed.dispatch(this, entity);
             if (entity._refCount === 1) {
                 entity.onEntityReleased.remove(this._cachedOnEntityReleased);
-                this._reusableEntities.push(entity);
+                this._reusableEntities.add(entity);
             }
             else {
                 this._retainedEntities[entity.creationIndex] = entity;
@@ -955,27 +1184,17 @@ var entitas;
         };
         Pool.prototype.getEntities = function () {
             if (this._entitiesCache === undefined) {
-                this._entitiesCache = [];
-                for (var k in Object.keys(this._entities)) {
-                    this._entitiesCache.push(this._entities[k]);
+                var entities = this._entities;
+                var keys = Object.keys(entities);
+                var length = keys.length;
+                var entitiesCache = this._entitiesCache = new Array(length);
+                for (var i = 0; i < length; i++) {
+                    var k = keys[i];
+                    entitiesCache[i] = entities[k];
                 }
             }
-            return this._entitiesCache;
+            return entitiesCache;
         };
-        //public getEntities(matcher?:IMatcher):Entity[] {
-        //  if (matcher) {
-        //    /** PoolExtension::getEntities */
-        //    return this.getGroup(matcher).getEntities();
-        //  } else {
-        //    if (this._entitiesCache === undefined) {
-        //      this._entitiesCache = [];
-        //      for (var k in Object.keys(this._entities)) {
-        //        this._entitiesCache.push(this._entities[k]);
-        //      }
-        //    }
-        //    return this._entitiesCache;
-        //  }
-        //}
         Pool.prototype.getGroup = function (matcher) {
             var group;
             if (matcher.id in this._groups) {
@@ -991,9 +1210,9 @@ var entitas;
                 for (var i = 0, indicesLength = matcher.indices.length; i < indicesLength; i++) {
                     var index = matcher.indices[i];
                     if (this._groupsForIndex[index] === undefined) {
-                        this._groupsForIndex[index] = [];
+                        this._groupsForIndex[index] = new Bag();
                     }
-                    this._groupsForIndex[index].push(group);
+                    this._groupsForIndex[index].add(group);
                 }
                 this.onGroupCreated.dispatch(this, group);
             }
@@ -1053,13 +1272,14 @@ var entitas;
             var ensureComponents = this._ensureComponents;
             var excludeComponents = this._excludeComponents;
             var buffer = this._buffer;
+            var j = buffer.length;
             if (Object.keys(collectedEntities).length != 0) {
                 if (ensureComponents) {
                     if (excludeComponents) {
                         for (var k in collectedEntities) {
                             var e = collectedEntities[k];
                             if (ensureComponents.matches(e) && !excludeComponents.matches(e)) {
-                                buffer.push(e.addRef());
+                                buffer[j++] = e.addRef();
                             }
                         }
                     }
@@ -1067,7 +1287,7 @@ var entitas;
                         for (var k in collectedEntities) {
                             var e = collectedEntities[k];
                             if (ensureComponents.matches(e)) {
-                                buffer.push(e.addRef());
+                                buffer[j++] = e.addRef();
                             }
                         }
                     }
@@ -1076,14 +1296,14 @@ var entitas;
                     for (var k in collectedEntities) {
                         var e = collectedEntities[k];
                         if (!excludeComponents.matches(e)) {
-                            buffer.push(e.addRef());
+                            buffer[j++] = e.addRef();
                         }
                     }
                 }
                 else {
                     for (var k in collectedEntities) {
                         var e = collectedEntities[k];
-                        buffer.push(e.addRef());
+                        buffer[j++] = e.addRef();
                     }
                 }
                 this._observer.clearCollectedEntities();
@@ -1137,11 +1357,13 @@ var entitas;
                 ? as(reactiveSystem.subsystem, 'initialize')
                 : as(system, 'initialize');
             if (initializeSystem != null) {
-                this._initializeSystems.push(initializeSystem);
+                var _initializeSystems = this._initializeSystems;
+                _initializeSystems[_initializeSystems.length] = initializeSystem;
             }
             var executeSystem = as(system, 'execute');
             if (executeSystem != null) {
-                this._executeSystems.push(executeSystem);
+                var _executeSystems = this._executeSystems;
+                _executeSystems[_executeSystems.length] = executeSystem;
             }
             return this;
         };
@@ -1237,9 +1459,12 @@ var entitas;
             }
             else {
                 if (this._entitiesCache === undefined) {
-                    this._entitiesCache = [];
-                    for (var k in Object.keys(this._entities)) {
-                        this._entitiesCache.push(this._entities[k]);
+                    var entities = this._entities;
+                    var keys = Object.keys(entities);
+                    var length = keys.length;
+                    var entitiesCache = this._entitiesCache = new Array(length);
+                    for (var i = 0; i < length; i++) {
+                        entitiesCache[i] = entities[keys[i]];
                     }
                 }
                 return this._entitiesCache;
