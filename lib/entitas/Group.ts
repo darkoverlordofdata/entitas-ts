@@ -134,9 +134,6 @@ module entitas {
         for (var i=0; i<length; i++) {
           entitiesCache[i] = entities[keys[i]];
         }
-        //for (var k in this._entities) {
-        //  this._entitiesCache.push(this._entities[k]);
-        //}
       }
       return this._entitiesCache;
     }
@@ -163,11 +160,5 @@ module entitas {
       }
       return this._toStringCache;
     }
-
-    //public createObserver(eventType:GroupEventType = GroupEventType.OnEntityAdded):GroupObserver {
-    //  return new GroupObserver(this, eventType);
-    //}
-
   }
-
 }

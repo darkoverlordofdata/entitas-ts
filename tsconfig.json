@@ -15,6 +15,7 @@
     "lib/entitas/utils/HashMap.ts",
     "lib/entitas/utils/ImmutableBag.ts",
     "lib/entitas/utils/Bag.ts",
+    "lib/entitas/utils/BitSet.ts",
     "lib/entitas/utils/Exceptions.ts",
     "lib/entitas/utils/Signal.ts",
     "lib/entitas/utils/Stopwatch.ts",

@@ -1,5 +1,6 @@
 module entitas {
 
+  import BitSet = entitas.BitSet;
   import Signal = entitas.Signal;
   import ISignal = entitas.ISignal;
   import IComponent = entitas.IComponent;

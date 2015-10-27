@@ -24,7 +24,7 @@ module entitas.browser {
 
         var observer = new PoolObserver(pool);
 
-        VisualDebugging._controllers = [];
+        VisualDebugging._controllers = {};
         VisualDebugging._entities = gui.addFolder('Entities');
         VisualDebugging._pools = gui.addFolder('Pools');
         VisualDebugging._systems = gui.addFolder('Systems');

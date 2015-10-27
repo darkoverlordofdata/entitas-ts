@@ -62,9 +62,9 @@ module entitas {
      * @param listener
      */
     remove(listener:T):void {
-      var _listeners = this._listeners;
-      _listeners.remove(listener);
-      this.active = _listeners.size() > 0;
+      var listeners = this._listeners;
+      listeners.remove(listener);
+      this.active = listeners.size() > 0;
 
     }
 

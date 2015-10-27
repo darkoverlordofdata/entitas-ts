@@ -1,6 +1,7 @@
 module entitas {
 
   import Entity = entitas.Entity;
+  import BitSet = entitas.BitSet;
   import Component = entitas.IComponent;
   import IAllOfMatcher = entitas.IAllOfMatcher;
   import IAnyOfMatcher = entitas.IAnyOfMatcher;
@@ -70,9 +71,9 @@ module entitas {
     }
 
     public matches(entity:Entity):boolean {
-      var matchesAllOf = this._allOfIndices === undefined || entity.hasComponents(this._allOfIndices);
-      var matchesAnyOf = this._anyOfIndices === undefined || entity.hasAnyComponent(this._anyOfIndices);
-      var matchesNoneOf = this._noneOfIndices === undefined || !entity.hasAnyComponent(this._noneOfIndices);
+      var matchesAllOf = this._allOfIndices === undefined ? true : entity.hasComponents(this._allOfIndices);
+      var matchesAnyOf = this._anyOfIndices === undefined ? true : entity.hasAnyComponent(this._anyOfIndices);
+      var matchesNoneOf = this._noneOfIndices === undefined ? true : !entity.hasAnyComponent(this._noneOfIndices);
       return matchesAllOf && matchesAnyOf && matchesNoneOf;
 
     }
@@ -183,7 +184,7 @@ module entitas {
     public static allOf(...args:any[]):IAllOfMatcher {
       if ('number' === typeof args[0] || 'string' === typeof args[0]) {
         var matcher = new Matcher();
-        matcher._allOfIndices = Matcher.distinctIndices(args);
+        var indices = matcher._allOfIndices = Matcher.distinctIndices(args);
         return matcher;
       } else {
         return Matcher.allOf.apply(this, Matcher.mergeIndices(args));
@@ -197,7 +198,7 @@ module entitas {
     public static anyOf(...args:any[]):IAnyOfMatcher {
       if ('number' === typeof args[0] || 'string' === typeof args[0]) {
         var matcher = new Matcher();
-        matcher._anyOfIndices = Matcher.distinctIndices(args);
+        var indices = matcher._anyOfIndices = Matcher.distinctIndices(args);
         return matcher;
       } else {
         return Matcher.anyOf.apply(this, Matcher.mergeIndices(args));
