@@ -79,7 +79,8 @@ module entitas {
       this._componentsCache = undefined;
       this._componentIndicesCache = undefined;
       this._toStringCache = undefined;
-      this.onComponentAdded.dispatch(this, index, component);
+      var onComponentAdded:any = this.onComponentAdded;
+      if (onComponentAdded.active) onComponentAdded.dispatch(this, index, component);
 
       return this;
     }
@@ -114,7 +115,8 @@ module entitas {
       var components = this._components;
       var previousComponent = components[index];
       if (previousComponent === replacement) {
-        this.onComponentReplaced.dispatch(this, index, previousComponent, replacement);
+        var onComponentReplaced:any = this.onComponentReplaced;
+        if (onComponentReplaced.active) onComponentReplaced.dispatch(this, index, previousComponent, replacement);
 
       } else {
         components[index] = replacement;
@@ -123,10 +125,12 @@ module entitas {
           delete components[index];
           this._componentIndicesCache = undefined;
           this._toStringCache = undefined;
-          this.onComponentRemoved.dispatch(this, index, previousComponent);
+          var onComponentRemoved:any = this.onComponentRemoved;
+          if (onComponentRemoved.active) onComponentRemoved.dispatch(this, index, previousComponent);
 
         } else {
-          this.onComponentReplaced.dispatch(this, index, previousComponent, replacement);
+          var onComponentReplaced:any = this.onComponentReplaced;
+          if (onComponentReplaced.active) onComponentReplaced.dispatch(this, index, previousComponent, replacement);
         }
       }
 
@@ -247,7 +251,8 @@ module entitas {
     public release() {
       this._refCount -= 1;
       if (this._refCount === 0) {
-        this.onEntityReleased.dispatch(this);
+        var onEntityReleased:any = this.onEntityReleased;
+        if (onEntityReleased.active) onEntityReleased.dispatch(this);
 
       } else if (this._refCount < 0) {
         throw new EntityIsAlreadyReleasedException();

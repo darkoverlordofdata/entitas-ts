@@ -10,10 +10,10 @@ module entitas {
   }
 
   export class Signal<T> implements ISignal<T> {
-    private _listeners:Bag<T>;
+    public _listeners:Bag<T>;
     private _context;
-    private _size:number;
     private _alloc:number;
+    public active:boolean;
 
     /**
      *
@@ -24,20 +24,26 @@ module entitas {
       this._listeners = new Bag<T>();
       this._context = context;
       this._alloc = alloc;
-      this._size = 0;
+      this.active = false;
     }
 
     /**
      * Dispatch event
-     * @param args
+     *
+     * @param $0
+     * @param $1
+     * @param $2
+     * @param $3
+     * @param $4
      */
-    dispatch(...args:any[]):void {
+    dispatch($0?, $1?, $2?, $3?, $4?):void {
       var listeners:Bag<T> = this._listeners;
       var size = listeners.size();
+      if (size <=0 ) return; // bail early
       var context = this._context;
 
       for (var i = 0; i < size; i++) {
-        listeners[i].apply(context, args);
+        listeners[i].call(context, $0, $1, $2, $3, $4);
       }
     }
 
@@ -47,6 +53,8 @@ module entitas {
      */
     add(listener:T):void {
       this._listeners.add(listener);
+      this.active = true
+
     }
 
     /**
@@ -54,11 +62,10 @@ module entitas {
      * @param listener
      */
     remove(listener:T):void {
-      //var listeners = this._listeners;
-      //var index = listeners.indexOf(listener);
-      //if (index !== -1) listeners.splice(index, 1);
+      var _listeners = this._listeners;
+      _listeners.remove(listener);
+      this.active = _listeners.size() > 0;
 
-      this._listeners.remove(listener);
     }
 
     /**
@@ -66,6 +73,7 @@ module entitas {
      */
     clear():void {
       this._listeners.clear();
+      this.active = false;
     }
   }
 }

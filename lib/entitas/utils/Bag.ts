@@ -6,7 +6,7 @@ module entitas {
    */
 
   export class Bag<E> extends Array implements ImmutableBag<E> {
-    private size_:number = 0;
+    public size_:number = 0;
 
     /**
      * Constructs an empty Bag with the specified initial capacity.

@@ -10,6 +10,9 @@
     "outDir": "web/src/entitas"
   },
   "files": [
+    "lib/entitas/utils/UUID.ts",
+    "lib/entitas/utils/Map.ts",
+    "lib/entitas/utils/HashMap.ts",
     "lib/entitas/utils/ImmutableBag.ts",
     "lib/entitas/utils/Bag.ts",
     "lib/entitas/utils/Exceptions.ts",

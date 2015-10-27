@@ -1,3 +1,160 @@
+var entitas;
+(function (entitas) {
+    var hex = [
+        "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f",
+        "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1a", "1b", "1c", "1d", "1e", "1f",
+        "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "2a", "2b", "2c", "2d", "2e", "2f",
+        "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "3a", "3b", "3c", "3d", "3e", "3f",
+        "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "4a", "4b", "4c", "4d", "4e", "4f",
+        "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "5a", "5b", "5c", "5d", "5e", "5f",
+        "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "6a", "6b", "6c", "6d", "6e", "6f",
+        "70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "7a", "7b", "7c", "7d", "7e", "7f",
+        "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "8a", "8b", "8c", "8d", "8e", "8f",
+        "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "9a", "9b", "9c", "9d", "9e", "9f",
+        "a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "aa", "ab", "ac", "ad", "ae", "af",
+        "b0", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "ba", "bb", "bc", "bd", "be", "bf",
+        "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "ca", "cb", "cc", "cd", "ce", "cf",
+        "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "da", "db", "dc", "dd", "de", "df",
+        "e0", "e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9", "ea", "eb", "ec", "ed", "ee", "ef",
+        "f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "fa", "fb", "fc", "fd", "fe", "ff"
+    ];
+    var UUID = (function () {
+        function UUID() {
+        }
+        //static check = {};
+        /**
+         * Fast UUID generator, RFC4122 version 4 compliant
+         * format xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+         *
+         * @author Jeff Ward (jcward.com).
+         * @license MIT license
+         * @link http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
+         **/
+        UUID.randomUUID = function () {
+            var d0 = Math.random() * 0xffffffff | 0;
+            var d1 = Math.random() * 0xffffffff | 0;
+            var d2 = Math.random() * 0xffffffff | 0;
+            var d3 = Math.random() * 0xffffffff | 0;
+            return hex[d0 & 0xff] + hex[d0 >> 8 & 0xff] + hex[d0 >> 16 & 0xff] + hex[d0 >> 24 & 0xff] + '-' +
+                hex[d1 & 0xff] + hex[d1 >> 8 & 0xff] + '-' + hex[d1 >> 16 & 0x0f | 0x40] + hex[d1 >> 24 & 0xff] + '-' +
+                hex[d2 & 0x3f | 0x80] + hex[d2 >> 8 & 0xff] + '-' + hex[d2 >> 16 & 0xff] + hex[d2 >> 24 & 0xff] +
+                hex[d3 & 0xff] + hex[d3 >> 8 & 0xff] + hex[d3 >> 16 & 0xff] + hex[d3 >> 24 & 0xff];
+        };
+        return UUID;
+    })();
+    entitas.UUID = UUID;
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    /**
+     * Gets Class Metadata - Name
+     *
+     * @param {Function} klass
+     * @return {string}
+     */
+    function getClassName(klass) {
+        return klass.className || klass.name;
+    }
+    entitas.getClassName = getClassName;
+    /**
+     * Decode HashMap key
+     *
+     * When the key is an object, we generate a unique uuid and use that as the actual key.
+     */
+    function decode(key) {
+        switch (typeof key) {
+            case 'boolean':
+                return '' + key;
+            case 'number':
+                return '' + key;
+            case 'string':
+                return '' + key;
+            case 'function':
+                return getClassName(key);
+            default:
+                key.uuid = key.uuid ? key.uuid : entitas.UUID.randomUUID();
+                return key.uuid;
+        }
+    }
+    /**
+     * HashMap
+     *
+     * Allow object as key.
+     */
+    var HashMap = (function () {
+        function HashMap() {
+            this.clear();
+        }
+        HashMap.prototype.clear = function () {
+            this.map_ = {};
+            this.keys_ = {};
+        };
+        HashMap.prototype.values = function () {
+            var result = [];
+            var map = this.map_;
+            for (var key in map) {
+                result.push(map[key]);
+            }
+            return result;
+        };
+        HashMap.prototype.contains = function (value) {
+            var map = this.map_;
+            for (var key in map) {
+                if (value === map[key]) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        HashMap.prototype.containsKey = function (key) {
+            return decode(key) in this.map_;
+        };
+        HashMap.prototype.containsValue = function (value) {
+            var map = this.map_;
+            for (var key in map) {
+                if (value === map[key]) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        HashMap.prototype.get = function (key) {
+            return this.map_[decode(key)];
+        };
+        HashMap.prototype.isEmpty = function () {
+            return Object.keys(this.map_).length === 0;
+        };
+        HashMap.prototype.keys = function () {
+            var keys = this.map_;
+            var result = [];
+            for (var key in keys) {
+                result.push(keys[key]);
+            }
+            return result;
+        };
+        /**
+         * if key is a string, use as is, else use key.id_ or key.name
+         */
+        HashMap.prototype.put = function (key, value) {
+            var k = decode(key);
+            this.map_[k] = value;
+            this.keys_[k] = key;
+        };
+        HashMap.prototype.remove = function (key) {
+            var map = this.map_;
+            var k = decode(key);
+            var value = map[k];
+            delete map[k];
+            delete this.keys_[k];
+            return value;
+        };
+        HashMap.prototype.size = function () {
+            return Object.keys(this.map_).length;
+        };
+        return HashMap;
+    })();
+    entitas.HashMap = HashMap;
+})(entitas || (entitas = {}));
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -346,22 +503,25 @@ var entitas;
             this._listeners = new Bag();
             this._context = context;
             this._alloc = alloc;
-            this._size = 0;
+            this.active = false;
         }
         /**
          * Dispatch event
-         * @param args
+         *
+         * @param $0
+         * @param $1
+         * @param $2
+         * @param $3
+         * @param $4
          */
-        Signal.prototype.dispatch = function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
-            }
+        Signal.prototype.dispatch = function ($0, $1, $2, $3, $4) {
             var listeners = this._listeners;
             var size = listeners.size();
+            if (size <= 0)
+                return; // bail early
             var context = this._context;
             for (var i = 0; i < size; i++) {
-                listeners[i].apply(context, args);
+                listeners[i].call(context, $0, $1, $2, $3, $4);
             }
         };
         /**
@@ -370,22 +530,23 @@ var entitas;
          */
         Signal.prototype.add = function (listener) {
             this._listeners.add(listener);
+            this.active = true;
         };
         /**
          * Remove event listener
          * @param listener
          */
         Signal.prototype.remove = function (listener) {
-            //var listeners = this._listeners;
-            //var index = listeners.indexOf(listener);
-            //if (index !== -1) listeners.splice(index, 1);
-            this._listeners.remove(listener);
+            var _listeners = this._listeners;
+            _listeners.remove(listener);
+            this.active = _listeners.size() > 0;
         };
         /**
          * Clear and reset to original alloc
          */
         Signal.prototype.clear = function () {
             this._listeners.clear();
+            this.active = false;
         };
         return Signal;
     })();
@@ -697,7 +858,9 @@ var entitas;
             this._componentsCache = undefined;
             this._componentIndicesCache = undefined;
             this._toStringCache = undefined;
-            this.onComponentAdded.dispatch(this, index, component);
+            var onComponentAdded = this.onComponentAdded;
+            if (onComponentAdded.active)
+                onComponentAdded.dispatch(this, index, component);
             return this;
         };
         Entity.prototype.removeComponent = function (index) {
@@ -727,7 +890,9 @@ var entitas;
             var components = this._components;
             var previousComponent = components[index];
             if (previousComponent === replacement) {
-                this.onComponentReplaced.dispatch(this, index, previousComponent, replacement);
+                var onComponentReplaced = this.onComponentReplaced;
+                if (onComponentReplaced.active)
+                    onComponentReplaced.dispatch(this, index, previousComponent, replacement);
             }
             else {
                 components[index] = replacement;
@@ -736,10 +901,14 @@ var entitas;
                     delete components[index];
                     this._componentIndicesCache = undefined;
                     this._toStringCache = undefined;
-                    this.onComponentRemoved.dispatch(this, index, previousComponent);
+                    var onComponentRemoved = this.onComponentRemoved;
+                    if (onComponentRemoved.active)
+                        onComponentRemoved.dispatch(this, index, previousComponent);
                 }
                 else {
-                    this.onComponentReplaced.dispatch(this, index, previousComponent, replacement);
+                    var onComponentReplaced = this.onComponentReplaced;
+                    if (onComponentReplaced.active)
+                        onComponentReplaced.dispatch(this, index, previousComponent, replacement);
                 }
             }
         };
@@ -837,7 +1006,9 @@ var entitas;
         Entity.prototype.release = function () {
             this._refCount -= 1;
             if (this._refCount === 0) {
-                this.onEntityReleased.dispatch(this);
+                var onEntityReleased = this.onEntityReleased;
+                if (onEntityReleased.active)
+                    onEntityReleased.dispatch(this);
             }
             else if (this._refCount < 0) {
                 throw new EntityIsAlreadyReleasedException();
@@ -887,9 +1058,15 @@ var entitas;
         };
         Group.prototype.updateEntity = function (entity, index, previousComponent, newComponent) {
             if (entity.creationIndex in this._entities) {
-                this.onEntityRemoved.dispatch(this, entity, index, previousComponent);
-                this.onEntityAdded.dispatch(this, entity, index, newComponent);
-                this.onEntityUpdated.dispatch(this, entity, index, previousComponent, newComponent);
+                var onEntityRemoved = this.onEntityRemoved;
+                if (onEntityRemoved.active)
+                    onEntityRemoved.dispatch(this, entity, index, previousComponent);
+                var onEntityAdded = this.onEntityAdded;
+                if (onEntityAdded.active)
+                    onEntityAdded.dispatch(this, entity, index, newComponent);
+                var onEntityUpdated = this.onEntityUpdated;
+                if (onEntityUpdated.active)
+                    onEntityUpdated.dispatch(this, entity, index, previousComponent, newComponent);
             }
         };
         Group.prototype.addEntitySilently = function (entity) {
@@ -906,7 +1083,9 @@ var entitas;
                 this._entitiesCache = undefined;
                 this._singleEntityCache = undefined;
                 entity.addRef();
-                this.onEntityAdded.dispatch(this, entity, index, component);
+                var onEntityAdded = this.onEntityAdded;
+                if (onEntityAdded.active)
+                    onEntityAdded.dispatch(this, entity, index, component);
             }
         };
         Group.prototype.removeEntitySilently = function (entity) {
@@ -922,7 +1101,9 @@ var entitas;
                 delete this._entities[entity.creationIndex];
                 this._entitiesCache = undefined;
                 this._singleEntityCache = undefined;
-                this.onEntityRemoved.dispatch(this, entity, index, component);
+                var onEntityRemoved = this.onEntityRemoved;
+                if (onEntityRemoved.active)
+                    onEntityRemoved.dispatch(this, entity, index, component);
                 entity.release();
             }
         };
@@ -1149,7 +1330,9 @@ var entitas;
             entity.onComponentRemoved.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
             entity.onComponentReplaced.add(this._cachedUpdateGroupsComponentReplaced);
             entity.onEntityReleased.add(this._cachedOnEntityReleased);
-            this.onEntityCreated.dispatch(this, entity);
+            var onEntityCreated = this.onEntityCreated;
+            if (onEntityCreated.active)
+                onEntityCreated.dispatch(this, entity);
             return entity;
         };
         /**
@@ -1162,9 +1345,13 @@ var entitas;
             }
             delete this._entities[entity.creationIndex];
             this._entitiesCache = undefined;
-            this.onEntityWillBeDestroyed.dispatch(this, entity);
+            var onEntityWillBeDestroyed = this.onEntityWillBeDestroyed;
+            if (onEntityWillBeDestroyed.active)
+                onEntityWillBeDestroyed.dispatch(this, entity);
             entity.destroy();
-            this.onEntityDestroyed.dispatch(this, entity);
+            var onEntityDestroyed = this.onEntityDestroyed;
+            if (onEntityDestroyed.active)
+                onEntityDestroyed.dispatch(this, entity);
             if (entity._refCount === 1) {
                 entity.onEntityReleased.remove(this._cachedOnEntityReleased);
                 this._reusableEntities.add(entity);
@@ -1215,7 +1402,9 @@ var entitas;
                     }
                     this._groupsForIndex[index].add(group);
                 }
-                this.onGroupCreated.dispatch(this, group);
+                var onGroupCreated = this.onGroupCreated;
+                if (onGroupCreated.active)
+                    onGroupCreated.dispatch(this, group);
             }
             return group;
         };

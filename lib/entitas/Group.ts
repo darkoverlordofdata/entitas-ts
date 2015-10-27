@@ -70,9 +70,12 @@ module entitas {
     public updateEntity(entity:Entity, index:number, previousComponent:IComponent, newComponent:IComponent) {
       if (entity.creationIndex in this._entities) {
 
-        this.onEntityRemoved.dispatch(this, entity, index, previousComponent);
-        this.onEntityAdded.dispatch(this, entity, index, newComponent);
-        this.onEntityUpdated.dispatch(this, entity, index, previousComponent, newComponent);
+        var onEntityRemoved:any = this.onEntityRemoved;
+        if (onEntityRemoved.active) onEntityRemoved.dispatch(this, entity, index, previousComponent);
+        var onEntityAdded:any = this.onEntityAdded;
+        if (onEntityAdded.active) onEntityAdded.dispatch(this, entity, index, newComponent);
+        var onEntityUpdated:any = this.onEntityUpdated;
+        if (onEntityUpdated.active) onEntityUpdated.dispatch(this, entity, index, previousComponent, newComponent);
 
       }
     }
@@ -92,7 +95,8 @@ module entitas {
         this._entitiesCache = undefined;
         this._singleEntityCache = undefined;
         entity.addRef();
-        this.onEntityAdded.dispatch(this, entity, index, component)
+        var onEntityAdded:any = this.onEntityAdded;
+        if (onEntityAdded.active) onEntityAdded.dispatch(this, entity, index, component)
 
       }
     }
@@ -111,7 +115,8 @@ module entitas {
         delete this._entities[entity.creationIndex];
         this._entitiesCache = undefined;
         this._singleEntityCache = undefined;
-        this.onEntityRemoved.dispatch(this, entity, index, component);
+        var onEntityRemoved:any = this.onEntityRemoved;
+        if (onEntityRemoved.active) onEntityRemoved.dispatch(this, entity, index, component);
         entity.release();
       }
     }

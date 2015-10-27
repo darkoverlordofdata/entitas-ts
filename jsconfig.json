@@ -1,5 +1,8 @@
 {
   "files": [
+    "web/src/entitas/utils/UUID.js",
+    "web/src/entitas/utils/Map.js",
+    "web/src/entitas/utils/HashMap.js",
     "web/src/entitas/utils/ImmutableBag.js",
     "web/src/entitas/utils/Bag.js",
     "web/src/entitas/utils/Exceptions.js",

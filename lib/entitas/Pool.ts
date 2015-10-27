@@ -126,7 +126,8 @@ module entitas {
       entity.onComponentReplaced.add(this._cachedUpdateGroupsComponentReplaced);
       entity.onEntityReleased.add(this._cachedOnEntityReleased);
 
-      this.onEntityCreated.dispatch(this, entity);
+      var onEntityCreated:any = this.onEntityCreated;
+      if (onEntityCreated.active) onEntityCreated.dispatch(this, entity);
       return entity;
     }
 
@@ -141,10 +142,12 @@ module entitas {
       }
       delete this._entities[entity.creationIndex];
       this._entitiesCache = undefined;
-      this.onEntityWillBeDestroyed.dispatch(this, entity);
+      var onEntityWillBeDestroyed:any = this.onEntityWillBeDestroyed;
+      if (onEntityWillBeDestroyed.active) onEntityWillBeDestroyed.dispatch(this, entity);
       entity.destroy();
 
-      this.onEntityDestroyed.dispatch(this, entity);
+      var onEntityDestroyed:any = this.onEntityDestroyed;
+      if (onEntityDestroyed.active) onEntityDestroyed.dispatch(this, entity);
 
       if (entity._refCount === 1) {
         entity.onEntityReleased.remove(this._cachedOnEntityReleased);
@@ -205,7 +208,8 @@ module entitas {
           }
           this._groupsForIndex[index].add(group);
         }
-          this.onGroupCreated.dispatch(this, group);
+        var onGroupCreated:any = this.onGroupCreated;
+        if (onGroupCreated.active) onGroupCreated.dispatch(this, group);
       }
       return group;
     }
@@ -237,39 +241,5 @@ module entitas {
       delete this._retainedEntities[entity.creationIndex];
       this._reusableEntities.add(entity);
     };
-
-
-
-
-    //public createSystem(system) {
-    //  if ('function' === typeof system) {
-    //    var Klass:any = system;
-    //    system = new Klass();
-    //  }
-    //
-    //  Pool.setPool(system, this);
-    //
-    //  //    return method1 in obj ? obj : null;
-    //
-    //  var reactiveSystem = as(system, 'trigger');
-    //  if (reactiveSystem != null) {
-    //    return new ReactiveSystem(this, reactiveSystem);
-    //  }
-    //  var multiReactiveSystem = as(system, 'triggers');
-    //  if (multiReactiveSystem != null) {
-    //    return new ReactiveSystem(this, multiReactiveSystem);
-    //  }
-    //
-    //  return system;
-    //}
-
-    //public static setPool(system:ISystem, pool:Pool) {
-    //  var poolSystem = as(system, 'setPool');
-    //  if (poolSystem != null) {
-    //    poolSystem.setPool(pool);
-    //  }
-    //
-    //}
-
   }
 }

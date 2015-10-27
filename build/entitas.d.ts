@@ -1,4 +1,68 @@
 declare module entitas {
+    class UUID {
+        /**
+         * Fast UUID generator, RFC4122 version 4 compliant
+         * format xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+         *
+         * @author Jeff Ward (jcward.com).
+         * @license MIT license
+         * @link http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
+         **/
+        static randomUUID(): string;
+    }
+}
+declare module entitas {
+    interface Map<K, V> {
+        clear(): any;
+        containsKey(key: any): boolean;
+        containsValue(value: any): boolean;
+        get(key: any): any;
+        isEmpty(): boolean;
+        put(key: any, value: any): any;
+        remove(key: any): any;
+        size(): number;
+        values(): any;
+    }
+}
+declare module entitas {
+    /**
+     * For documenting where Function refers to a class definition
+     */
+    interface Class extends Function {
+    }
+    /**
+     * Gets Class Metadata - Name
+     *
+     * @param {Function} klass
+     * @return {string}
+     */
+    function getClassName(klass: any): any;
+    /**
+     * HashMap
+     *
+     * Allow object as key.
+     */
+    class HashMap<K, V> implements Map<K, V> {
+        private map_;
+        private keys_;
+        constructor();
+        clear(): void;
+        values(): any[];
+        contains(value: any): boolean;
+        containsKey(key: any): boolean;
+        containsValue(value: any): boolean;
+        get(key: any): any;
+        isEmpty(): boolean;
+        keys(): any[];
+        /**
+         * if key is a string, use as is, else use key.id_ or key.name
+         */
+        put(key: any, value: any): void;
+        remove(key: any): any;
+        size(): number;
+    }
+}
+declare module entitas {
     interface ImmutableBag<E> {
         get(index: number): E;
         size(): number;
@@ -12,7 +76,7 @@ declare module entitas {
      * entities, speedwise it is very good, especially suited for games.
      */
     class Bag<E> extends Array implements ImmutableBag<E> {
-        private size_;
+        size_: number;
         /**
          * Constructs an empty Bag with the specified initial capacity.
          * Constructs an empty Bag with an initial capacity of 64.
@@ -173,6 +237,7 @@ declare module entitas {
     }
 }
 declare module entitas {
+    import Bag = entitas.Bag;
     interface ISignal<T> {
         dispatch(...args: any[]): void;
         add(listener: T): void;
@@ -180,10 +245,10 @@ declare module entitas {
         remove(listener: T): void;
     }
     class Signal<T> implements ISignal<T> {
-        private _listeners;
+        _listeners: Bag<T>;
         private _context;
-        private _size;
         private _alloc;
+        active: boolean;
         /**
          *
          * @param context
@@ -192,9 +257,14 @@ declare module entitas {
         constructor(context: any, alloc?: number);
         /**
          * Dispatch event
-         * @param args
+         *
+         * @param $0
+         * @param $1
+         * @param $2
+         * @param $3
+         * @param $4
          */
-        dispatch(...args: any[]): void;
+        dispatch($0?: any, $1?: any, $2?: any, $3?: any, $4?: any): void;
         /**
          * Add event listener
          * @param listener
