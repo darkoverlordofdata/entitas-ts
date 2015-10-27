@@ -16,7 +16,8 @@ module entitas {
      *            the initial capacity of Bag
      */
     constructor(capacity:number = 64) {
-      super(capacity);
+      super();
+      this.length = capacity;
     }
 
     /**
