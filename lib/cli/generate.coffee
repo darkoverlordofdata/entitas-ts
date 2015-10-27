@@ -124,7 +124,7 @@ module.exports =
         else
           js.push "  Entity._#{name}ComponentPool = new Bag();"
           js.push "  Entity.clear#{Name}ComponentPool = function() {"
-          js.push "    Entity._#{name}ComponentPool.length = 0;"
+          js.push "    Entity._#{name}ComponentPool.clear();"
           js.push "  };"
           js.push "  Object.defineProperty(Entity.prototype, '#{name}', {"
           js.push "    get: function() {"
