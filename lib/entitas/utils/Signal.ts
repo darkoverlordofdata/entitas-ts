@@ -1,6 +1,6 @@
-module entitas {
+module entitas.utils {
 
-  import Bag = entitas.Bag;
+  import Bag = entitas.utils.Bag;
 
   export interface ISignal<T> {
     dispatch(...args:any[]):void;

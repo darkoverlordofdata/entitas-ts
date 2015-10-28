@@ -8,7 +8,7 @@ module entitas.browser {
 
   import Pool = entitas.Pool;
   import Systems = entitas.Systems;
-  import Stopwatch = entitas.Stopwatch;
+  import Stopwatch = entitas.utils.Stopwatch;
   /** todo: SystemObserver track time spent in ms by system */
 
   export var gui;

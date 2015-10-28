@@ -64,6 +64,7 @@ module.exports =
     js.push "  var Pool = entitas.Pool;"
     js.push "  var Entity = entitas.Entity;"
     js.push "  var Matcher = entitas.Matcher;"
+    js.push "  var SingleEntityException = entitas.SingleEntityException;"
     for Name, properties of config.components
       js.push "  var #{Name}Component = #{config.namespace}.#{Name}Component;"
     js.push "  var CoreComponentIds = #{config.namespace}.CoreComponentIds;"

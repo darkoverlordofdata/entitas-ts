@@ -1,4 +1,4 @@
-module entitas {
+module entitas.utils {
 
   /**
    * For documenting where Function refers to a class definition

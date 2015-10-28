@@ -1,8 +1,7 @@
 module entitas {
 
-  import BitSet = entitas.BitSet;
-  import Signal = entitas.Signal;
-  import ISignal = entitas.ISignal;
+  import Signal = entitas.utils.Signal;
+  import ISignal = entitas.utils.ISignal;
   import IComponent = entitas.IComponent;
   import EntityChanged = Entity.EntityChanged;
   import EntityReleased = Entity.EntityReleased;

@@ -1,4 +1,4 @@
-module entitas {
+module entitas.utils {
 
   /**
    * Collection type a bit like ArrayList but does not preserve the order of its

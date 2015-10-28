@@ -1,4 +1,4 @@
-module entitas {
+module entitas.utils {
   /*
    * BitSets are packed into arrays of "words."  Currently a word
    * consists of 32 bits, requiring 5 address bits.

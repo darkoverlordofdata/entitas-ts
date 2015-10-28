@@ -1,4 +1,4 @@
-module entitas {
+module entitas.utils {
 
   export class Stopwatch {
     public get isRunning():boolean {

@@ -1,11 +1,12 @@
 module entitas {
 
-  import Bag = entitas.Bag;
-  import ImmutableBag = entitas.ImmutableBag;
+  import Bag = entitas.utils.Bag;
+  import ImmutableBag = entitas.utils.ImmutableBag;
 
   import Group = entitas.Group;
   import Entity = entitas.Entity;
-  import ISignal = entitas.ISignal;
+  import Signal = entitas.utils.Signal;
+  import ISignal = entitas.utils.ISignal;
   import IMatcher = entitas.IMatcher;
   import ISetPool = entitas.ISetPool;
   import PoolChanged = Pool.PoolChanged;

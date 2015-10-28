@@ -1,7 +1,6 @@
 module entitas {
 
   import Entity = entitas.Entity;
-  import BitSet = entitas.BitSet;
   import Component = entitas.IComponent;
   import IAllOfMatcher = entitas.IAllOfMatcher;
   import IAnyOfMatcher = entitas.IAnyOfMatcher;

@@ -1,8 +1,8 @@
 module entitas {
 
   import Entity = entitas.Entity;
-  import Signal = entitas.Signal;
-  import ISignal = entitas.ISignal;
+  import Signal = entitas.utils.Signal;
+  import ISignal = entitas.utils.ISignal;
   import IMatcher = entitas.IMatcher;
   import IComponent = entitas.IComponent;
   import GroupChanged = Group.GroupChanged;

@@ -6,7 +6,7 @@
     "web/src/entitas/utils/ImmutableBag.js",
     "web/src/entitas/utils/Bag.js",
     "web/src/entitas/utils/BitSet.js",
-    "web/src/entitas/utils/Exceptions.js",
+    "web/src/entitas/Exceptions.js",
     "web/src/entitas/utils/Signal.js",
     "web/src/entitas/utils/Stopwatch.js",
     "web/src/entitas/interfaces/IComponent.js",
