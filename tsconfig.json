@@ -24,20 +24,20 @@
     "lib/entitas/interfaces/IExecuteSystem.ts",
     "lib/entitas/interfaces/IInitializeSystem.ts",
     "lib/entitas/interfaces/IReactiveSystem.ts",
+    "lib/entitas/Exceptions.ts",
     "lib/entitas/matcher/Matcher.ts",
     "lib/entitas/matcher/MatcherInterfaces.ts",
     "lib/entitas/matcher/TriggerOnEvent.ts",
-    "lib/entitas/extensions/CollectionExtension.ts",
-    "lib/entitas/extensions/GroupExtension.ts",
-    "lib/entitas/extensions/MatcherExtension.ts",
-    "lib/entitas/extensions/PoolExtension.ts",
-    "lib/entitas/browser/VisualDebugging.ts",
-    "lib/entitas/Exceptions.ts",
     "lib/entitas/Entity.ts",
     "lib/entitas/Group.ts",
     "lib/entitas/GroupObserver.ts",
     "lib/entitas/Pool.ts",
     "lib/entitas/ReactiveSystem.ts",
-    "lib/entitas/Systems.ts"
+    "lib/entitas/Systems.ts",
+    "lib/entitas/extensions/CollectionExtension.ts",
+    "lib/entitas/extensions/GroupExtension.ts",
+    "lib/entitas/extensions/MatcherExtension.ts",
+    "lib/entitas/extensions/PoolExtension.ts",
+    "lib/entitas/browser/VisualDebugging.ts"
   ]
 }

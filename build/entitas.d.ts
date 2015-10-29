@@ -326,6 +326,40 @@ declare module entitas {
     }
 }
 declare module entitas {
+    class Exception {
+        message: string;
+        constructor(message: any);
+        toString(): string;
+    }
+    class EntityAlreadyHasComponentException extends Exception {
+        constructor(message: string, index: number);
+    }
+    class EntityDoesNotHaveComponentException extends Exception {
+        constructor(message: string, index: number);
+    }
+    class EntityIsNotEnabledException extends Exception {
+        constructor(message: string);
+    }
+    class EntityIsAlreadyReleasedException extends Exception {
+        constructor();
+    }
+    class SingleEntityException extends Exception {
+        constructor(matcher: IMatcher);
+    }
+    class GroupObserverException extends Exception {
+        constructor(message: string);
+    }
+    class PoolDoesNotContainEntityException extends Exception {
+        constructor(entity: Entity, message: string);
+    }
+    class EntityIsNotDestroyedException extends Exception {
+        constructor(message: string);
+    }
+    class MatcherException extends Exception {
+        constructor(matcher: IMatcher);
+    }
+}
+declare module entitas {
     import Entity = entitas.Entity;
     import IAllOfMatcher = entitas.IAllOfMatcher;
     import IAnyOfMatcher = entitas.IAnyOfMatcher;
@@ -390,100 +424,6 @@ declare module entitas {
         trigger: IMatcher;
         eventType: GroupEventType;
         constructor(trigger: IMatcher, eventType: GroupEventType);
-    }
-}
-declare module entitas.extensions {
-    import Entity = entitas.Entity;
-    class Collection extends Array {
-        constructor($0: any);
-        singleEntity(): Entity;
-    }
-}
-declare module entitas.extensions {
-}
-declare module entitas.extensions {
-}
-declare module entitas.extensions {
-}
-/**
- * Inspired by Unity
- */
-declare module entitas.browser {
-    import Pool = entitas.Pool;
-    /** todo: SystemObserver track time spent in ms by system */
-    var gui: any;
-    class VisualDebugging {
-        static _controllers: any;
-        static _entities: any;
-        static _pools: any;
-        static _systems: any;
-        static init(pool: Pool): void;
-    }
-    /**
-     * Profiler class for Entities
-     */
-    class EntityBehavior {
-        protected obj: any;
-        name: string;
-        private _name;
-        constructor(obj: any);
-    }
-    /**
-     * Profiler class for Systems
-     */
-    class SystemObserver {
-        protected _systems: any;
-        name: string;
-        Systems: string;
-        initialize: string;
-        execute: string;
-        constructor(_systems: any);
-    }
-    /**
-     * Profiler class for Pools
-     */
-    class PoolObserver {
-        protected _pool: any;
-        name: string;
-        Pool: string;
-        entities: string;
-        reusable: string;
-        protected _groups: any;
-        constructor(_pool: any);
-    }
-}
-declare module entitas {
-    class Exception {
-        message: string;
-        constructor(message: any);
-        toString(): string;
-    }
-    class EntityAlreadyHasComponentException extends Exception {
-        constructor(message: string, index: number);
-    }
-    class EntityDoesNotHaveComponentException extends Exception {
-        constructor(message: string, index: number);
-    }
-    class EntityIsNotEnabledException extends Exception {
-        constructor(message: string);
-    }
-    class EntityIsAlreadyReleasedException extends Exception {
-        constructor();
-    }
-    class SingleEntityException extends Exception {
-        constructor(matcher: IMatcher);
-    }
-    class GroupObserverException extends Exception {
-        constructor(message: string);
-    }
-    class PoolDoesNotContainEntityException extends Exception {
-        constructor(entity: Entity, message: string);
-    }
-    class EntityIsNotDestroyedException extends Exception {
-        constructor(message: string);
-    }
-    class MatcherException extends Exception {
-        constructor(matcher: IMatcher);
     }
 }
 declare module entitas {
@@ -751,5 +691,65 @@ declare module entitas {
         initialize(): void;
         execute(): void;
         clearReactiveSystems(): void;
+    }
+}
+declare module entitas.extensions {
+    import Entity = entitas.Entity;
+    class Collection extends Array {
+        constructor($0: any);
+        singleEntity(): Entity;
+    }
+}
+declare module entitas.extensions {
+}
+declare module entitas.extensions {
+}
+declare module entitas.extensions {
+}
+/**
+ * Inspired by Unity
+ */
+declare module entitas.browser {
+    import Pool = entitas.Pool;
+    /** todo: SystemObserver track time spent in ms by system */
+    var gui: any;
+    class VisualDebugging {
+        static _controllers: any;
+        static _entities: any;
+        static _pools: any;
+        static _systems: any;
+        static init(pool: Pool): void;
+    }
+    /**
+     * Profiler class for Entities
+     */
+    class EntityBehavior {
+        protected obj: any;
+        name: string;
+        private _name;
+        constructor(obj: any);
+    }
+    /**
+     * Profiler class for Systems
+     */
+    class SystemObserver {
+        protected _systems: any;
+        name: string;
+        Systems: string;
+        initialize: string;
+        execute: string;
+        constructor(_systems: any);
+    }
+    /**
+     * Profiler class for Pools
+     */
+    class PoolObserver {
+        protected _pool: any;
+        name: string;
+        Pool: string;
+        entities: string;
+        reusable: string;
+        protected _groups: any;
+        constructor(_pool: any);
     }
 }
