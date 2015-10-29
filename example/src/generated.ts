@@ -56,20 +56,20 @@ module example {
     
     static get allPools():Array<Pool> {
       if (Pools._allPools == null) {
-        Pools._allPools = [Pools.core];
+        Pools._allPools = [Pools.pool];
       }
       return Pools._allPools;
     }
     
-    static _core:Pool;
+    static _pool:Pool;
     
-    static get core():Pool {
-      if (Pools._core == null) {
-        Pools._core = new Pool(CoreComponentIds, CoreComponentIds.TotalComponents);
-        entitas.browser.VisualDebugging.init(Pools._core);
+    static get pool():Pool {
+      if (Pools._pool == null) {
+        Pools._pool = new Pool(CoreComponentIds, CoreComponentIds.TotalComponents);
+        entitas.browser.VisualDebugging.init(Pools._pool);
       }
     
-      return Pools._core;
+      return Pools._pool;
     }
   }
 }

@@ -9,7 +9,7 @@ module example {
 
     start() {
 
-      this.systems = this.createSystems(Pools.core);
+      this.systems = this.createSystems(Pools.pool);
       this.systems.initialize();
 
     }
