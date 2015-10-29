@@ -1,5 +1,6 @@
 module entitas {
 
+  import UUID = entitas.utils.UUID;
   import Bag = entitas.utils.Bag;
   import ImmutableBag = entitas.utils.ImmutableBag;
 
@@ -119,8 +120,9 @@ module entitas {
       entity._isEnabled = true;
       entity.name = name;
       entity._creationIndex = this._creationIndex++;
+      entity.id = UUID.randomUUID()
       entity.addRef();
-      this._entities[entity.creationIndex] = entity;
+      this._entities[entity.id] = entity;
       this._entitiesCache = undefined;
       entity.onComponentAdded.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
       entity.onComponentRemoved.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
@@ -137,11 +139,11 @@ module entitas {
      * @param entity
      */
     public destroyEntity(entity:Entity) {
-      if (!(entity.creationIndex in this._entities)) {
+      if (!(entity.id in this._entities)) {
         throw new PoolDoesNotContainEntityException(entity,
           "Could not destroy entity!");
       }
-      delete this._entities[entity.creationIndex];
+      delete this._entities[entity.id];
       this._entitiesCache = undefined;
       var onEntityWillBeDestroyed:any = this.onEntityWillBeDestroyed;
       if (onEntityWillBeDestroyed.active) onEntityWillBeDestroyed.dispatch(this, entity);
@@ -154,7 +156,7 @@ module entitas {
         entity.onEntityReleased.remove(this._cachedOnEntityReleased);
         this._reusableEntities.add(entity);
       } else {
-        this._retainedEntities[entity.creationIndex] = entity;
+        this._retainedEntities[entity.id] = entity;
       }
       entity.release();
 
@@ -168,7 +170,7 @@ module entitas {
     }
 
     public hasEntity(entity:Entity):boolean {
-      return entity.creationIndex in this._entities
+      return entity.id in this._entities
     }
 
 
@@ -239,7 +241,7 @@ module entitas {
         throw new EntityIsNotDestroyedException("Cannot release entity.");
       }
       entity.onEntityReleased.remove(this._cachedOnEntityReleased);
-      delete this._retainedEntities[entity.creationIndex];
+      delete this._retainedEntities[entity.id];
       this._reusableEntities.add(entity);
     };
   }

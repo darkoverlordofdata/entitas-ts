@@ -38,12 +38,12 @@ module entitas.browser {
 
         pool.onEntityCreated.add((pool, entity:Entity) => {
           var proxy = new EntityBehavior(entity);
-          VisualDebugging._controllers[entity.creationIndex] = VisualDebugging._entities.add(proxy, proxy.name).listen();
+          VisualDebugging._controllers[entity.id] = VisualDebugging._entities.add(proxy, proxy.name).listen();
         });
 
         pool.onEntityDestroyed.add((pool, entity:Entity) => {
-          var controller = VisualDebugging._controllers[entity.creationIndex];
-          delete VisualDebugging._controllers[entity.creationIndex];
+          var controller = VisualDebugging._controllers[entity.id];
+          delete VisualDebugging._controllers[entity.id];
           VisualDebugging._entities.remove(controller);
         });
 

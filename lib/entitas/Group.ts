@@ -68,7 +68,7 @@ module entitas {
     }
 
     public updateEntity(entity:Entity, index:number, previousComponent:IComponent, newComponent:IComponent) {
-      if (entity.creationIndex in this._entities) {
+      if (entity.id in this._entities) {
 
         var onEntityRemoved:any = this.onEntityRemoved;
         if (onEntityRemoved.active) onEntityRemoved.dispatch(this, entity, index, previousComponent);
@@ -81,8 +81,8 @@ module entitas {
     }
 
     public addEntitySilently(entity:Entity) {
-      if (!(entity.creationIndex in this._entities)) {
-        this._entities[entity.creationIndex] = entity;
+      if (!(entity.id in this._entities)) {
+        this._entities[entity.id] = entity;
         this._entitiesCache = undefined;
         this._singleEntityCache = undefined;
         entity.addRef();
@@ -90,8 +90,8 @@ module entitas {
     }
 
     public addEntity(entity:Entity, index:number, component:IComponent) {
-      if (!(entity.creationIndex in this._entities)) {
-        this._entities[entity.creationIndex] = entity;
+      if (!(entity.id in this._entities)) {
+        this._entities[entity.id] = entity;
         this._entitiesCache = undefined;
         this._singleEntityCache = undefined;
         entity.addRef();
@@ -102,8 +102,8 @@ module entitas {
     }
 
     public removeEntitySilently(entity:Entity) {
-      if (entity.creationIndex in this._entities) {
-        delete this._entities[entity.creationIndex];
+      if (entity.id in this._entities) {
+        delete this._entities[entity.id];
         this._entitiesCache = undefined;
         this._singleEntityCache = undefined;
         entity.release();
@@ -111,8 +111,8 @@ module entitas {
     }
 
     public removeEntity(entity:Entity, index:number, component:IComponent) {
-      if (entity.creationIndex in this._entities) {
-        delete this._entities[entity.creationIndex];
+      if (entity.id in this._entities) {
+        delete this._entities[entity.id];
         this._entitiesCache = undefined;
         this._singleEntityCache = undefined;
         var onEntityRemoved:any = this.onEntityRemoved;
@@ -122,7 +122,7 @@ module entitas {
     }
 
     public containsEntity(entity:Entity):boolean {
-      return entity.creationIndex in this._entities;
+      return entity.id in this._entities;
     }
 
     public getEntities():Entity[] {

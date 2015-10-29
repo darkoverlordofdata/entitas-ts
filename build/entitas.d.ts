@@ -1,76 +1,4 @@
-declare module entitas {
-    class UUID {
-        /**
-         * Fast UUID generator, RFC4122 version 4 compliant
-         * format xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
-         *
-         * @author Jeff Ward (jcward.com).
-         * @license MIT license
-         * @link http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
-         **/
-        static randomUUID(): string;
-    }
-}
-declare module entitas {
-    interface Map<K, V> {
-        clear(): any;
-        containsKey(key: any): boolean;
-        containsValue(value: any): boolean;
-        get(key: any): any;
-        isEmpty(): boolean;
-        put(key: any, value: any): any;
-        remove(key: any): any;
-        size(): number;
-        values(): any;
-    }
-}
-declare module entitas {
-    /**
-     * For documenting where Function refers to a class definition
-     */
-    interface Class extends Function {
-    }
-    /**
-     * Gets Class Metadata - Name
-     *
-     * @param {Function} klass
-     * @return {string}
-     */
-    function getClassName(klass: any): any;
-    /**
-     * HashMap
-     *
-     * Allow object as key.
-     */
-    class HashMap<K, V> implements Map<K, V> {
-        private map_;
-        private keys_;
-        constructor();
-        clear(): void;
-        values(): any[];
-        contains(value: any): boolean;
-        containsKey(key: any): boolean;
-        containsValue(value: any): boolean;
-        get(key: any): any;
-        isEmpty(): boolean;
-        keys(): any[];
-        /**
-         * if key is a string, use as is, else use key.id_ or key.name
-         */
-        put(key: any, value: any): void;
-        remove(key: any): any;
-        size(): number;
-    }
-}
-declare module entitas {
-    interface ImmutableBag<E> {
-        get(index: number): E;
-        size(): number;
-        isEmpty(): boolean;
-        contains(e: E): boolean;
-    }
-}
-declare module entitas {
+declare module entitas.utils {
     /**
      * Collection type a bit like ArrayList but does not preserve the order of its
      * entities, speedwise it is very good, especially suited for games.
@@ -202,42 +130,80 @@ declare module entitas {
         addAll(items: ImmutableBag<E>): void;
     }
 }
-declare module entitas {
-    class Exception {
-        message: string;
-        constructor(message: any);
-        toString(): string;
-    }
-    class EntityAlreadyHasComponentException extends Exception {
-        constructor(message: string, index: number);
-    }
-    class EntityDoesNotHaveComponentException extends Exception {
-        constructor(message: string, index: number);
-    }
-    class EntityIsNotEnabledException extends Exception {
-        constructor(message: string);
-    }
-    class EntityIsAlreadyReleasedException extends Exception {
-        constructor();
-    }
-    class SingleEntityException extends Exception {
-        constructor(matcher: IMatcher);
-    }
-    class GroupObserverException extends Exception {
-        constructor(message: string);
-    }
-    class PoolDoesNotContainEntityException extends Exception {
-        constructor(entity: Entity, message: string);
-    }
-    class EntityIsNotDestroyedException extends Exception {
-        constructor(message: string);
-    }
-    class MatcherException extends Exception {
-        constructor(matcher: IMatcher);
+declare module entitas.utils {
+    class BitSet {
+        private words_;
+        constructor(nbits?: number);
+        nextSetBit(fromIndex: number): number;
+        intersects(set: BitSet): boolean;
+        hasAll(set: BitSet): boolean;
+        isEmpty(): boolean;
+        set(bitIndex: number, value?: boolean): number;
+        get(bitIndex: number): boolean;
+        clear(bitIndex?: number): number;
     }
 }
-declare module entitas {
-    import Bag = entitas.Bag;
+declare module entitas.utils {
+    /**
+     * For documenting where Function refers to a class definition
+     */
+    interface Class extends Function {
+    }
+    /**
+     * Gets Class Metadata - Name
+     *
+     * @param {Function} klass
+     * @return {string}
+     */
+    function getClassName(klass: any): any;
+    /**
+     * HashMap
+     *
+     * Allow object as key.
+     */
+    class HashMap<K, V> implements Map<K, V> {
+        private map_;
+        private keys_;
+        constructor();
+        clear(): void;
+        values(): any[];
+        contains(value: any): boolean;
+        containsKey(key: any): boolean;
+        containsValue(value: any): boolean;
+        get(key: any): any;
+        isEmpty(): boolean;
+        keys(): any[];
+        /**
+         * if key is a string, use as is, else use key.id_ or key.name
+         */
+        put(key: any, value: any): void;
+        remove(key: any): any;
+        size(): number;
+    }
+}
+declare module entitas.utils {
+    interface ImmutableBag<E> {
+        get(index: number): E;
+        size(): number;
+        isEmpty(): boolean;
+        contains(e: E): boolean;
+    }
+}
+declare module entitas.utils {
+    interface Map<K, V> {
+        clear(): any;
+        containsKey(key: any): boolean;
+        containsValue(value: any): boolean;
+        get(key: any): any;
+        isEmpty(): boolean;
+        put(key: any, value: any): any;
+        remove(key: any): any;
+        size(): number;
+        values(): any;
+    }
+}
+declare module entitas.utils {
+    import Bag = entitas.utils.Bag;
     interface ISignal<T> {
         dispatch(...args: any[]): void;
         add(listener: T): void;
@@ -281,7 +247,7 @@ declare module entitas {
         clear(): void;
     }
 }
-declare module entitas {
+declare module entitas.utils {
     class Stopwatch {
         isRunning: boolean;
         startTimeStamp: number;
@@ -295,6 +261,19 @@ declare module entitas {
         stop(): void;
         reset(): void;
         static getTimeStamp(): number;
+    }
+}
+declare module entitas.utils {
+    class UUID {
+        /**
+         * Fast UUID generator, RFC4122 version 4 compliant
+         * format xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+         *
+         * @author Jeff Ward (jcward.com).
+         * @license MIT license
+         * @link http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
+         **/
+        static randomUUID(): string;
     }
 }
 declare module entitas {
@@ -413,8 +392,102 @@ declare module entitas {
         constructor(trigger: IMatcher, eventType: GroupEventType);
     }
 }
+declare module entitas.extensions {
+    import Entity = entitas.Entity;
+    class Collection extends Array {
+        constructor($0: any);
+        singleEntity(): Entity;
+    }
+}
+declare module entitas.extensions {
+}
+declare module entitas.extensions {
+}
+declare module entitas.extensions {
+}
+/**
+ * Inspired by Unity
+ */
+declare module entitas.browser {
+    import Pool = entitas.Pool;
+    /** todo: SystemObserver track time spent in ms by system */
+    var gui: any;
+    class VisualDebugging {
+        static _controllers: any;
+        static _entities: any;
+        static _pools: any;
+        static _systems: any;
+        static init(pool: Pool): void;
+    }
+    /**
+     * Profiler class for Entities
+     */
+    class EntityBehavior {
+        protected obj: any;
+        name: string;
+        private _name;
+        constructor(obj: any);
+    }
+    /**
+     * Profiler class for Systems
+     */
+    class SystemObserver {
+        protected _systems: any;
+        name: string;
+        Systems: string;
+        initialize: string;
+        execute: string;
+        constructor(_systems: any);
+    }
+    /**
+     * Profiler class for Pools
+     */
+    class PoolObserver {
+        protected _pool: any;
+        name: string;
+        Pool: string;
+        entities: string;
+        reusable: string;
+        protected _groups: any;
+        constructor(_pool: any);
+    }
+}
 declare module entitas {
-    import ISignal = entitas.ISignal;
+    class Exception {
+        message: string;
+        constructor(message: any);
+        toString(): string;
+    }
+    class EntityAlreadyHasComponentException extends Exception {
+        constructor(message: string, index: number);
+    }
+    class EntityDoesNotHaveComponentException extends Exception {
+        constructor(message: string, index: number);
+    }
+    class EntityIsNotEnabledException extends Exception {
+        constructor(message: string);
+    }
+    class EntityIsAlreadyReleasedException extends Exception {
+        constructor();
+    }
+    class SingleEntityException extends Exception {
+        constructor(matcher: IMatcher);
+    }
+    class GroupObserverException extends Exception {
+        constructor(message: string);
+    }
+    class PoolDoesNotContainEntityException extends Exception {
+        constructor(entity: Entity, message: string);
+    }
+    class EntityIsNotDestroyedException extends Exception {
+        constructor(message: string);
+    }
+    class MatcherException extends Exception {
+        constructor(matcher: IMatcher);
+    }
+}
+declare module entitas {
+    import ISignal = entitas.utils.ISignal;
     import IComponent = entitas.IComponent;
     import EntityChanged = Entity.EntityChanged;
     import EntityReleased = Entity.EntityReleased;
@@ -451,6 +524,7 @@ declare module entitas {
         onComponentRemoved: IEntityChanged<EntityChanged>;
         onComponentReplaced: Entity.IComponentReplaced<ComponentReplaced>;
         name: string;
+        id: string;
         _creationIndex: number;
         _isEnabled: boolean;
         _components: any;
@@ -479,7 +553,7 @@ declare module entitas {
 }
 declare module entitas {
     import Entity = entitas.Entity;
-    import ISignal = entitas.ISignal;
+    import ISignal = entitas.utils.ISignal;
     import IMatcher = entitas.IMatcher;
     import IComponent = entitas.IComponent;
     import GroupChanged = Group.GroupChanged;
@@ -552,10 +626,10 @@ declare module entitas {
     }
 }
 declare module entitas {
-    import Bag = entitas.Bag;
+    import Bag = entitas.utils.Bag;
     import Group = entitas.Group;
     import Entity = entitas.Entity;
-    import ISignal = entitas.ISignal;
+    import ISignal = entitas.utils.ISignal;
     import IMatcher = entitas.IMatcher;
     import PoolChanged = Pool.PoolChanged;
     import IComponent = entitas.IComponent;
@@ -677,65 +751,5 @@ declare module entitas {
         initialize(): void;
         execute(): void;
         clearReactiveSystems(): void;
-    }
-}
-declare module entitas.extensions {
-    import Entity = entitas.Entity;
-    class Collection extends Array {
-        constructor($0: any);
-        singleEntity(): Entity;
-    }
-}
-declare module entitas.extensions {
-}
-declare module entitas.extensions {
-}
-declare module entitas.extensions {
-}
-/**
- * Inspired by Unity
- */
-declare module entitas.browser {
-    import Pool = entitas.Pool;
-    /** todo: SystemObserver track time spent in ms by system */
-    var gui: any;
-    class VisualDebugging {
-        static _controllers: any;
-        static _entities: any;
-        static _pools: any;
-        static _systems: any;
-        static init(pool: Pool): void;
-    }
-    /**
-     * Profiler class for Entities
-     */
-    class EntityBehavior {
-        protected obj: any;
-        name: string;
-        private _name;
-        constructor(obj: any);
-    }
-    /**
-     * Profiler class for Systems
-     */
-    class SystemObserver {
-        protected _systems: any;
-        name: string;
-        Systems: string;
-        initialize: string;
-        execute: string;
-        constructor(_systems: any);
-    }
-    /**
-     * Profiler class for Pools
-     */
-    class PoolObserver {
-        protected _pool: any;
-        name: string;
-        Pool: string;
-        entities: string;
-        reusable: string;
-        protected _groups: any;
-        constructor(_pool: any);
     }
 }

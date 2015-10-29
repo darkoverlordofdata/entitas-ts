@@ -1,160 +1,3 @@
-var entitas;
-(function (entitas) {
-    var hex = [
-        "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f",
-        "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1a", "1b", "1c", "1d", "1e", "1f",
-        "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "2a", "2b", "2c", "2d", "2e", "2f",
-        "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "3a", "3b", "3c", "3d", "3e", "3f",
-        "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "4a", "4b", "4c", "4d", "4e", "4f",
-        "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "5a", "5b", "5c", "5d", "5e", "5f",
-        "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "6a", "6b", "6c", "6d", "6e", "6f",
-        "70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "7a", "7b", "7c", "7d", "7e", "7f",
-        "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "8a", "8b", "8c", "8d", "8e", "8f",
-        "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "9a", "9b", "9c", "9d", "9e", "9f",
-        "a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "aa", "ab", "ac", "ad", "ae", "af",
-        "b0", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "ba", "bb", "bc", "bd", "be", "bf",
-        "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "ca", "cb", "cc", "cd", "ce", "cf",
-        "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "da", "db", "dc", "dd", "de", "df",
-        "e0", "e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9", "ea", "eb", "ec", "ed", "ee", "ef",
-        "f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "fa", "fb", "fc", "fd", "fe", "ff"
-    ];
-    var UUID = (function () {
-        function UUID() {
-        }
-        //static check = {};
-        /**
-         * Fast UUID generator, RFC4122 version 4 compliant
-         * format xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
-         *
-         * @author Jeff Ward (jcward.com).
-         * @license MIT license
-         * @link http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
-         **/
-        UUID.randomUUID = function () {
-            var d0 = Math.random() * 0xffffffff | 0;
-            var d1 = Math.random() * 0xffffffff | 0;
-            var d2 = Math.random() * 0xffffffff | 0;
-            var d3 = Math.random() * 0xffffffff | 0;
-            return hex[d0 & 0xff] + hex[d0 >> 8 & 0xff] + hex[d0 >> 16 & 0xff] + hex[d0 >> 24 & 0xff] + '-' +
-                hex[d1 & 0xff] + hex[d1 >> 8 & 0xff] + '-' + hex[d1 >> 16 & 0x0f | 0x40] + hex[d1 >> 24 & 0xff] + '-' +
-                hex[d2 & 0x3f | 0x80] + hex[d2 >> 8 & 0xff] + '-' + hex[d2 >> 16 & 0xff] + hex[d2 >> 24 & 0xff] +
-                hex[d3 & 0xff] + hex[d3 >> 8 & 0xff] + hex[d3 >> 16 & 0xff] + hex[d3 >> 24 & 0xff];
-        };
-        return UUID;
-    })();
-    entitas.UUID = UUID;
-})(entitas || (entitas = {}));
-var entitas;
-(function (entitas) {
-    /**
-     * Gets Class Metadata - Name
-     *
-     * @param {Function} klass
-     * @return {string}
-     */
-    function getClassName(klass) {
-        return klass.className || klass.name;
-    }
-    entitas.getClassName = getClassName;
-    /**
-     * Decode HashMap key
-     *
-     * When the key is an object, we generate a unique uuid and use that as the actual key.
-     */
-    function decode(key) {
-        switch (typeof key) {
-            case 'boolean':
-                return '' + key;
-            case 'number':
-                return '' + key;
-            case 'string':
-                return '' + key;
-            case 'function':
-                return getClassName(key);
-            default:
-                key.uuid = key.uuid ? key.uuid : entitas.UUID.randomUUID();
-                return key.uuid;
-        }
-    }
-    /**
-     * HashMap
-     *
-     * Allow object as key.
-     */
-    var HashMap = (function () {
-        function HashMap() {
-            this.clear();
-        }
-        HashMap.prototype.clear = function () {
-            this.map_ = {};
-            this.keys_ = {};
-        };
-        HashMap.prototype.values = function () {
-            var result = [];
-            var map = this.map_;
-            for (var key in map) {
-                result.push(map[key]);
-            }
-            return result;
-        };
-        HashMap.prototype.contains = function (value) {
-            var map = this.map_;
-            for (var key in map) {
-                if (value === map[key]) {
-                    return true;
-                }
-            }
-            return false;
-        };
-        HashMap.prototype.containsKey = function (key) {
-            return decode(key) in this.map_;
-        };
-        HashMap.prototype.containsValue = function (value) {
-            var map = this.map_;
-            for (var key in map) {
-                if (value === map[key]) {
-                    return true;
-                }
-            }
-            return false;
-        };
-        HashMap.prototype.get = function (key) {
-            return this.map_[decode(key)];
-        };
-        HashMap.prototype.isEmpty = function () {
-            return Object.keys(this.map_).length === 0;
-        };
-        HashMap.prototype.keys = function () {
-            var keys = this.map_;
-            var result = [];
-            for (var key in keys) {
-                result.push(keys[key]);
-            }
-            return result;
-        };
-        /**
-         * if key is a string, use as is, else use key.id_ or key.name
-         */
-        HashMap.prototype.put = function (key, value) {
-            var k = decode(key);
-            this.map_[k] = value;
-            this.keys_[k] = key;
-        };
-        HashMap.prototype.remove = function (key) {
-            var map = this.map_;
-            var k = decode(key);
-            var value = map[k];
-            delete map[k];
-            delete this.keys_[k];
-            return value;
-        };
-        HashMap.prototype.size = function () {
-            return Object.keys(this.map_).length;
-        };
-        return HashMap;
-    })();
-    entitas.HashMap = HashMap;
-})(entitas || (entitas = {}));
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -162,448 +5,701 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var entitas;
 (function (entitas) {
-    /**
-     * Collection type a bit like ArrayList but does not preserve the order of its
-     * entities, speedwise it is very good, especially suited for games.
-     */
-    var Bag = (function (_super) {
-        __extends(Bag, _super);
+    var utils;
+    (function (utils) {
         /**
-         * Constructs an empty Bag with the specified initial capacity.
-         * Constructs an empty Bag with an initial capacity of 64.
-         *
-         * @param capacity
-         *            the initial capacity of Bag
+         * Collection type a bit like ArrayList but does not preserve the order of its
+         * entities, speedwise it is very good, especially suited for games.
          */
-        function Bag(capacity) {
-            if (capacity === void 0) { capacity = 64; }
-            _super.call(this);
-            this.size_ = 0;
-            this.length = capacity;
-        }
-        /**
-         * Removes the element at the specified position in this Bag. does this by
-         * overwriting it was last element then removing last element
-         *
-         * @param index
-         *            the index of element to be removed
-         * @return element that was removed from the Bag
-         */
-        Bag.prototype.removeAt = function (index) {
-            var e = this[index]; // make copy of element to remove so it can be returned
-            this[index] = this[--this.size_]; // overwrite item to remove with last element
-            this[this.size_] = null; // null last element, so gc can do its work
-            return e;
-        };
-        /**
-         * Removes the first occurrence of the specified element from this Bag, if
-         * it is present. If the Bag does not contain the element, it is unchanged.
-         * does this by overwriting it was last element then removing last element
-         *
-         * @param e
-         *            element to be removed from this list, if present
-         * @return <tt>true</tt> if this list contained the specified element
-         */
-        Bag.prototype.remove = function (e) {
-            var i;
-            var e2;
-            var size = this.size_;
-            for (i = 0; i < size; i++) {
-                e2 = this[i];
-                if (e == e2) {
-                    this[i] = this[--this.size_]; // overwrite item to remove with last element
-                    this[this.size_] = null; // null last element, so gc can do its work
-                    return true;
-                }
+        var Bag = (function (_super) {
+            __extends(Bag, _super);
+            /**
+             * Constructs an empty Bag with the specified initial capacity.
+             * Constructs an empty Bag with an initial capacity of 64.
+             *
+             * @param capacity
+             *            the initial capacity of Bag
+             */
+            function Bag(capacity) {
+                if (capacity === void 0) { capacity = 64; }
+                _super.call(this);
+                this.size_ = 0;
+                this.length = capacity;
             }
-            return false;
-        };
-        /**
-         * Remove and return the last object in the bag.
-         *
-         * @return the last object in the bag, null if empty.
-         */
-        Bag.prototype.removeLast = function () {
-            if (this.size_ > 0) {
-                var e = this[--this.size_];
-                this[this.size_] = null;
+            /**
+             * Removes the element at the specified position in this Bag. does this by
+             * overwriting it was last element then removing last element
+             *
+             * @param index
+             *            the index of element to be removed
+             * @return element that was removed from the Bag
+             */
+            Bag.prototype.removeAt = function (index) {
+                var e = this[index]; // make copy of element to remove so it can be returned
+                this[index] = this[--this.size_]; // overwrite item to remove with last element
+                this[this.size_] = null; // null last element, so gc can do its work
                 return e;
-            }
-            return null;
-        };
-        /**
-         * Check if bag contains this element.
-         *
-         * @param e
-         * @return
-         */
-        Bag.prototype.contains = function (e) {
-            var i;
-            var size;
-            for (i = 0, size = this.size_; size > i; i++) {
-                if (e === this[i]) {
-                    return true;
+            };
+            /**
+             * Removes the first occurrence of the specified element from this Bag, if
+             * it is present. If the Bag does not contain the element, it is unchanged.
+             * does this by overwriting it was last element then removing last element
+             *
+             * @param e
+             *            element to be removed from this list, if present
+             * @return <tt>true</tt> if this list contained the specified element
+             */
+            Bag.prototype.remove = function (e) {
+                var i;
+                var e2;
+                var size = this.size_;
+                for (i = 0; i < size; i++) {
+                    e2 = this[i];
+                    if (e == e2) {
+                        this[i] = this[--this.size_]; // overwrite item to remove with last element
+                        this[this.size_] = null; // null last element, so gc can do its work
+                        return true;
+                    }
                 }
-            }
-            return false;
-        };
-        /**
-         * Removes from this Bag all of its elements that are contained in the
-         * specified Bag.
-         *
-         * @param bag
-         *            Bag containing elements to be removed from this Bag
-         * @return {@code true} if this Bag changed as a result of the call
+                return false;
+            };
+            /**
+             * Remove and return the last object in the bag.
+             *
+             * @return the last object in the bag, null if empty.
+             */
+            Bag.prototype.removeLast = function () {
+                if (this.size_ > 0) {
+                    var e = this[--this.size_];
+                    this[this.size_] = null;
+                    return e;
+                }
+                return null;
+            };
+            /**
+             * Check if bag contains this element.
+             *
+             * @param e
+             * @return
+             */
+            Bag.prototype.contains = function (e) {
+                var i;
+                var size;
+                for (i = 0, size = this.size_; size > i; i++) {
+                    if (e === this[i]) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+            /**
+             * Removes from this Bag all of its elements that are contained in the
+             * specified Bag.
+             *
+             * @param bag
+             *            Bag containing elements to be removed from this Bag
+             * @return {@code true} if this Bag changed as a result of the call
+             */
+            Bag.prototype.removeAll = function (bag) {
+                var modified = false;
+                var i;
+                var j;
+                var l;
+                var e1;
+                var e2;
+                for (i = 0, l = bag.size(); i < l; i++) {
+                    e1 = bag.get(i);
+                    for (j = 0; j < this.size_; j++) {
+                        e2 = this[j];
+                        if (e1 === e2) {
+                            this.removeAt(j);
+                            j--;
+                            modified = true;
+                            break;
+                        }
+                    }
+                }
+                return modified;
+            };
+            /**
+             * Returns the element at the specified position in Bag.
+             *
+             * @param index
+             *            index of the element to return
+             * @return the element at the specified position in bag
+             *
+             * @throws ArrayIndexOutOfBoundsException
+             */
+            Bag.prototype.get = function (index) {
+                if (index >= this.length) {
+                    throw new Error('ArrayIndexOutOfBoundsException');
+                }
+                return this[index];
+            };
+            /**
+             * Returns the element at the specified position in Bag. This method
+             * ensures that the bag grows if the requested index is outside the bounds
+             * of the current backing array.
+             *
+             * @param index
+             *      index of the element to return
+             *
+             * @return the element at the specified position in bag
+             *
+             */
+            Bag.prototype.safeGet = function (index) {
+                if (index >= this.length) {
+                    this.grow((index * 7) / 4 + 1);
+                }
+                return this[index];
+            };
+            /**
+             * Returns the number of elements in this bag.
+             *
+             * @return the number of elements in this bag
+             */
+            Bag.prototype.size = function () {
+                return this.size_;
+            };
+            /**
+             * Returns the number of elements the bag can hold without growing.
+             *
+             * @return the number of elements the bag can hold without growing.
+             */
+            Bag.prototype.getCapacity = function () {
+                return this.length;
+            };
+            /**
+             * Checks if the internal storage supports this index.
+             *
+             * @param index
+             * @return
+             */
+            Bag.prototype.isIndexWithinBounds = function (index) {
+                return index < this.getCapacity();
+            };
+            /**
+             * Returns true if this list contains no elements.
+             *
+             * @return true if this list contains no elements
+             */
+            Bag.prototype.isEmpty = function () {
+                return this.size_ == 0;
+            };
+            /**
+             * Adds the specified element to the end of this bag. if needed also
+             * increases the capacity of the bag.
+             *
+             * @param e
+             *            element to be added to this list
+             */
+            Bag.prototype.add = function (e) {
+                // is size greater than capacity increase capacity
+                if (this.size_ === this.length) {
+                    this.grow();
+                }
+                this[this.size_++] = e;
+            };
+            /**
+             * Set element at specified index in the bag.
+             *
+             * @param index position of element
+             * @param e the element
+             */
+            Bag.prototype.set = function (index, e) {
+                if (index >= this.length) {
+                    this.grow(index * 2);
+                }
+                this.size_ = index + 1;
+                this[index] = e;
+            };
+            Bag.prototype.grow = function (newCapacity) {
+                if (newCapacity === void 0) { newCapacity = ~~((this.length * 3) / 2) + 1; }
+                this.length = ~~newCapacity;
+            };
+            Bag.prototype.ensureCapacity = function (index) {
+                if (index >= this.length) {
+                    this.grow(index * 2);
+                }
+            };
+            /**
+             * Removes all of the elements from this bag. The bag will be empty after
+             * this call returns.
+             */
+            Bag.prototype.clear = function () {
+                var i;
+                var size;
+                // null all elements so gc can clean up
+                for (i = 0, size = this.size_; i < size; i++) {
+                    this[i] = null;
+                }
+                this.size_ = 0;
+            };
+            /**
+             * Add all items into this bag.
+             * @param items
+             */
+            Bag.prototype.addAll = function (items) {
+                var i;
+                for (i = 0; items.size() > i; i++) {
+                    this.add(items.get(i));
+                }
+            };
+            return Bag;
+        })(Array);
+        utils.Bag = Bag;
+    })(utils = entitas.utils || (entitas.utils = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var utils;
+    (function (utils) {
+        /*
+         * BitSets are packed into arrays of "words."  Currently a word
+         * consists of 32 bits, requiring 5 address bits.
          */
-        Bag.prototype.removeAll = function (bag) {
-            var modified = false;
-            var i;
-            var j;
-            var l;
-            var e1;
-            var e2;
-            for (i = 0, l = bag.size(); i < l; i++) {
-                e1 = bag.get(i);
-                for (j = 0; j < this.size_; j++) {
-                    e2 = this[j];
-                    if (e1 === e2) {
-                        this.removeAt(j);
-                        j--;
-                        modified = true;
-                        break;
+        var ADDRESS_BITS_PER_WORD = 5;
+        var BITS_PER_WORD = 1 << ADDRESS_BITS_PER_WORD; // 32
+        var WORD_MASK = 0xffffffff;
+        /**
+         * @see http://stackoverflow.com/questions/6506356/java-implementation-of-long-numberoftrailingzeros
+         */
+        function numberOfTrailingZeros(i) {
+            if (i == 0)
+                return 64;
+            var x = i;
+            var y;
+            var n = 63;
+            y = x << 32;
+            if (y != 0) {
+                n -= 32;
+                x = y;
+            }
+            y = x << 16;
+            if (y != 0) {
+                n -= 16;
+                x = y;
+            }
+            y = x << 8;
+            if (y != 0) {
+                n -= 8;
+                x = y;
+            }
+            y = x << 4;
+            if (y != 0) {
+                n -= 4;
+                x = y;
+            }
+            y = x << 2;
+            if (y != 0) {
+                n -= 2;
+                x = y;
+            }
+            return (n - ((x << 1) >>> 63));
+        }
+        var BitSet = (function () {
+            function BitSet(nbits) {
+                if (nbits === void 0) { nbits = 0; }
+                if (nbits < 0) {
+                    throw RangeError("Negative Array Size: [" + nbits + ']');
+                }
+                else if (nbits === 0) {
+                    this.words_ = [];
+                }
+                else {
+                    var words = this.words_ = new Array(((nbits - 1) >> ADDRESS_BITS_PER_WORD) + 1);
+                    for (var i = 0, l = words.length; i < l; i++) {
+                        words[i] = 0;
                     }
                 }
             }
-            return modified;
-        };
-        /**
-         * Returns the element at the specified position in Bag.
-         *
-         * @param index
-         *            index of the element to return
-         * @return the element at the specified position in bag
-         *
-         * @throws ArrayIndexOutOfBoundsException
-         */
-        Bag.prototype.get = function (index) {
-            if (index >= this.length) {
-                throw new Error('ArrayIndexOutOfBoundsException');
-            }
-            return this[index];
-        };
-        /**
-         * Returns the element at the specified position in Bag. This method
-         * ensures that the bag grows if the requested index is outside the bounds
-         * of the current backing array.
-         *
-         * @param index
-         *      index of the element to return
-         *
-         * @return the element at the specified position in bag
-         *
-         */
-        Bag.prototype.safeGet = function (index) {
-            if (index >= this.length) {
-                this.grow((index * 7) / 4 + 1);
-            }
-            return this[index];
-        };
-        /**
-         * Returns the number of elements in this bag.
-         *
-         * @return the number of elements in this bag
-         */
-        Bag.prototype.size = function () {
-            return this.size_;
-        };
-        /**
-         * Returns the number of elements the bag can hold without growing.
-         *
-         * @return the number of elements the bag can hold without growing.
-         */
-        Bag.prototype.getCapacity = function () {
-            return this.length;
-        };
-        /**
-         * Checks if the internal storage supports this index.
-         *
-         * @param index
-         * @return
-         */
-        Bag.prototype.isIndexWithinBounds = function (index) {
-            return index < this.getCapacity();
-        };
-        /**
-         * Returns true if this list contains no elements.
-         *
-         * @return true if this list contains no elements
-         */
-        Bag.prototype.isEmpty = function () {
-            return this.size_ == 0;
-        };
-        /**
-         * Adds the specified element to the end of this bag. if needed also
-         * increases the capacity of the bag.
-         *
-         * @param e
-         *            element to be added to this list
-         */
-        Bag.prototype.add = function (e) {
-            // is size greater than capacity increase capacity
-            if (this.size_ === this.length) {
-                this.grow();
-            }
-            this[this.size_++] = e;
-        };
-        /**
-         * Set element at specified index in the bag.
-         *
-         * @param index position of element
-         * @param e the element
-         */
-        Bag.prototype.set = function (index, e) {
-            if (index >= this.length) {
-                this.grow(index * 2);
-            }
-            this.size_ = index + 1;
-            this[index] = e;
-        };
-        Bag.prototype.grow = function (newCapacity) {
-            if (newCapacity === void 0) { newCapacity = ~~((this.length * 3) / 2) + 1; }
-            this.length = ~~newCapacity;
-        };
-        Bag.prototype.ensureCapacity = function (index) {
-            if (index >= this.length) {
-                this.grow(index * 2);
-            }
-        };
-        /**
-         * Removes all of the elements from this bag. The bag will be empty after
-         * this call returns.
-         */
-        Bag.prototype.clear = function () {
-            var i;
-            var size;
-            // null all elements so gc can clean up
-            for (i = 0, size = this.size_; i < size; i++) {
-                this[i] = null;
-            }
-            this.size_ = 0;
-        };
-        /**
-         * Add all items into this bag.
-         * @param items
-         */
-        Bag.prototype.addAll = function (items) {
-            var i;
-            for (i = 0; items.size() > i; i++) {
-                this.add(items.get(i));
-            }
-        };
-        return Bag;
-    })(Array);
-    entitas.Bag = Bag;
+            BitSet.prototype.nextSetBit = function (fromIndex) {
+                var u = fromIndex >> ADDRESS_BITS_PER_WORD;
+                var words = this.words_;
+                var wordsInUse = words.length;
+                var word = words[u] & (WORD_MASK << fromIndex);
+                while (true) {
+                    if (word !== 0)
+                        return (u * BITS_PER_WORD) + numberOfTrailingZeros(word);
+                    if (++u === wordsInUse)
+                        return -1;
+                    word = words[u];
+                }
+            };
+            BitSet.prototype.intersects = function (set) {
+                var words = this.words_;
+                var wordsInUse = words.length;
+                for (var i = Math.min(wordsInUse, set.words_.length) - 1; i >= 0; i--)
+                    if ((words[i] & set.words_[i]) != 0)
+                        return true;
+                return false;
+            };
+            BitSet.prototype.hasAll = function (set) {
+                var words = this.words_;
+                var wordsInUse = words.length;
+                for (var i = Math.min(wordsInUse, set.words_.length) - 1; i >= 0; i--)
+                    if ((words[i] & set.words_[i]) != set.words_[i])
+                        return false;
+                return true;
+            };
+            // length():number {
+            // 	return this.length_;
+            // }
+            // and(set:BitSet):BitSet {
+            // }
+            // or(set:BitSet):BitSet {
+            // }
+            // nand(set:BitSet):BitSet {
+            // }
+            // nor(set:BitSet):BitSet {
+            // }
+            // not(set:BitSet):BitSet {
+            // }
+            // xor(set:BitSet):BitSet {
+            // }
+            // equals(set:BitSet):boolean {
+            // }
+            // clone():BitSet {
+            // }
+            BitSet.prototype.isEmpty = function () {
+                return this.words_.length === 0;
+            };
+            // toString():string {
+            // }
+            // cardinality():number {
+            // }
+            // msb():number {
+            // }
+            BitSet.prototype.set = function (bitIndex, value) {
+                if (value === void 0) { value = true; }
+                var wordIndex = bitIndex >> ADDRESS_BITS_PER_WORD;
+                var words = this.words_;
+                var wordsInUse = words.length;
+                var wordsRequired = wordIndex + 1;
+                if (wordsInUse < wordsRequired) {
+                    words.length = Math.max(2 * wordsInUse, wordsRequired);
+                    for (var i = wordsInUse, l = words.length; i < l; i++) {
+                        words[i] = 0;
+                    }
+                }
+                if (value) {
+                    return words[wordIndex] |= (1 << bitIndex);
+                }
+                else {
+                    return words[wordIndex] &= ~(1 << bitIndex);
+                }
+            };
+            // setRange(from:number, to:number, value:number):number {
+            // }
+            BitSet.prototype.get = function (bitIndex) {
+                var wordIndex = bitIndex >> ADDRESS_BITS_PER_WORD;
+                var words = this.words_;
+                var wordsInUse = words.length;
+                return (wordIndex < wordsInUse) && ((words[wordIndex] & (1 << bitIndex)) != 0);
+            };
+            // getRange(from:number, to:number):number {
+            // }
+            BitSet.prototype.clear = function (bitIndex) {
+                if (bitIndex === null) {
+                    var words = this.words_;
+                    var wordsInUse = words.length;
+                    while (wordsInUse > 0) {
+                        words[--wordsInUse] = 0;
+                    }
+                    return;
+                }
+                var wordIndex = bitIndex >> ADDRESS_BITS_PER_WORD;
+                this.words_[wordIndex] &= ~(1 << bitIndex);
+            };
+            return BitSet;
+        })();
+        utils.BitSet = BitSet;
+    })(utils = entitas.utils || (entitas.utils = {}));
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
-    var Exception = (function () {
-        function Exception(message) {
-            this.message = message;
+    var utils;
+    (function (utils) {
+        /**
+         * Gets Class Metadata - Name
+         *
+         * @param {Function} klass
+         * @return {string}
+         */
+        function getClassName(klass) {
+            return klass.className || klass.name;
         }
-        Exception.prototype.toString = function () {
-            return this.message;
-        };
-        return Exception;
-    })();
-    entitas.Exception = Exception;
-    var EntityAlreadyHasComponentException = (function (_super) {
-        __extends(EntityAlreadyHasComponentException, _super);
-        function EntityAlreadyHasComponentException(message, index) {
-            _super.call(this, message + "\nEntity already has a component at index " + index);
+        utils.getClassName = getClassName;
+        /**
+         * Decode HashMap key
+         *
+         * When the key is an object, we generate a unique uuid and use that as the actual key.
+         */
+        function decode(key) {
+            switch (typeof key) {
+                case 'boolean':
+                    return '' + key;
+                case 'number':
+                    return '' + key;
+                case 'string':
+                    return '' + key;
+                case 'function':
+                    return getClassName(key);
+                default:
+                    key.uuid = key.uuid ? key.uuid : utils.UUID.randomUUID();
+                    return key.uuid;
+            }
         }
-        return EntityAlreadyHasComponentException;
-    })(Exception);
-    entitas.EntityAlreadyHasComponentException = EntityAlreadyHasComponentException;
-    var EntityDoesNotHaveComponentException = (function (_super) {
-        __extends(EntityDoesNotHaveComponentException, _super);
-        function EntityDoesNotHaveComponentException(message, index) {
-            _super.call(this, message + "\nEntity does not have a component at index " + index);
-        }
-        return EntityDoesNotHaveComponentException;
-    })(Exception);
-    entitas.EntityDoesNotHaveComponentException = EntityDoesNotHaveComponentException;
-    var EntityIsNotEnabledException = (function (_super) {
-        __extends(EntityIsNotEnabledException, _super);
-        function EntityIsNotEnabledException(message) {
-            _super.call(this, message + "\nEntity is not enabled");
-        }
-        return EntityIsNotEnabledException;
-    })(Exception);
-    entitas.EntityIsNotEnabledException = EntityIsNotEnabledException;
-    var EntityIsAlreadyReleasedException = (function (_super) {
-        __extends(EntityIsAlreadyReleasedException, _super);
-        function EntityIsAlreadyReleasedException() {
-            _super.call(this, "Entity is already released!");
-        }
-        return EntityIsAlreadyReleasedException;
-    })(Exception);
-    entitas.EntityIsAlreadyReleasedException = EntityIsAlreadyReleasedException;
-    var SingleEntityException = (function (_super) {
-        __extends(SingleEntityException, _super);
-        function SingleEntityException(matcher) {
-            _super.call(this, "Multiple entities exist matching " + matcher);
-        }
-        return SingleEntityException;
-    })(Exception);
-    entitas.SingleEntityException = SingleEntityException;
-    var GroupObserverException = (function (_super) {
-        __extends(GroupObserverException, _super);
-        function GroupObserverException(message) {
-            _super.call(this, message);
-        }
-        return GroupObserverException;
-    })(Exception);
-    entitas.GroupObserverException = GroupObserverException;
-    var PoolDoesNotContainEntityException = (function (_super) {
-        __extends(PoolDoesNotContainEntityException, _super);
-        function PoolDoesNotContainEntityException(entity, message) {
-            _super.call(this, message + "\nPool does not contain entity " + entity);
-        }
-        return PoolDoesNotContainEntityException;
-    })(Exception);
-    entitas.PoolDoesNotContainEntityException = PoolDoesNotContainEntityException;
-    var EntityIsNotDestroyedException = (function (_super) {
-        __extends(EntityIsNotDestroyedException, _super);
-        function EntityIsNotDestroyedException(message) {
-            _super.call(this, message + "\nEntity is not destroyed yet!");
-        }
-        return EntityIsNotDestroyedException;
-    })(Exception);
-    entitas.EntityIsNotDestroyedException = EntityIsNotDestroyedException;
-    var MatcherException = (function (_super) {
-        __extends(MatcherException, _super);
-        function MatcherException(matcher) {
-            _super.call(this, "matcher.indices.length must be 1 but was " + matcher.indices.length);
-        }
-        return MatcherException;
-    })(Exception);
-    entitas.MatcherException = MatcherException;
+        /**
+         * HashMap
+         *
+         * Allow object as key.
+         */
+        var HashMap = (function () {
+            function HashMap() {
+                this.clear();
+            }
+            HashMap.prototype.clear = function () {
+                this.map_ = {};
+                this.keys_ = {};
+            };
+            HashMap.prototype.values = function () {
+                var result = [];
+                var map = this.map_;
+                for (var key in map) {
+                    result.push(map[key]);
+                }
+                return result;
+            };
+            HashMap.prototype.contains = function (value) {
+                var map = this.map_;
+                for (var key in map) {
+                    if (value === map[key]) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+            HashMap.prototype.containsKey = function (key) {
+                return decode(key) in this.map_;
+            };
+            HashMap.prototype.containsValue = function (value) {
+                var map = this.map_;
+                for (var key in map) {
+                    if (value === map[key]) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+            HashMap.prototype.get = function (key) {
+                return this.map_[decode(key)];
+            };
+            HashMap.prototype.isEmpty = function () {
+                return Object.keys(this.map_).length === 0;
+            };
+            HashMap.prototype.keys = function () {
+                var keys = this.map_;
+                var result = [];
+                for (var key in keys) {
+                    result.push(keys[key]);
+                }
+                return result;
+            };
+            /**
+             * if key is a string, use as is, else use key.id_ or key.name
+             */
+            HashMap.prototype.put = function (key, value) {
+                var k = decode(key);
+                this.map_[k] = value;
+                this.keys_[k] = key;
+            };
+            HashMap.prototype.remove = function (key) {
+                var map = this.map_;
+                var k = decode(key);
+                var value = map[k];
+                delete map[k];
+                delete this.keys_[k];
+                return value;
+            };
+            HashMap.prototype.size = function () {
+                return Object.keys(this.map_).length;
+            };
+            return HashMap;
+        })();
+        utils.HashMap = HashMap;
+    })(utils = entitas.utils || (entitas.utils = {}));
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
-    var Bag = entitas.Bag;
-    var Signal = (function () {
-        /**
-         *
-         * @param context
-         * @param alloc
-         */
-        function Signal(context, alloc) {
-            if (alloc === void 0) { alloc = 16; }
-            this._listeners = new Bag();
-            this._context = context;
-            this._alloc = alloc;
-            this.active = false;
-        }
-        /**
-         * Dispatch event
-         *
-         * @param $0
-         * @param $1
-         * @param $2
-         * @param $3
-         * @param $4
-         */
-        Signal.prototype.dispatch = function ($0, $1, $2, $3, $4) {
-            var listeners = this._listeners;
-            var size = listeners.size();
-            if (size <= 0)
-                return; // bail early
-            var context = this._context;
-            for (var i = 0; i < size; i++) {
-                listeners[i].call(context, $0, $1, $2, $3, $4);
+    var utils;
+    (function (utils) {
+        var Bag = entitas.utils.Bag;
+        var Signal = (function () {
+            /**
+             *
+             * @param context
+             * @param alloc
+             */
+            function Signal(context, alloc) {
+                if (alloc === void 0) { alloc = 16; }
+                this._listeners = new Bag();
+                this._context = context;
+                this._alloc = alloc;
+                this.active = false;
             }
-        };
-        /**
-         * Add event listener
-         * @param listener
-         */
-        Signal.prototype.add = function (listener) {
-            this._listeners.add(listener);
-            this.active = true;
-        };
-        /**
-         * Remove event listener
-         * @param listener
-         */
-        Signal.prototype.remove = function (listener) {
-            var _listeners = this._listeners;
-            _listeners.remove(listener);
-            this.active = _listeners.size() > 0;
-        };
-        /**
-         * Clear and reset to original alloc
-         */
-        Signal.prototype.clear = function () {
-            this._listeners.clear();
-            this.active = false;
-        };
-        return Signal;
-    })();
-    entitas.Signal = Signal;
+            /**
+             * Dispatch event
+             *
+             * @param $0
+             * @param $1
+             * @param $2
+             * @param $3
+             * @param $4
+             */
+            Signal.prototype.dispatch = function ($0, $1, $2, $3, $4) {
+                var listeners = this._listeners;
+                var size = listeners.size();
+                if (size <= 0)
+                    return; // bail early
+                var context = this._context;
+                for (var i = 0; i < size; i++) {
+                    listeners[i].call(context, $0, $1, $2, $3, $4);
+                }
+            };
+            /**
+             * Add event listener
+             * @param listener
+             */
+            Signal.prototype.add = function (listener) {
+                this._listeners.add(listener);
+                this.active = true;
+            };
+            /**
+             * Remove event listener
+             * @param listener
+             */
+            Signal.prototype.remove = function (listener) {
+                var listeners = this._listeners;
+                listeners.remove(listener);
+                this.active = listeners.size() > 0;
+            };
+            /**
+             * Clear and reset to original alloc
+             */
+            Signal.prototype.clear = function () {
+                this._listeners.clear();
+                this.active = false;
+            };
+            return Signal;
+        })();
+        utils.Signal = Signal;
+    })(utils = entitas.utils || (entitas.utils = {}));
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
-    var Stopwatch = (function () {
-        function Stopwatch() {
-            Stopwatch.isHighRes = performance ? true : false;
-            this.reset();
-        }
-        Object.defineProperty(Stopwatch.prototype, "isRunning", {
-            get: function () {
-                return this._isRunning;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Stopwatch.prototype, "startTimeStamp", {
-            get: function () {
-                return this._startTimeStamp;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Stopwatch.prototype, "elapsed", {
-            get: function () {
-                return this._elapsed;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Stopwatch.prototype.start = function () {
-            if (!this._isRunning) {
-                this._startTimeStamp = Stopwatch.getTimeStamp();
-                this._isRunning = true;
+    var utils;
+    (function (utils) {
+        var Stopwatch = (function () {
+            function Stopwatch() {
+                Stopwatch.isHighRes = performance ? true : false;
+                this.reset();
             }
-        };
-        Stopwatch.prototype.stop = function () {
-            if (this._isRunning) {
-                this._elapsed += (Stopwatch.getTimeStamp() - this._startTimeStamp);
+            Object.defineProperty(Stopwatch.prototype, "isRunning", {
+                get: function () {
+                    return this._isRunning;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Stopwatch.prototype, "startTimeStamp", {
+                get: function () {
+                    return this._startTimeStamp;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Stopwatch.prototype, "elapsed", {
+                get: function () {
+                    return this._elapsed;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Stopwatch.prototype.start = function () {
+                if (!this._isRunning) {
+                    this._startTimeStamp = Stopwatch.getTimeStamp();
+                    this._isRunning = true;
+                }
+            };
+            Stopwatch.prototype.stop = function () {
+                if (this._isRunning) {
+                    this._elapsed += (Stopwatch.getTimeStamp() - this._startTimeStamp);
+                    this._isRunning = false;
+                }
+            };
+            Stopwatch.prototype.reset = function () {
+                this._elapsed = 0;
+                this._startTimeStamp = 0;
                 this._isRunning = false;
+            };
+            Stopwatch.getTimeStamp = function () {
+                return Stopwatch.isHighRes ? performance.now() : Date.now();
+            };
+            Stopwatch.isHighRes = false;
+            return Stopwatch;
+        })();
+        utils.Stopwatch = Stopwatch;
+    })(utils = entitas.utils || (entitas.utils = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var utils;
+    (function (utils) {
+        var hex = [
+            "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f",
+            "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1a", "1b", "1c", "1d", "1e", "1f",
+            "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "2a", "2b", "2c", "2d", "2e", "2f",
+            "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "3a", "3b", "3c", "3d", "3e", "3f",
+            "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "4a", "4b", "4c", "4d", "4e", "4f",
+            "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "5a", "5b", "5c", "5d", "5e", "5f",
+            "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "6a", "6b", "6c", "6d", "6e", "6f",
+            "70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "7a", "7b", "7c", "7d", "7e", "7f",
+            "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "8a", "8b", "8c", "8d", "8e", "8f",
+            "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "9a", "9b", "9c", "9d", "9e", "9f",
+            "a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "aa", "ab", "ac", "ad", "ae", "af",
+            "b0", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "ba", "bb", "bc", "bd", "be", "bf",
+            "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "ca", "cb", "cc", "cd", "ce", "cf",
+            "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "da", "db", "dc", "dd", "de", "df",
+            "e0", "e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9", "ea", "eb", "ec", "ed", "ee", "ef",
+            "f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "fa", "fb", "fc", "fd", "fe", "ff"
+        ];
+        var UUID = (function () {
+            function UUID() {
             }
-        };
-        Stopwatch.prototype.reset = function () {
-            this._elapsed = 0;
-            this._startTimeStamp = 0;
-            this._isRunning = false;
-        };
-        Stopwatch.getTimeStamp = function () {
-            return Stopwatch.isHighRes ? performance.now() : Date.now();
-        };
-        Stopwatch.isHighRes = false;
-        return Stopwatch;
-    })();
-    entitas.Stopwatch = Stopwatch;
+            //static check = {};
+            /**
+             * Fast UUID generator, RFC4122 version 4 compliant
+             * format xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+             *
+             * @author Jeff Ward (jcward.com).
+             * @license MIT license
+             * @link http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
+             **/
+            UUID.randomUUID = function () {
+                var d0 = Math.random() * 0xffffffff | 0;
+                var d1 = Math.random() * 0xffffffff | 0;
+                var d2 = Math.random() * 0xffffffff | 0;
+                var d3 = Math.random() * 0xffffffff | 0;
+                return hex[d0 & 0xff] + hex[d0 >> 8 & 0xff] + hex[d0 >> 16 & 0xff] + hex[d0 >> 24 & 0xff] + '-' +
+                    hex[d1 & 0xff] + hex[d1 >> 8 & 0xff] + '-' + hex[d1 >> 16 & 0x0f | 0x40] + hex[d1 >> 24 & 0xff] + '-' +
+                    hex[d2 & 0x3f | 0x80] + hex[d2 >> 8 & 0xff] + '-' + hex[d2 >> 16 & 0xff] + hex[d2 >> 24 & 0xff] +
+                    hex[d3 & 0xff] + hex[d3 >> 8 & 0xff] + hex[d3 >> 16 & 0xff] + hex[d3 >> 24 & 0xff];
+            };
+            return UUID;
+        })();
+        utils.UUID = UUID;
+    })(utils = entitas.utils || (entitas.utils = {}));
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
@@ -671,9 +767,9 @@ var entitas;
             }
         };
         Matcher.prototype.matches = function (entity) {
-            var matchesAllOf = this._allOfIndices === undefined || entity.hasComponents(this._allOfIndices);
-            var matchesAnyOf = this._anyOfIndices === undefined || entity.hasAnyComponent(this._anyOfIndices);
-            var matchesNoneOf = this._noneOfIndices === undefined || !entity.hasAnyComponent(this._noneOfIndices);
+            var matchesAllOf = this._allOfIndices === undefined ? true : entity.hasComponents(this._allOfIndices);
+            var matchesAnyOf = this._anyOfIndices === undefined ? true : entity.hasAnyComponent(this._anyOfIndices);
+            var matchesNoneOf = this._noneOfIndices === undefined ? true : !entity.hasAnyComponent(this._noneOfIndices);
             return matchesAllOf && matchesAnyOf && matchesNoneOf;
         };
         Matcher.prototype.mergeIndices = function () {
@@ -770,7 +866,7 @@ var entitas;
             }
             if ('number' === typeof args[0] || 'string' === typeof args[0]) {
                 var matcher = new Matcher();
-                matcher._allOfIndices = Matcher.distinctIndices(args);
+                var indices = matcher._allOfIndices = Matcher.distinctIndices(args);
                 return matcher;
             }
             else {
@@ -784,7 +880,7 @@ var entitas;
             }
             if ('number' === typeof args[0] || 'string' === typeof args[0]) {
                 var matcher = new Matcher();
-                matcher._anyOfIndices = Matcher.distinctIndices(args);
+                var indices = matcher._anyOfIndices = Matcher.distinctIndices(args);
                 return matcher;
             }
             else {
@@ -823,7 +919,354 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
-    var Signal = entitas.Signal;
+    var extensions;
+    (function (extensions) {
+        var Exception = entitas.Exception;
+        var Collection = (function (_super) {
+            __extends(Collection, _super);
+            function Collection($0) {
+                _super.call(this, $0);
+            }
+            Collection.prototype.singleEntity = function () {
+                if (this.length !== 1) {
+                    throw new Exception("Expected exactly one entity but found " + this.length);
+                }
+                return this[0];
+            };
+            return Collection;
+        })(Array);
+        extensions.Collection = Collection;
+    })(extensions = entitas.extensions || (entitas.extensions = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var extensions;
+    (function (extensions) {
+        var GroupEventType = entitas.GroupEventType;
+        var GroupObserver = entitas.GroupObserver;
+        entitas.Group.prototype.createObserver = function (eventType) {
+            if (eventType === void 0) { eventType = GroupEventType.OnEntityAdded; }
+            return new GroupObserver(this, eventType);
+        };
+    })(extensions = entitas.extensions || (entitas.extensions = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var extensions;
+    (function (extensions) {
+        var Matcher = entitas.Matcher;
+        var GroupEventType = entitas.GroupEventType;
+        var TriggerOnEvent = entitas.TriggerOnEvent;
+        Matcher.prototype.onEntityAdded = function () {
+            return new TriggerOnEvent(this, GroupEventType.OnEntityAdded);
+        };
+        Matcher.prototype.onEntityRemoved = function () {
+            return new TriggerOnEvent(this, GroupEventType.OnEntityRemoved);
+        };
+        Matcher.prototype.onEntityAddedOrRemoved = function () {
+            return new TriggerOnEvent(this, GroupEventType.OnEntityAddedOrRemoved);
+        };
+    })(extensions = entitas.extensions || (entitas.extensions = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var extensions;
+    (function (extensions) {
+        function as(obj, method1) {
+            return method1 in obj ? obj : null;
+        }
+        entitas.Pool.prototype.getEntities = function (matcher) {
+            if (matcher) {
+                /** PoolExtension::getEntities */
+                return this.getGroup(matcher).getEntities();
+            }
+            else {
+                if (this._entitiesCache === undefined) {
+                    var entities = this._entities;
+                    var keys = Object.keys(entities);
+                    var length = keys.length;
+                    var entitiesCache = this._entitiesCache = new Array(length);
+                    for (var i = 0; i < length; i++) {
+                        entitiesCache[i] = entities[keys[i]];
+                    }
+                }
+                return this._entitiesCache;
+            }
+        };
+        entitas.Pool.prototype.createSystem = function (system) {
+            if ('function' === typeof system) {
+                var Klass = system;
+                system = new Klass();
+            }
+            entitas.Pool.setPool(system, this);
+            var reactiveSystem = as(system, 'trigger');
+            if (reactiveSystem != null) {
+                return new entitas.ReactiveSystem(this, reactiveSystem);
+            }
+            var multiReactiveSystem = as(system, 'triggers');
+            if (multiReactiveSystem != null) {
+                return new entitas.ReactiveSystem(this, multiReactiveSystem);
+            }
+            return system;
+        };
+        entitas.Pool.setPool = function (system, pool) {
+            var poolSystem = as(system, 'setPool');
+            if (poolSystem != null) {
+                poolSystem.setPool(pool);
+            }
+        };
+    })(extensions = entitas.extensions || (entitas.extensions = {}));
+})(entitas || (entitas = {}));
+/**
+ * Inspired by Unity
+ */
+var entitas;
+(function (entitas) {
+    var browser;
+    (function (browser) {
+        var Systems = entitas.Systems;
+        var VisualDebugging = (function () {
+            function VisualDebugging() {
+            }
+            VisualDebugging.init = function (pool) {
+                if (location.search === "?debug=true" && window['dat']) {
+                    browser.gui = new dat.GUI({ height: 5 * 32 - 1, width: 300 });
+                    var observer = new PoolObserver(pool);
+                    VisualDebugging._controllers = {};
+                    VisualDebugging._entities = browser.gui.addFolder('Entities');
+                    VisualDebugging._pools = browser.gui.addFolder('Pools');
+                    VisualDebugging._systems = browser.gui.addFolder('Systems');
+                    VisualDebugging._entities.open();
+                    VisualDebugging._pools.open();
+                    VisualDebugging._systems.open();
+                    VisualDebugging._pools.add(observer, 'entities').listen();
+                    VisualDebugging._pools.add(observer, 'reusable').listen();
+                    pool.onEntityCreated.add(function (pool, entity) {
+                        var proxy = new EntityBehavior(entity);
+                        VisualDebugging._controllers[entity.id] = VisualDebugging._entities.add(proxy, proxy.name).listen();
+                    });
+                    pool.onEntityDestroyed.add(function (pool, entity) {
+                        var controller = VisualDebugging._controllers[entity.id];
+                        delete VisualDebugging._controllers[entity.id];
+                        VisualDebugging._entities.remove(controller);
+                    });
+                    Systems.prototype.initialize = function () {
+                        for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
+                            this._initializeSystems[i].initialize();
+                        }
+                        var sys = new SystemObserver(this);
+                        VisualDebugging._systems.add(sys, 'initialize').listen();
+                        VisualDebugging._systems.add(sys, 'execute').listen();
+                    };
+                    function get_Systems() {
+                        return "Systems " + " (" +
+                            this._initializeSystems.length + " init, " +
+                            this._executeSystems.length + " exe ";
+                    }
+                    Object.defineProperty(Systems.prototype, 'name', { get: function () { return 'Systems'; } });
+                    Object.defineProperty(Systems.prototype, 'Systems', { get: get_Systems });
+                }
+            };
+            return VisualDebugging;
+        })();
+        browser.VisualDebugging = VisualDebugging;
+        /**
+         * Profiler class for Entities
+         */
+        var EntityBehavior = (function () {
+            function EntityBehavior(obj) {
+                var _this = this;
+                this.obj = obj;
+                if (this.obj.name) {
+                    this._name = this.obj.name;
+                }
+                else {
+                    this._name = "Entity_" + this.obj._creationIndex;
+                }
+                Object.defineProperty(this, this._name, { get: function () { return _this.obj.toString(); } });
+            }
+            Object.defineProperty(EntityBehavior.prototype, "name", {
+                get: function () {
+                    return this._name;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return EntityBehavior;
+        })();
+        browser.EntityBehavior = EntityBehavior;
+        /**
+         * Profiler class for Systems
+         */
+        var SystemObserver = (function () {
+            function SystemObserver(_systems) {
+                this._systems = _systems;
+            }
+            Object.defineProperty(SystemObserver.prototype, "name", {
+                get: function () {
+                    return "Systems";
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(SystemObserver.prototype, "Systems", {
+                get: function () {
+                    return "Systems " + " (" +
+                        this._systems._initializeSystems.length + " init, " +
+                        this._systems._executeSystems.length + " exe ";
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(SystemObserver.prototype, "initialize", {
+                get: function () {
+                    return this._systems._initializeSystems.length;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(SystemObserver.prototype, "execute", {
+                get: function () {
+                    return this._systems._executeSystems.length;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return SystemObserver;
+        })();
+        browser.SystemObserver = SystemObserver;
+        /**
+         * Profiler class for Pools
+         */
+        var PoolObserver = (function () {
+            function PoolObserver(_pool) {
+                this._pool = _pool;
+                this._groups = this._pool._groups;
+            }
+            Object.defineProperty(PoolObserver.prototype, "name", {
+                get: function () {
+                    return "Pool";
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(PoolObserver.prototype, "Pool", {
+                get: function () {
+                    return "Pool " + " (" +
+                        this._pool.count + " entities, " +
+                        this._pool.reusableEntitiesCount + " reusable, " +
+                        Object.keys(this._groups).length + " groups)";
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(PoolObserver.prototype, "entities", {
+                get: function () {
+                    return this._pool.count;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(PoolObserver.prototype, "reusable", {
+                get: function () {
+                    return this._pool.reusableEntitiesCount;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return PoolObserver;
+        })();
+        browser.PoolObserver = PoolObserver;
+    })(browser = entitas.browser || (entitas.browser = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var Exception = (function () {
+        function Exception(message) {
+            this.message = message;
+        }
+        Exception.prototype.toString = function () {
+            return this.message;
+        };
+        return Exception;
+    })();
+    entitas.Exception = Exception;
+    var EntityAlreadyHasComponentException = (function (_super) {
+        __extends(EntityAlreadyHasComponentException, _super);
+        function EntityAlreadyHasComponentException(message, index) {
+            _super.call(this, message + "\nEntity already has a component at index " + index);
+        }
+        return EntityAlreadyHasComponentException;
+    })(Exception);
+    entitas.EntityAlreadyHasComponentException = EntityAlreadyHasComponentException;
+    var EntityDoesNotHaveComponentException = (function (_super) {
+        __extends(EntityDoesNotHaveComponentException, _super);
+        function EntityDoesNotHaveComponentException(message, index) {
+            _super.call(this, message + "\nEntity does not have a component at index " + index);
+        }
+        return EntityDoesNotHaveComponentException;
+    })(Exception);
+    entitas.EntityDoesNotHaveComponentException = EntityDoesNotHaveComponentException;
+    var EntityIsNotEnabledException = (function (_super) {
+        __extends(EntityIsNotEnabledException, _super);
+        function EntityIsNotEnabledException(message) {
+            _super.call(this, message + "\nEntity is not enabled");
+        }
+        return EntityIsNotEnabledException;
+    })(Exception);
+    entitas.EntityIsNotEnabledException = EntityIsNotEnabledException;
+    var EntityIsAlreadyReleasedException = (function (_super) {
+        __extends(EntityIsAlreadyReleasedException, _super);
+        function EntityIsAlreadyReleasedException() {
+            _super.call(this, "Entity is already released!");
+        }
+        return EntityIsAlreadyReleasedException;
+    })(Exception);
+    entitas.EntityIsAlreadyReleasedException = EntityIsAlreadyReleasedException;
+    var SingleEntityException = (function (_super) {
+        __extends(SingleEntityException, _super);
+        function SingleEntityException(matcher) {
+            _super.call(this, "Multiple entities exist matching " + matcher);
+        }
+        return SingleEntityException;
+    })(Exception);
+    entitas.SingleEntityException = SingleEntityException;
+    var GroupObserverException = (function (_super) {
+        __extends(GroupObserverException, _super);
+        function GroupObserverException(message) {
+            _super.call(this, message);
+        }
+        return GroupObserverException;
+    })(Exception);
+    entitas.GroupObserverException = GroupObserverException;
+    var PoolDoesNotContainEntityException = (function (_super) {
+        __extends(PoolDoesNotContainEntityException, _super);
+        function PoolDoesNotContainEntityException(entity, message) {
+            _super.call(this, message + "\nPool does not contain entity " + entity);
+        }
+        return PoolDoesNotContainEntityException;
+    })(Exception);
+    entitas.PoolDoesNotContainEntityException = PoolDoesNotContainEntityException;
+    var EntityIsNotDestroyedException = (function (_super) {
+        __extends(EntityIsNotDestroyedException, _super);
+        function EntityIsNotDestroyedException(message) {
+            _super.call(this, message + "\nEntity is not destroyed yet!");
+        }
+        return EntityIsNotDestroyedException;
+    })(Exception);
+    entitas.EntityIsNotDestroyedException = EntityIsNotDestroyedException;
+    var MatcherException = (function (_super) {
+        __extends(MatcherException, _super);
+        function MatcherException(matcher) {
+            _super.call(this, "matcher.indices.length must be 1 but was " + matcher.indices.length);
+        }
+        return MatcherException;
+    })(Exception);
+    entitas.MatcherException = MatcherException;
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var Signal = entitas.utils.Signal;
     var EntityIsNotEnabledException = entitas.EntityIsNotEnabledException;
     var EntityIsAlreadyReleasedException = entitas.EntityIsAlreadyReleasedException;
     var EntityAlreadyHasComponentException = entitas.EntityAlreadyHasComponentException;
@@ -1020,7 +1463,7 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
-    var Signal = entitas.Signal;
+    var Signal = entitas.utils.Signal;
     var SingleEntityException = entitas.SingleEntityException;
     var Group = (function () {
         function Group(matcher) {
@@ -1057,7 +1500,7 @@ var entitas;
             }
         };
         Group.prototype.updateEntity = function (entity, index, previousComponent, newComponent) {
-            if (entity.creationIndex in this._entities) {
+            if (entity.id in this._entities) {
                 var onEntityRemoved = this.onEntityRemoved;
                 if (onEntityRemoved.active)
                     onEntityRemoved.dispatch(this, entity, index, previousComponent);
@@ -1070,16 +1513,16 @@ var entitas;
             }
         };
         Group.prototype.addEntitySilently = function (entity) {
-            if (!(entity.creationIndex in this._entities)) {
-                this._entities[entity.creationIndex] = entity;
+            if (!(entity.id in this._entities)) {
+                this._entities[entity.id] = entity;
                 this._entitiesCache = undefined;
                 this._singleEntityCache = undefined;
                 entity.addRef();
             }
         };
         Group.prototype.addEntity = function (entity, index, component) {
-            if (!(entity.creationIndex in this._entities)) {
-                this._entities[entity.creationIndex] = entity;
+            if (!(entity.id in this._entities)) {
+                this._entities[entity.id] = entity;
                 this._entitiesCache = undefined;
                 this._singleEntityCache = undefined;
                 entity.addRef();
@@ -1089,16 +1532,16 @@ var entitas;
             }
         };
         Group.prototype.removeEntitySilently = function (entity) {
-            if (entity.creationIndex in this._entities) {
-                delete this._entities[entity.creationIndex];
+            if (entity.id in this._entities) {
+                delete this._entities[entity.id];
                 this._entitiesCache = undefined;
                 this._singleEntityCache = undefined;
                 entity.release();
             }
         };
         Group.prototype.removeEntity = function (entity, index, component) {
-            if (entity.creationIndex in this._entities) {
-                delete this._entities[entity.creationIndex];
+            if (entity.id in this._entities) {
+                delete this._entities[entity.id];
                 this._entitiesCache = undefined;
                 this._singleEntityCache = undefined;
                 var onEntityRemoved = this.onEntityRemoved;
@@ -1108,7 +1551,7 @@ var entitas;
             }
         };
         Group.prototype.containsEntity = function (entity) {
-            return entity.creationIndex in this._entities;
+            return entity.id in this._entities;
         };
         Group.prototype.getEntities = function () {
             if (this._entitiesCache === undefined) {
@@ -1162,8 +1605,8 @@ var entitas;
             var _this = this;
             this._collectedEntities = {};
             this.addEntity = function (group, entity, index, component) {
-                if (!(entity.creationIndex in _this._collectedEntities)) {
-                    _this._collectedEntities[entity.creationIndex] = entity;
+                if (!(entity.id in _this._collectedEntities)) {
+                    _this._collectedEntities[entity.id] = entity;
                     entity.addRef();
                 }
             };
@@ -1226,9 +1669,11 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
-    var Bag = entitas.Bag;
+    var UUID = entitas.utils.UUID;
+    var Bag = entitas.utils.Bag;
     var Group = entitas.Group;
     var Entity = entitas.Entity;
+    var Signal = entitas.utils.Signal;
     var EntityIsNotDestroyedException = entitas.EntityIsNotDestroyedException;
     var PoolDoesNotContainEntityException = entitas.PoolDoesNotContainEntityException;
     var Pool = (function () {
@@ -1262,13 +1707,13 @@ var entitas;
                     throw new EntityIsNotDestroyedException("Cannot release entity.");
                 }
                 entity.onEntityReleased.remove(_this._cachedOnEntityReleased);
-                delete _this._retainedEntities[entity.creationIndex];
+                delete _this._retainedEntities[entity.id];
                 _this._reusableEntities.add(entity);
             };
-            this.onGroupCreated = new entitas.Signal(this);
-            this.onEntityCreated = new entitas.Signal(this);
-            this.onEntityDestroyed = new entitas.Signal(this);
-            this.onEntityWillBeDestroyed = new entitas.Signal(this);
+            this.onGroupCreated = new Signal(this);
+            this.onEntityCreated = new Signal(this);
+            this.onEntityDestroyed = new Signal(this);
+            this.onEntityWillBeDestroyed = new Signal(this);
             this._componentsEnum = components;
             this._totalComponents = totalComponents;
             this._creationIndex = startCreationIndex;
@@ -1323,8 +1768,9 @@ var entitas;
             entity._isEnabled = true;
             entity.name = name;
             entity._creationIndex = this._creationIndex++;
+            entity.id = UUID.randomUUID();
             entity.addRef();
-            this._entities[entity.creationIndex] = entity;
+            this._entities[entity.id] = entity;
             this._entitiesCache = undefined;
             entity.onComponentAdded.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
             entity.onComponentRemoved.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
@@ -1340,10 +1786,10 @@ var entitas;
          * @param entity
          */
         Pool.prototype.destroyEntity = function (entity) {
-            if (!(entity.creationIndex in this._entities)) {
+            if (!(entity.id in this._entities)) {
                 throw new PoolDoesNotContainEntityException(entity, "Could not destroy entity!");
             }
-            delete this._entities[entity.creationIndex];
+            delete this._entities[entity.id];
             this._entitiesCache = undefined;
             var onEntityWillBeDestroyed = this.onEntityWillBeDestroyed;
             if (onEntityWillBeDestroyed.active)
@@ -1357,7 +1803,7 @@ var entitas;
                 this._reusableEntities.add(entity);
             }
             else {
-                this._retainedEntities[entity.creationIndex] = entity;
+                this._retainedEntities[entity.id] = entity;
             }
             entity.release();
         };
@@ -1368,7 +1814,7 @@ var entitas;
             }
         };
         Pool.prototype.hasEntity = function (entity) {
-            return entity.creationIndex in this._entities;
+            return entity.id in this._entities;
         };
         Pool.prototype.getEntities = function () {
             if (this._entitiesCache === undefined) {
@@ -1583,267 +2029,5 @@ var entitas;
         return Systems;
     })();
     entitas.Systems = Systems;
-})(entitas || (entitas = {}));
-var entitas;
-(function (entitas) {
-    var extensions;
-    (function (extensions) {
-        var Exception = entitas.Exception;
-        var Collection = (function (_super) {
-            __extends(Collection, _super);
-            function Collection($0) {
-                _super.call(this, $0);
-            }
-            Collection.prototype.singleEntity = function () {
-                if (this.length !== 1) {
-                    throw new Exception("Expected exactly one entity but found " + this.length);
-                }
-                return this[0];
-            };
-            return Collection;
-        })(Array);
-        extensions.Collection = Collection;
-    })(extensions = entitas.extensions || (entitas.extensions = {}));
-})(entitas || (entitas = {}));
-var entitas;
-(function (entitas) {
-    var extensions;
-    (function (extensions) {
-        var GroupEventType = entitas.GroupEventType;
-        var GroupObserver = entitas.GroupObserver;
-        entitas.Group.prototype.createObserver = function (eventType) {
-            if (eventType === void 0) { eventType = GroupEventType.OnEntityAdded; }
-            return new GroupObserver(this, eventType);
-        };
-    })(extensions = entitas.extensions || (entitas.extensions = {}));
-})(entitas || (entitas = {}));
-var entitas;
-(function (entitas) {
-    var extensions;
-    (function (extensions) {
-        var Matcher = entitas.Matcher;
-        var GroupEventType = entitas.GroupEventType;
-        var TriggerOnEvent = entitas.TriggerOnEvent;
-        Matcher.prototype.onEntityAdded = function () {
-            return new TriggerOnEvent(this, GroupEventType.OnEntityAdded);
-        };
-        Matcher.prototype.onEntityRemoved = function () {
-            return new TriggerOnEvent(this, GroupEventType.OnEntityRemoved);
-        };
-        Matcher.prototype.onEntityAddedOrRemoved = function () {
-            return new TriggerOnEvent(this, GroupEventType.OnEntityAddedOrRemoved);
-        };
-    })(extensions = entitas.extensions || (entitas.extensions = {}));
-})(entitas || (entitas = {}));
-var entitas;
-(function (entitas) {
-    var extensions;
-    (function (extensions) {
-        function as(obj, method1) {
-            return method1 in obj ? obj : null;
-        }
-        entitas.Pool.prototype.getEntities = function (matcher) {
-            if (matcher) {
-                /** PoolExtension::getEntities */
-                return this.getGroup(matcher).getEntities();
-            }
-            else {
-                if (this._entitiesCache === undefined) {
-                    var entities = this._entities;
-                    var keys = Object.keys(entities);
-                    var length = keys.length;
-                    var entitiesCache = this._entitiesCache = new Array(length);
-                    for (var i = 0; i < length; i++) {
-                        entitiesCache[i] = entities[keys[i]];
-                    }
-                }
-                return this._entitiesCache;
-            }
-        };
-        entitas.Pool.prototype.createSystem = function (system) {
-            if ('function' === typeof system) {
-                var Klass = system;
-                system = new Klass();
-            }
-            entitas.Pool.setPool(system, this);
-            var reactiveSystem = as(system, 'trigger');
-            if (reactiveSystem != null) {
-                return new entitas.ReactiveSystem(this, reactiveSystem);
-            }
-            var multiReactiveSystem = as(system, 'triggers');
-            if (multiReactiveSystem != null) {
-                return new entitas.ReactiveSystem(this, multiReactiveSystem);
-            }
-            return system;
-        };
-        entitas.Pool.setPool = function (system, pool) {
-            var poolSystem = as(system, 'setPool');
-            if (poolSystem != null) {
-                poolSystem.setPool(pool);
-            }
-        };
-    })(extensions = entitas.extensions || (entitas.extensions = {}));
-})(entitas || (entitas = {}));
-/**
- * Inspired by Unity
- */
-var entitas;
-(function (entitas) {
-    var browser;
-    (function (browser) {
-        var Systems = entitas.Systems;
-        var VisualDebugging = (function () {
-            function VisualDebugging() {
-            }
-            VisualDebugging.init = function (pool) {
-                if (location.search === "?debug=true" && window['dat']) {
-                    browser.gui = new dat.GUI({ height: 5 * 32 - 1, width: 300 });
-                    var observer = new PoolObserver(pool);
-                    VisualDebugging._controllers = [];
-                    VisualDebugging._entities = browser.gui.addFolder('Entities');
-                    VisualDebugging._pools = browser.gui.addFolder('Pools');
-                    VisualDebugging._systems = browser.gui.addFolder('Systems');
-                    VisualDebugging._entities.open();
-                    VisualDebugging._pools.open();
-                    VisualDebugging._systems.open();
-                    VisualDebugging._pools.add(observer, 'entities').listen();
-                    VisualDebugging._pools.add(observer, 'reusable').listen();
-                    pool.onEntityCreated.add(function (pool, entity) {
-                        var proxy = new EntityBehavior(entity);
-                        VisualDebugging._controllers[entity.creationIndex] = VisualDebugging._entities.add(proxy, proxy.name).listen();
-                    });
-                    pool.onEntityDestroyed.add(function (pool, entity) {
-                        var controller = VisualDebugging._controllers[entity.creationIndex];
-                        delete VisualDebugging._controllers[entity.creationIndex];
-                        VisualDebugging._entities.remove(controller);
-                    });
-                    Systems.prototype.initialize = function () {
-                        for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
-                            this._initializeSystems[i].initialize();
-                        }
-                        var sys = new SystemObserver(this);
-                        VisualDebugging._systems.add(sys, 'initialize').listen();
-                        VisualDebugging._systems.add(sys, 'execute').listen();
-                    };
-                    function get_Systems() {
-                        return "Systems " + " (" +
-                            this._initializeSystems.length + " init, " +
-                            this._executeSystems.length + " exe ";
-                    }
-                    Object.defineProperty(Systems.prototype, 'name', { get: function () { return 'Systems'; } });
-                    Object.defineProperty(Systems.prototype, 'Systems', { get: get_Systems });
-                }
-            };
-            return VisualDebugging;
-        })();
-        browser.VisualDebugging = VisualDebugging;
-        /**
-         * Profiler class for Entities
-         */
-        var EntityBehavior = (function () {
-            function EntityBehavior(obj) {
-                var _this = this;
-                this.obj = obj;
-                if (this.obj.name) {
-                    this._name = this.obj.name;
-                }
-                else {
-                    this._name = "Entity_" + this.obj._creationIndex;
-                }
-                Object.defineProperty(this, this._name, { get: function () { return _this.obj.toString(); } });
-            }
-            Object.defineProperty(EntityBehavior.prototype, "name", {
-                get: function () {
-                    return this._name;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return EntityBehavior;
-        })();
-        browser.EntityBehavior = EntityBehavior;
-        /**
-         * Profiler class for Systems
-         */
-        var SystemObserver = (function () {
-            function SystemObserver(_systems) {
-                this._systems = _systems;
-            }
-            Object.defineProperty(SystemObserver.prototype, "name", {
-                get: function () {
-                    return "Systems";
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(SystemObserver.prototype, "Systems", {
-                get: function () {
-                    return "Systems " + " (" +
-                        this._systems._initializeSystems.length + " init, " +
-                        this._systems._executeSystems.length + " exe ";
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(SystemObserver.prototype, "initialize", {
-                get: function () {
-                    return this._systems._initializeSystems.length;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(SystemObserver.prototype, "execute", {
-                get: function () {
-                    return this._systems._executeSystems.length;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return SystemObserver;
-        })();
-        browser.SystemObserver = SystemObserver;
-        /**
-         * Profiler class for Pools
-         */
-        var PoolObserver = (function () {
-            function PoolObserver(_pool) {
-                this._pool = _pool;
-                this._groups = this._pool._groups;
-            }
-            Object.defineProperty(PoolObserver.prototype, "name", {
-                get: function () {
-                    return "Pool";
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(PoolObserver.prototype, "Pool", {
-                get: function () {
-                    return "Pool " + " (" +
-                        this._pool.count + " entities, " +
-                        this._pool.reusableEntitiesCount + " reusable, " +
-                        Object.keys(this._groups).length + " groups)";
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(PoolObserver.prototype, "entities", {
-                get: function () {
-                    return this._pool.count;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(PoolObserver.prototype, "reusable", {
-                get: function () {
-                    return this._pool.reusableEntitiesCount;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return PoolObserver;
-        })();
-        browser.PoolObserver = PoolObserver;
-    })(browser = entitas.browser || (entitas.browser = {}));
 })(entitas || (entitas = {}));
 //# sourceMappingURL=entitas.js.map

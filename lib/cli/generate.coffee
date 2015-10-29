@@ -29,6 +29,7 @@ module.exports =
 
     ts = [] # StringBuilder for generated typescript code
     js = [] # StringBuilder for generated javascript code
+    d0 = [] # StringBuilder for associated *.d.ts file: Components
     d1 = [] # StringBuilder for associated *.d.ts file: Entity
     d2 = [] # StringBuilder for associated *.d.ts file: Matcher
     d3 = [] # StringBuilder for associated *.d.ts file: Pool
@@ -91,6 +92,18 @@ module.exports =
     ts.push ""
 
     ###
+     * Components Class Declarations
+    ###
+    d0.push ""
+    for Name, properties of config.components
+      d0.push "    class #{Name}Component implements IComponent {"
+      for p in properties
+        d0.push "      public #{p};"
+      d0.push "    }"
+    d0.push ""
+
+
+    ###
      * Extend Entity with components
     ###
     ts.push ""
@@ -118,17 +131,17 @@ module.exports =
           js.push "    return this;"
           js.push "  };"
 
-          d1.push "        static #{name}Component: any;"
+          d1.push "        static #{name}Component: #{Name}Component;"
           d1.push "        is#{Name}: boolean;"
           d1.push "        set#{Name}(value: boolean);"
 
         else
           js.push "  Entity._#{name}ComponentPool = new Bag();"
-          js.push "  (function() {"
-          js.push "    for (var i=0; i<64; i++) {"
-          js.push "      Entity._#{name}ComponentPool.add(new #{Name}Component());"
-          js.push "    }"
-          js.push "  })();"
+#          js.push "  (function() {"
+#          js.push "    for (var i=0; i<64; i++) {"
+#          js.push "      Entity._#{name}ComponentPool.add(new #{Name}Component());"
+#          js.push "    }"
+#          js.push "  })();"
           js.push "  Entity.clear#{Name}ComponentPool = function() {"
           js.push "    Entity._#{name}ComponentPool.clear();"
           js.push "  };"
@@ -169,7 +182,7 @@ module.exports =
 
           d1.push "        static _#{name}ComponentPool;"
           d1.push "        static clear#{Name}ComponentPool();"
-          d1.push "        #{name}: any;"
+          d1.push "        #{name}: #{Name}Component;"
           d1.push "        has#{Name}: boolean;"
           d1.push "        add#{Name}(#{properties.join(', ')});"
           d1.push "        replace#{Name}(#{properties.join(', ')});"
@@ -266,7 +279,7 @@ module.exports =
           js.push "  };"
 
           d3.push "        #{name}Entity: Entity;"
-          d3.push "        #{name}: IComponent;"
+          d3.push "        #{name}: #{Name}Component;"
           d3.push "        has#{Name}: boolean;"
           d3.push "        set#{Name}(#{properties.join(', ')}): Entity;"
           d3.push "        replace#{Name}(#{properties.join(', ')}): Entity;"
@@ -323,6 +336,7 @@ module.exports =
 
 
     dts = fs.readFileSync(path.join(__dirname, 'entitas.d.ts'), 'utf8')
+    dts = def(dts, '    interface IComponent {\n    }', d0)
     dts = def(dts, '    class Entity {', d1)
     dts = def(dts, '    class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {', d2)
     dts = def(dts, '    class Pool {', d3)

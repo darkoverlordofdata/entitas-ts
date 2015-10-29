@@ -45,6 +45,7 @@ module entitas {
     public onComponentReplaced:Entity.IComponentReplaced<ComponentReplaced>;
 
     public name:string;
+    public id:string;
     public _creationIndex:number=0;
     public _isEnabled:boolean=true;
     public _components;
