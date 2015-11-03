@@ -73,6 +73,11 @@ Default template is equivalent to:
       entitas create -s RemoveViewSystem IReactiveSystem ISetPool IEnsureComponents
       entitas create -s ScoreSystem IInitializeSystem IReactiveSystem ISetPool
 
+
+### Status
+
+Working...
+
 # MIT License
 
 Copyright (c) 2015 Bruce Davidson &lt;darkoverlordofdata@gmail.com&gt;

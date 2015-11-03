@@ -91,6 +91,7 @@ systemTemplate = (name, interfaces) ->
     switch iface
       when 'ISetPool'
         sb.push "    protected pool:Pool;"
+        sb.push "    protected group:Group;"
 
   sb.push ""
   for iface in interfaces
@@ -100,19 +101,31 @@ systemTemplate = (name, interfaces) ->
         sb.push "    }"
         sb.push "    "
         sb.push "    public execute(entities:Array<Entity>) {"
+        sb.push "      for (var i = 0, l = entities.length; i < l; i++) {"
+        sb.push "        var e = entities[i];"
+        sb.push "      }"
         sb.push "    }"
         sb.push "    "
 
       when 'IReactiveSystem'
         sb.push "    public get trigger():TriggerOnEvent {"
+        sb.push "      return null;"
         sb.push "    }"
         sb.push "    "
         sb.push "    public execute(entities:Array<Entity>) {"
+        sb.push "      for (var i = 0, l = entities.length; i < l; i++) {"
+        sb.push "        var e = entities[i];"
+        sb.push "      }"
         sb.push "    }"
         sb.push "    "
 
       when 'IExecuteSystem'
         sb.push "    public execute() {"
+        if 'ISetPool' in interfaces
+          sb.push "      var entities = this.group.getEntities();"
+          sb.push "      for (var i = 0, l = entities.length; i < l; i++) {"
+          sb.push "        var e = entities[i];"
+          sb.push "      }"
         sb.push "    }"
         sb.push "    "
 
@@ -139,6 +152,7 @@ systemTemplate = (name, interfaces) ->
       when 'ISetPool'
         sb.push "    public setPool(pool:Pool) {"
         sb.push "      this.pool = pool;"
+        sb.push "      this.group = pool.getGroup(Matcher.allOf());"
         sb.push "    }"
         sb.push "    "
 

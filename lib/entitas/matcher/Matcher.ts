@@ -49,7 +49,7 @@ module entitas {
     public anyOf(...args:any[]):IAnyOfMatcher {
       if ('number' === typeof args[0] || 'string' === typeof args[0]) {
         this._anyOfIndices = Matcher.distinctIndices(args);
-        this._indices = undefined;
+        this._indices = null;
         return this;
       } else {
         return this.anyOf.apply(this, Matcher.mergeIndices(args));
@@ -62,7 +62,7 @@ module entitas {
     public noneOf(...args:any[]):INoneOfMatcher {
       if ('number' === typeof args[0] || 'string' === typeof args[0]) {
         this._noneOfIndices = Matcher.distinctIndices(args);
-        this._indices = undefined;
+        this._indices = null;
         return this;
       } else {
         return this.noneOf.apply(this, Matcher.mergeIndices(args));
@@ -70,26 +70,26 @@ module entitas {
     }
 
     public matches(entity:Entity):boolean {
-      var matchesAllOf = this._allOfIndices === undefined ? true : entity.hasComponents(this._allOfIndices);
-      var matchesAnyOf = this._anyOfIndices === undefined ? true : entity.hasAnyComponent(this._anyOfIndices);
-      var matchesNoneOf = this._noneOfIndices === undefined ? true : !entity.hasAnyComponent(this._noneOfIndices);
+      var matchesAllOf = this._allOfIndices == null ? true : entity.hasComponents(this._allOfIndices);
+      var matchesAnyOf = this._anyOfIndices == null ? true : entity.hasAnyComponent(this._anyOfIndices);
+      var matchesNoneOf = this._noneOfIndices == null ? true : !entity.hasAnyComponent(this._noneOfIndices);
       return matchesAllOf && matchesAnyOf && matchesNoneOf;
 
     }
 
     public mergeIndices():number[] {
-      //var totalIndices = (this._allOfIndices !== undefined ? this._allOfIndices.length : 0)
-      //  + (this._anyOfIndices !== undefined ? this._anyOfIndices.length : 0)
-      //  + (this._noneOfIndices !== undefined ? this._noneOfIndices.length : 0);
+      //var totalIndices = (this._allOfIndices != null ? this._allOfIndices.length : 0)
+      //  + (this._anyOfIndices != null ? this._anyOfIndices.length : 0)
+      //  + (this._noneOfIndices != null ? this._noneOfIndices.length : 0);
 
       var indicesList = [];
-      if (this._allOfIndices !== undefined) {
+      if (this._allOfIndices != null) {
         indicesList = indicesList.concat(this._allOfIndices);
       }
-      if (this._anyOfIndices !== undefined) {
+      if (this._anyOfIndices != null) {
         indicesList = indicesList.concat(this._anyOfIndices);
       }
-      if (this._noneOfIndices !== undefined) {
+      if (this._noneOfIndices != null) {
         indicesList = indicesList.concat(this._noneOfIndices);
       }
 
@@ -98,18 +98,18 @@ module entitas {
     }
 
     public toString() {
-      if (this._toStringCache === undefined) {
+      if (this._toStringCache == null) {
         var sb:string[] = [];
-        if (this._allOfIndices !== undefined) {
+        if (this._allOfIndices != null) {
           Matcher.appendIndices(sb, "AllOf", this._allOfIndices);
         }
-        if (this._anyOfIndices !== undefined) {
-          if (this._allOfIndices !== undefined) {
+        if (this._anyOfIndices != null) {
+          if (this._allOfIndices != null) {
             sb[sb.length] = '.';
           }
           Matcher.appendIndices(sb, "AnyOf", this._anyOfIndices);
         }
-        if (this._noneOfIndices !== undefined) {
+        if (this._noneOfIndices != null) {
           Matcher.appendIndices(sb, ".NoneOf", this._noneOfIndices);
         }
         this._toStringCache = sb.join('');
@@ -118,7 +118,7 @@ module entitas {
     }
 
     public equals(obj) {
-      if (obj == null || obj === undefined) return false;
+      if (obj == null || obj == null) return false;
       var matcher:Matcher = obj;
 
       if (!Matcher.equalIndices(matcher.allOfIndices, this._allOfIndices)) {
@@ -135,10 +135,10 @@ module entitas {
     }
 
     public static equalIndices(i1:number[], i2:number[]):boolean {
-      if ((i1 === undefined) != (i2 === undefined)) {
+      if ((i1 == null) != (i2 == null)) {
         return false;
       }
-      if (i1 === undefined) {
+      if (i1 == null) {
         return true;
       }
       if (i1.length !== i2.length) {

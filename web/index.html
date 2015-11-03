@@ -1,5 +1,59 @@
 <!DOCTYPE html>
 <html>
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Star Warriors</title>
+    <link rel="icon" type="image/GIF" href="res/favicon.ico"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="full-screen" content="yes"/>
+    <meta name="screen-orientation" content="portrait"/>
+    <meta name="x5-fullscreen" content="true"/>
+    <meta name="360-fullscreen" content="true"/>
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Space Warriors">
+    <meta name="author" content="">
+
+    <meta property="og:title" content="Space Warriors" />
+    <meta property="og:type" content="game" />
+    <meta property="og:url" content="https://games.darkoverlordofdata.com/artemists/" />
+    <meta property="og:image" content="https://games.darkoverlordofdata.com/assets/artemists.png" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Space Warriors" />
+    <meta property="og:description" content="ArtemisTS Demo" />
+    <meta property="fb:app_id" content="???????????????" id="fbAppId"/>
+    <meta property="fb:admins" content="100002160218840">
+
+    <style>
+        html {
+            background: url(logo.png) #000;
+            background-repeat: no-repeat;
+            background-size: cover;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+        }
+        body {
+            padding:0;
+            margin: 0;
+            background: #000;
+        }
+        body, canvas, div {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            -khtml-user-select: none;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+    </style>
+</head>
+<body style="padding:0; margin: 0; background: #000;">
+</body>
+<!DOCTYPE html>
+<html>
 <head>
     <meta charset="utf-8">
     <title>Schmup Wars</title>
@@ -52,53 +106,62 @@
 <script src="dat.gui.min.js"></script>
 <script src="src/stats.js/stats.min.js"></script>
 <script src="src/pixi.js/pixi.min.js"></script>
-<script src="entitas.js"></script>
-<!--<script src="src/entitas/utils/UUID.js"></script>-->
-<!--<script src="src/entitas/utils/Map.js"></script>-->
-<!--<script src="src/entitas/utils/HashMap.js"></script>-->
-<!--<script src="src/entitas/utils/ImmutableBag.js"></script>-->
-<!--<script src="src/entitas/utils/Bag.js"></script>-->
-<!--<script src="src/entitas/utils/BitSet.js"></script>-->
-<!--<script src="src/entitas/utils/Signal.js"></script>-->
-<!--<script src="src/entitas/utils/Stopwatch.js"></script>-->
-<!--<script src="src/entitas/interfaces/IComponent.js"></script>-->
-<!--<script src="src/entitas/interfaces/IMatcher.js"></script>-->
-<!--<script src="src/entitas/interfaces/ISystem.js"></script>-->
-<!--<script src="src/entitas/interfaces/IExecuteSystem.js"></script>-->
-<!--<script src="src/entitas/interfaces/IInitializeSystem.js"></script>-->
-<!--<script src="src/entitas/interfaces/IReactiveSystem.js"></script>-->
-<!--<script src="src/entitas/Exceptions.js"></script>-->
-<!--<script src="src/entitas/matcher/Matcher.js"></script>-->
-<!--<script src="src/entitas/matcher/MatcherInterfaces.js"></script>-->
-<!--<script src="src/entitas/matcher/TriggerOnEvent.js"></script>-->
-<!--<script src="src/entitas/Entity.js"></script>-->
-<!--<script src="src/entitas/Group.js"></script>-->
-<!--<script src="src/entitas/GroupObserver.js"></script>-->
-<!--<script src="src/entitas/Pool.js"></script>-->
-<!--<script src="src/entitas/ReactiveSystem.js"></script>-->
-<!--<script src="src/entitas/Systems.js"></script>-->
-<!--<script src="src/entitas/extensions/CollectionExtension.js"></script>-->
-<!--<script src="src/entitas/extensions/GroupExtension.js"></script>-->
-<!--<script src="src/entitas/extensions/MatcherExtension.js"></script>-->
-<!--<script src="src/entitas/extensions/PoolExtension.js"></script>-->
-<!--<script src="src/entitas/browser/VisualDebugging.js"></script>-->
-
-<script src="src/example/generated.js"></script>
-<script src="src/example/extensions.js"></script>
-<script src="src/example/core/Constants.js"></script>
-<script src="src/example/systems/AccelerateSystem.js"></script>
+<script src="src/tween.ts/tween.min.js"></script>
+<script src="src/localstoragedb/localstoragedb.min.js"></script>
+<script src="src/chromestoragedb/chromestoragedb.js"></script>
+<script src="src/bosco/bosco.js"></script>
+<!--<script src="entitas.js"></script>-->
+<script src="src/entitas/utils/UUID.js"></script>
+<script src="src/entitas/utils/Map.js"></script>
+<script src="src/entitas/utils/HashMap.js"></script>
+<script src="src/entitas/utils/ImmutableBag.js"></script>
+<script src="src/entitas/utils/Bag.js"></script>
+<script src="src/entitas/utils/BitSet.js"></script>
+<script src="src/entitas/utils/Signal.js"></script>
+<script src="src/entitas/utils/Stopwatch.js"></script>
+<script src="src/entitas/interfaces/IComponent.js"></script>
+<script src="src/entitas/interfaces/IMatcher.js"></script>
+<script src="src/entitas/interfaces/ISystem.js"></script>
+<script src="src/entitas/interfaces/IExecuteSystem.js"></script>
+<script src="src/entitas/interfaces/IInitializeSystem.js"></script>
+<script src="src/entitas/interfaces/IReactiveSystem.js"></script>
+<script src="src/entitas/Exceptions.js"></script>
+<script src="src/entitas/matcher/Matcher.js"></script>
+<script src="src/entitas/matcher/MatcherInterfaces.js"></script>
+<script src="src/entitas/matcher/TriggerOnEvent.js"></script>
+<script src="src/entitas/Entity.js"></script>
+<script src="src/entitas/Group.js"></script>
+<script src="src/entitas/GroupObserver.js"></script>
+<script src="src/entitas/Pool.js"></script>
+<script src="src/entitas/ReactiveSystem.js"></script>
+<script src="src/entitas/Systems.js"></script>
+<script src="src/entitas/extensions/CollectionExtension.js"></script>
+<script src="src/entitas/extensions/GroupExtension.js"></script>
+<script src="src/entitas/extensions/MatcherExtension.js"></script>
+<script src="src/entitas/extensions/PoolExtension.js"></script>
+<script src="src/entitas/browser/VisualDebugging.js"></script>
+<!--
+        Demo
+-->
+<script src="src/example/prolog.js"></script>
+<script src="src/example/generatedComponents.js"></script>
+<script src="src/example/generatedExtensions.js"></script>
+<script src="src/example/systems/CollisionSystem.js"></script>
+<script src="src/example/systems/ColorAnimationSystem.js"></script>
 <script src="src/example/systems/DestroySystem.js"></script>
-<script src="src/example/systems/InputSystem.js"></script>
-<script src="src/example/systems/MoveSystem.js"></script>
-<script src="src/example/systems/ReachedFinishSystem.js"></script>
-<script src="src/example/systems/RenderPositionSystem.js"></script>
-<script src="src/example/systems/AddViewSystem.js"></script>
-<script src="src/example/systems/RemoveViewSystem.js"></script>
-<script src="src/example/systems/CreateFinishLineSystem.js"></script>
-<script src="src/example/systems/CreateOpponentsSystem.js"></script>
-<script src="src/example/systems/CreatePlayerSystem.js"></script>
-<script src="src/example/core/GameController.js"></script>
-<script src="src/example/core/Game.js"></script>
+<script src="src/example/systems/EntitySpawningTimerSystem.js"></script>
+<script src="src/example/systems/ExpiringSystem.js"></script>
+<script src="src/example/systems/HealthRenderSystem.js"></script>
+<script src="src/example/systems/HudRenderSystem.js"></script>
+<script src="src/example/systems/MovementSystem.js"></script>
+<script src="src/example/systems/ParallaxStarRepeatingSystem.js"></script>
+<script src="src/example/systems/PlayerInputSystem.js"></script>
+<script src="src/example/systems/RemoveOffscreenShipsSystem.js"></script>
+<script src="src/example/systems/ScaleAnimationSystem.js"></script>
+<script src="src/example/systems/SoundEffectSystem.js"></script>
+<script src="src/example/systems/SpriteRenderSystem.js"></script>
+<script src="src/example/controllers/GameController.js"></script>
 <script src="main.js"></script>
 
+</html>
 </html>

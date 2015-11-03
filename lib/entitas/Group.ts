@@ -83,8 +83,8 @@ module entitas {
     public addEntitySilently(entity:Entity) {
       if (!(entity.id in this._entities)) {
         this._entities[entity.id] = entity;
-        this._entitiesCache = undefined;
-        this._singleEntityCache = undefined;
+        this._entitiesCache = null;
+        this._singleEntityCache = null;
         entity.addRef();
       }
     }
@@ -92,8 +92,8 @@ module entitas {
     public addEntity(entity:Entity, index:number, component:IComponent) {
       if (!(entity.id in this._entities)) {
         this._entities[entity.id] = entity;
-        this._entitiesCache = undefined;
-        this._singleEntityCache = undefined;
+        this._entitiesCache = null;
+        this._singleEntityCache = null;
         entity.addRef();
         var onEntityAdded:any = this.onEntityAdded;
         if (onEntityAdded.active) onEntityAdded.dispatch(this, entity, index, component)
@@ -104,8 +104,8 @@ module entitas {
     public removeEntitySilently(entity:Entity) {
       if (entity.id in this._entities) {
         delete this._entities[entity.id];
-        this._entitiesCache = undefined;
-        this._singleEntityCache = undefined;
+        this._entitiesCache = null;
+        this._singleEntityCache = null;
         entity.release();
       }
     }
@@ -113,8 +113,8 @@ module entitas {
     public removeEntity(entity:Entity, index:number, component:IComponent) {
       if (entity.id in this._entities) {
         delete this._entities[entity.id];
-        this._entitiesCache = undefined;
-        this._singleEntityCache = undefined;
+        this._entitiesCache = null;
+        this._singleEntityCache = null;
         var onEntityRemoved:any = this.onEntityRemoved;
         if (onEntityRemoved.active) onEntityRemoved.dispatch(this, entity, index, component);
         entity.release();
@@ -126,7 +126,7 @@ module entitas {
     }
 
     public getEntities():Entity[] {
-      if (this._entitiesCache === undefined) {
+      if (this._entitiesCache == null) {
         var entities = this._entities;
         var keys = Object.keys(entities);
         var length = keys.length;
@@ -139,13 +139,13 @@ module entitas {
     }
 
     public getSingleEntity():Entity {
-      if (this._singleEntityCache === undefined) {
+      if (this._singleEntityCache == null) {
         var enumerator = Object.keys(this._entities);
         var c = enumerator.length;
         if (c === 1) {
           this._singleEntityCache = this._entities[enumerator[0]];
         } else if (c === 0) {
-          return undefined;
+          return null;
         } else {
           throw new SingleEntityException(this._matcher);
         }
@@ -155,7 +155,7 @@ module entitas {
     }
 
     public toString():string {
-      if (this._toStringCache === undefined) {
+      if (this._toStringCache == null) {
         this._toStringCache = "Group(" + this._matcher + ")";
       }
       return this._toStringCache;

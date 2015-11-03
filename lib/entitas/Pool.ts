@@ -57,6 +57,7 @@ module entitas {
 
     public static componentsEnum:Object;
     public static totalComponents:number=0;
+    public static instance:Pool;
 
     public _componentsEnum:Object;
     public _totalComponents:number = 0;
@@ -76,6 +77,7 @@ module entitas {
 
 
     constructor(components:{}, totalComponents:number, startCreationIndex:number=0) {
+      Pool.instance = this;
       this.onGroupCreated = new Signal<GroupChanged>(this);
       this.onEntityCreated = new Signal<PoolChanged>(this);
       this.onEntityDestroyed = new Signal<PoolChanged>(this);
@@ -123,11 +125,11 @@ module entitas {
       entity.id = UUID.randomUUID()
       entity.addRef();
       this._entities[entity.id] = entity;
-      this._entitiesCache = undefined;
-      entity.onComponentAdded.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
-      entity.onComponentRemoved.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
-      entity.onComponentReplaced.add(this._cachedUpdateGroupsComponentReplaced);
-      entity.onEntityReleased.add(this._cachedOnEntityReleased);
+      this._entitiesCache = null;
+      //entity.onComponentAdded.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
+      //entity.onComponentRemoved.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
+      //entity.onComponentReplaced.add(this._cachedUpdateGroupsComponentReplaced);
+      //entity.onEntityReleased.add(this._cachedOnEntityReleased);
 
       var onEntityCreated:any = this.onEntityCreated;
       if (onEntityCreated.active) onEntityCreated.dispatch(this, entity);
@@ -144,7 +146,7 @@ module entitas {
           "Could not destroy entity!");
       }
       delete this._entities[entity.id];
-      this._entitiesCache = undefined;
+      this._entitiesCache = null;
       var onEntityWillBeDestroyed:any = this.onEntityWillBeDestroyed;
       if (onEntityWillBeDestroyed.active) onEntityWillBeDestroyed.dispatch(this, entity);
       entity.destroy();
@@ -153,7 +155,7 @@ module entitas {
       if (onEntityDestroyed.active) onEntityDestroyed.dispatch(this, entity);
 
       if (entity._refCount === 1) {
-        entity.onEntityReleased.remove(this._cachedOnEntityReleased);
+        //entity.onEntityReleased.remove(this._cachedOnEntityReleased);
         this._reusableEntities.add(entity);
       } else {
         this._retainedEntities[entity.id] = entity;
@@ -175,7 +177,7 @@ module entitas {
 
 
     public getEntities():Entity[] {
-      if (this._entitiesCache === undefined) {
+      if (this._entitiesCache == null) {
 
         var entities = this._entities;
         var keys = Object.keys(entities);
@@ -206,7 +208,7 @@ module entitas {
 
         for (var i = 0, indicesLength = matcher.indices.length; i < indicesLength; i++) {
           var index = matcher.indices[i];
-          if (this._groupsForIndex[index] === undefined) {
+          if (this._groupsForIndex[index] == null) {
             this._groupsForIndex[index] = new Bag();
           }
           this._groupsForIndex[index].add(group);
@@ -219,7 +221,7 @@ module entitas {
 
     public updateGroupsComponentAddedOrRemoved = (entity:Entity, index:number, component:IComponent) => {
       var groups = this._groupsForIndex[index];
-      if (groups !== undefined) {
+      if (groups != null) {
         for (var i = 0, groupsCount = groups.size(); i < groupsCount; i++) {
           groups[i].handleEntity(entity, index, component);
         }
@@ -229,7 +231,7 @@ module entitas {
 
     public updateGroupsComponentReplaced = (entity:Entity, index:number, previousComponent:IComponent, newComponent:IComponent) => {
       var groups = this._groupsForIndex[index];
-      if (groups !== undefined) {
+      if (groups != null) {
         for (var i = 0, groupsCount = groups.size(); i < groupsCount; i++) {
           groups[i].updateEntity(entity, index, previousComponent, newComponent);
         }
@@ -240,7 +242,7 @@ module entitas {
       if(entity._isEnabled){
         throw new EntityIsNotDestroyedException("Cannot release entity.");
       }
-      entity.onEntityReleased.remove(this._cachedOnEntityReleased);
+      //entity.onEntityReleased.remove(this._cachedOnEntityReleased);
       delete this._retainedEntities[entity.id];
       this._reusableEntities.add(entity);
     };

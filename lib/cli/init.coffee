@@ -34,6 +34,7 @@ module.exports =
     "typescript": "lib/src/generatedComponents.ts",
     "declaration": "lib/ext/#{namespace}.d.ts"
   },
+  "alloc": 100,
   "components": {
   },
   "systems": {

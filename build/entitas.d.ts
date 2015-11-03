@@ -1,4 +1,76 @@
 declare module entitas.utils {
+    class UUID {
+        /**
+         * Fast UUID generator, RFC4122 version 4 compliant
+         * format xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+         *
+         * @author Jeff Ward (jcward.com).
+         * @license MIT license
+         * @link http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
+         **/
+        static randomUUID(): string;
+    }
+}
+declare module entitas.utils {
+    interface Map<K, V> {
+        clear(): any;
+        containsKey(key: any): boolean;
+        containsValue(value: any): boolean;
+        get(key: any): any;
+        isEmpty(): boolean;
+        put(key: any, value: any): any;
+        remove(key: any): any;
+        size(): number;
+        values(): any;
+    }
+}
+declare module entitas.utils {
+    /**
+     * For documenting where Function refers to a class definition
+     */
+    interface Class extends Function {
+    }
+    /**
+     * Gets Class Metadata - Name
+     *
+     * @param {Function} klass
+     * @return {string}
+     */
+    function getClassName(klass: any): any;
+    /**
+     * HashMap
+     *
+     * Allow object as key.
+     */
+    class HashMap<K, V> implements Map<K, V> {
+        private map_;
+        private keys_;
+        constructor();
+        clear(): void;
+        values(): any[];
+        contains(value: any): boolean;
+        containsKey(key: any): boolean;
+        containsValue(value: any): boolean;
+        get(key: any): any;
+        isEmpty(): boolean;
+        keys(): any[];
+        /**
+         * if key is a string, use as is, else use key.id_ or key.name
+         */
+        put(key: any, value: any): void;
+        remove(key: any): any;
+        size(): number;
+    }
+}
+declare module entitas.utils {
+    interface ImmutableBag<E> {
+        get(index: number): E;
+        size(): number;
+        isEmpty(): boolean;
+        contains(e: E): boolean;
+    }
+}
+declare module entitas.utils {
     /**
      * Collection type a bit like ArrayList but does not preserve the order of its
      * entities, speedwise it is very good, especially suited for games.
@@ -144,65 +216,6 @@ declare module entitas.utils {
     }
 }
 declare module entitas.utils {
-    /**
-     * For documenting where Function refers to a class definition
-     */
-    interface Class extends Function {
-    }
-    /**
-     * Gets Class Metadata - Name
-     *
-     * @param {Function} klass
-     * @return {string}
-     */
-    function getClassName(klass: any): any;
-    /**
-     * HashMap
-     *
-     * Allow object as key.
-     */
-    class HashMap<K, V> implements Map<K, V> {
-        private map_;
-        private keys_;
-        constructor();
-        clear(): void;
-        values(): any[];
-        contains(value: any): boolean;
-        containsKey(key: any): boolean;
-        containsValue(value: any): boolean;
-        get(key: any): any;
-        isEmpty(): boolean;
-        keys(): any[];
-        /**
-         * if key is a string, use as is, else use key.id_ or key.name
-         */
-        put(key: any, value: any): void;
-        remove(key: any): any;
-        size(): number;
-    }
-}
-declare module entitas.utils {
-    interface ImmutableBag<E> {
-        get(index: number): E;
-        size(): number;
-        isEmpty(): boolean;
-        contains(e: E): boolean;
-    }
-}
-declare module entitas.utils {
-    interface Map<K, V> {
-        clear(): any;
-        containsKey(key: any): boolean;
-        containsValue(value: any): boolean;
-        get(key: any): any;
-        isEmpty(): boolean;
-        put(key: any, value: any): any;
-        remove(key: any): any;
-        size(): number;
-        values(): any;
-    }
-}
-declare module entitas.utils {
     import Bag = entitas.utils.Bag;
     interface ISignal<T> {
         dispatch(...args: any[]): void;
@@ -261,19 +274,6 @@ declare module entitas.utils {
         stop(): void;
         reset(): void;
         static getTimeStamp(): number;
-    }
-}
-declare module entitas.utils {
-    class UUID {
-        /**
-         * Fast UUID generator, RFC4122 version 4 compliant
-         * format xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
-         *
-         * @author Jeff Ward (jcward.com).
-         * @license MIT license
-         * @link http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
-         **/
-        static randomUUID(): string;
     }
 }
 declare module entitas {
@@ -429,11 +429,6 @@ declare module entitas {
 declare module entitas {
     import ISignal = entitas.utils.ISignal;
     import IComponent = entitas.IComponent;
-    import EntityChanged = Entity.EntityChanged;
-    import EntityReleased = Entity.EntityReleased;
-    import IEntityChanged = Entity.IEntityChanged;
-    import IEntityReleased = Entity.IEntityReleased;
-    import ComponentReplaced = Entity.ComponentReplaced;
     /**
      * event delegate boilerplate:
      */
@@ -459,21 +454,24 @@ declare module entitas {
     }
     class Entity {
         creationIndex: number;
-        onEntityReleased: IEntityReleased<EntityReleased>;
-        onComponentAdded: IEntityChanged<EntityChanged>;
-        onComponentRemoved: IEntityChanged<EntityChanged>;
-        onComponentReplaced: Entity.IComponentReplaced<ComponentReplaced>;
         name: string;
         id: string;
         _creationIndex: number;
         _isEnabled: boolean;
-        _components: any;
+        _components: Array<IComponent>;
+        private _pool;
         private _componentsEnum;
         _componentsCache: any;
         _componentIndicesCache: number[];
         _toStringCache: string;
         _refCount: number;
+        static instanceIndex: number;
+        private static alloc;
+        private static first;
+        private componentIndex;
+        private instanceIndex;
         constructor(componentsEnum: any, totalComponents?: number);
+        static dim(count: number, size: number): void;
         addComponent(index: number, component: IComponent): Entity;
         removeComponent(index: number): Entity;
         replaceComponent(index: number, component: IComponent): Entity;
@@ -607,6 +605,7 @@ declare module entitas {
         _retainedEntities: {};
         static componentsEnum: Object;
         static totalComponents: number;
+        static instance: Pool;
         _componentsEnum: Object;
         _totalComponents: number;
         _creationIndex: number;

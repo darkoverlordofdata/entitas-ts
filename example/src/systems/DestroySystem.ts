@@ -1,30 +1,36 @@
 module example {
 
   import Pool = entitas.Pool;
+  import Group = entitas.Group;
   import Entity = entitas.Entity;
-  import ISetPool = entitas.ISetPool;
-  import IComponent = entitas.IComponent;
   import Matcher = entitas.Matcher;
+  import Exception = entitas.Exception;
   import TriggerOnEvent = entitas.TriggerOnEvent;
-  import IReactiveSystem = entitas.IReactiveSystem;
+  import IExecuteSystem = entitas.IExecuteSystem;
+  import ISetPool = entitas.ISetPool;
 
-  export class DestroySystem implements IReactiveSystem, ISetPool {
+  declare var viewContainer;
 
-    public get trigger():TriggerOnEvent {
-      return Matcher.Destroy.onEntityAdded();
-    }
+  export class DestroySystem implements IExecuteSystem, ISetPool {
 
-    pool:Pool;
+    protected pool:Pool;
+    protected group:Group;
 
-    public setPool(pool:Pool) {
-      this.pool = pool;
-    }
-
-    public execute(entities:Array<Entity>) {
-      for (var i=0, l=entities.length; i<l; i++) {
-        this.pool.destroyEntity(entities[i]);
+    public execute() {
+      var entities = this.group.getEntities();
+      for (var i = 0, l = entities.length; i < l; i++) {
+        var e = entities[i];
+        viewContainer.removeChild(e.sprite.object);
+        this.pool.destroyEntity(e);
       }
     }
+    
+    public setPool(pool:Pool) {
+      this.pool = pool;
+      this.group = pool.getGroup(Matcher.allOf(Matcher.Destroy));
+    }
+    
+
+
   }
 }
-

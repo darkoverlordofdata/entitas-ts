@@ -16,7 +16,7 @@ module entitas.extensions {
       /** PoolExtension::getEntities */
       return this.getGroup(matcher).getEntities();
     } else {
-      if (this._entitiesCache === undefined) {
+      if (this._entitiesCache == null) {
         var entities = this._entities;
         var keys = Object.keys(entities);
         var length = keys.length;

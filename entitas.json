@@ -1,35 +1,97 @@
 {
-  "namespace":"example",
+  "namespace": "example",
+  "src": "example/src",
   "output": {
-    "javascript": "web/src/example/extensions.js",
-    "typescript": "example/src/generated.ts",
-    "declaration": "example/ext/generated.d.ts"
+    "javascript": "web/src/example/generatedExtensions.js",
+    "typescript": "example/src/generatedComponents.ts",
+    "declaration": "example/ext/example.d.ts"
   },
+  "alloc": 300,
   "components": {
-    "Acceleratable": false,
-    "Accelerating": false,
+    "Bounds": [
+      "radius:number"
+    ],
+    "Bullet": false,
+    "ColorAnimation": [
+      "redMin:number",
+      "redMax:number",
+      "redSpeed:number",
+      "greenMin:number",
+      "greenMax:number",
+      "greenSpeed:number",
+      "blueMin:number",
+      "blueMax:number",
+      "blueSpeed:number",
+      "alphaMin:number",
+      "alphaMax:number",
+      "alphaSpeed:number",
+      "redAnimate:boolean",
+      "greenAnimate:boolean",
+      "blueAnimate:boolean",
+      "alphaAnimate:boolean",
+      "repeat:boolean"
+    ],
+    "Enemy": false,
+    "Expires": [
+      "delay:number"
+    ],
+    "Health": [
+      "health:number",
+      "maximumHealth:number"
+    ],
+    "ParallaxStar": false,
+    "Player": false,
+    "Position": [
+      "x:number",
+      "y:number"
+    ],
+    "ScaleAnimation": [
+      "min:number",
+      "max:number",
+      "speed:number",
+      "repeat:boolean",
+      "active:boolean"
+    ],
+    "SoundEffect": [
+      "effect:number"
+    ],
+    "Sprite": [
+      "layer:number",
+      "object:Object"
+    ],
+    "Velocity": [
+      "x:number",
+      "y:number"
+    ],
+    "Score": [
+      "value:number"
+    ],
     "Destroy": false,
-    "Move": ["speed:number", "maxSpeed:number"],
-    "Position": ["x:number","y:number","z:number"],
-    "FinishLine": false,
-    "Resource": ["name:string"],
-    "View": ["sprite:Object"]
+    "Mouse": [
+      "x:number",
+      "y:number"
+    ],
+    "Firing": false
   },
   "systems": {
-    "Accelerate":false,
-    "Destroy":false,
-    "Input":true,
-    "Move":true,
-    "ReachedFinish":false,
-    "RenderPosition":false,
-    "AddView":false,
-    "RemoveView":false,
-    "CreatePlayerSystem": false,
-    "CreateOpponentsSystem": false,
-    "CreateFinishLineSystem": false
+    "MovementSystem": true,
+    "PlayerInputSystem": true,
+    "SoundEffectSystem": true,
+    "CollisionSystem": true,
+    "ExpiringSystem": true,
+    "EntitySpawningTimerSystem": true,
+    "ParallaxStarRepeatingSystem": true,
+    "ColorAnimationSystem": true,
+    "ScaleAnimationSystem": true,
+    "RemoveOffscreenShipsSystem": true,
+    "SpriteRenderSystem": true,
+    "HealthRenderSystem": true,
+    "HudRenderSystem": true,
+    "DestroySystem": true
   },
   "entities": {
-    "Accelerating": true,
-    "FinishLine": true
+    "Score": true,
+    "Mouse": true,
+    "Firing": true
   }
 }

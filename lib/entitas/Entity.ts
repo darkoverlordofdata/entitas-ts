@@ -1,5 +1,6 @@
 module entitas {
 
+  import Pool = entitas.Pool;
   import Signal = entitas.utils.Signal;
   import ISignal = entitas.utils.ISignal;
   import IComponent = entitas.IComponent;
@@ -39,16 +40,17 @@ module entitas {
 
     public get creationIndex():number {return this._creationIndex;}
 
-    public onEntityReleased:IEntityReleased<EntityReleased>;
-    public onComponentAdded:IEntityChanged<EntityChanged>;
-    public onComponentRemoved:IEntityChanged<EntityChanged>;
-    public onComponentReplaced:Entity.IComponentReplaced<ComponentReplaced>;
+    //public onEntityReleased:IEntityReleased<EntityReleased>;
+    //public onComponentAdded:IEntityChanged<EntityChanged>;
+    //public onComponentRemoved:IEntityChanged<EntityChanged>;
+    //public onComponentReplaced:Entity.IComponentReplaced<ComponentReplaced>;
 
     public name:string;
     public id:string;
     public _creationIndex:number=0;
     public _isEnabled:boolean=true;
-    public _components;
+    public _components:Array<IComponent>;
+    private _pool:Pool;
 
     private _componentsEnum:{};
     public _componentsCache;
@@ -56,16 +58,37 @@ module entitas {
     public _toStringCache:string;
 
     public _refCount:number=0;
+    public static instanceIndex:number=0;
+    private static alloc:Array<Array<number>>;
+    private static first:boolean=true;
+    private componentIndex:number;
+    private instanceIndex:number;
 
     constructor(componentsEnum, totalComponents:number=16) {
-      this.onEntityReleased = new Signal<EntityReleased>(this);
-      this.onComponentAdded = new Signal<EntityChanged>(this);
-      this.onComponentRemoved = new Signal<EntityChanged>(this);
-      this.onComponentReplaced = new Signal<ComponentReplaced>(this);
 
+      //this.onEntityReleased = new Signal<EntityReleased>(this);
+      //this.onComponentAdded = new Signal<EntityChanged>(this);
+      //this.onComponentRemoved = new Signal<EntityChanged>(this);
+      //this.onComponentReplaced = new Signal<ComponentReplaced>(this);
       this._componentsEnum = componentsEnum;
-      this._components = new Array(totalComponents);
+      if (Entity.instanceIndex === 0) Entity.dim(totalComponents, 100);
+      this._pool = entitas.Pool.instance;
+      this.instanceIndex = Entity.instanceIndex++;
+      this._components = Entity.alloc[this.instanceIndex];
 
+    }
+
+    public static dim(count:number, size:number) {
+      if (!Entity.first) return;
+      Entity.first = false;
+
+      Entity.alloc = new Array(size);
+      for (var e=0; e<size; e++) {
+        Entity.alloc[e] = new Array(count);
+        for (var k=0; k<count; k++) {
+          Entity.alloc[e][k] = null;
+        }
+      }
     }
 
     public addComponent(index:number, component:IComponent):Entity {
@@ -77,11 +100,12 @@ module entitas {
         throw new EntityAlreadyHasComponentException(errorMsg, index);
       }
       this._components[index] = component;
-      this._componentsCache = undefined;
-      this._componentIndicesCache = undefined;
-      this._toStringCache = undefined;
-      var onComponentAdded:any = this.onComponentAdded;
-      if (onComponentAdded.active) onComponentAdded.dispatch(this, index, component);
+      this._componentsCache = null;
+      this._componentIndicesCache = null;
+      this._toStringCache = null;
+      //var onComponentAdded:any = this.onComponentAdded;
+      //if (onComponentAdded.active) onComponentAdded.dispatch(this, index, component);
+      this._pool.updateGroupsComponentAddedOrRemoved(this, index, component);
 
       return this;
     }
@@ -94,7 +118,7 @@ module entitas {
         var errorMsg = "Cannot remove component at index " + index + " from " + this;
         throw new EntityDoesNotHaveComponentException(errorMsg, index);
       }
-      this._replaceComponent(index, undefined);
+      this._replaceComponent(index, null);
       return this;
     }
 
@@ -106,7 +130,7 @@ module entitas {
 
       if (this.hasComponent(index)) {
         this._replaceComponent(index, component);
-      } else if (component !== undefined) {
+      } else if (component != null) {
         this.addComponent(index, component);
       }
       return this;
@@ -116,22 +140,25 @@ module entitas {
       var components = this._components;
       var previousComponent = components[index];
       if (previousComponent === replacement) {
-        var onComponentReplaced:any = this.onComponentReplaced;
-        if (onComponentReplaced.active) onComponentReplaced.dispatch(this, index, previousComponent, replacement);
+        this._pool.updateGroupsComponentReplaced(this, index, previousComponent, replacement);
+        //var onComponentReplaced:any = this.onComponentReplaced;
+        //if (onComponentReplaced.active) onComponentReplaced.dispatch(this, index, previousComponent, replacement);
 
       } else {
         components[index] = replacement;
-        this._componentsCache = undefined;
-        if (replacement === undefined) {
+        this._componentsCache = null;
+        if (replacement == null) {
           delete components[index];
-          this._componentIndicesCache = undefined;
-          this._toStringCache = undefined;
-          var onComponentRemoved:any = this.onComponentRemoved;
-          if (onComponentRemoved.active) onComponentRemoved.dispatch(this, index, previousComponent);
+          this._componentIndicesCache = null;
+          this._toStringCache = null;
+          this._pool.updateGroupsComponentAddedOrRemoved(this, index, previousComponent);
+          //var onComponentRemoved:any = this.onComponentRemoved;
+          //if (onComponentRemoved.active) onComponentRemoved.dispatch(this, index, previousComponent);
 
         } else {
-          var onComponentReplaced:any = this.onComponentReplaced;
-          if (onComponentReplaced.active) onComponentReplaced.dispatch(this, index, previousComponent, replacement);
+          this._pool.updateGroupsComponentReplaced(this, index, previousComponent, replacement);
+          //var onComponentReplaced:any = this.onComponentReplaced;
+          //if (onComponentReplaced.active) onComponentReplaced.dispatch(this, index, previousComponent, replacement);
         }
       }
 
@@ -146,12 +173,12 @@ module entitas {
     }
 
     public getComponents():IComponent[] {
-      if (this._componentsCache === undefined) {
+      if (this._componentsCache == null) {
         var components = [];
         var _components = this._components;
         for (var i = 0, j = 0, componentsLength = _components.length; i < componentsLength; i++) {
           var component = _components[i];
-          if (component !== undefined) {
+          if (component != null) {
             components[j++] = component;
           }
         }
@@ -164,11 +191,11 @@ module entitas {
     }
 
     public getComponentIndices():number[] {
-      if (this._componentIndicesCache === undefined) {
+      if (this._componentIndicesCache == null) {
         var indices = [];
         var _components = this._components;
         for (var i = 0, j = 0, componentsLength = _components.length; i < componentsLength; i++) {
-          if (_components[i] !== undefined) {
+          if (_components[i] != null) {
             indices[j++] = i;
           }
         }
@@ -181,13 +208,13 @@ module entitas {
     }
 
     public hasComponent(index:number):boolean {
-      return this._components[index] !== undefined;
+      return this._components[index] != null;
     }
 
     public hasComponents(indices:number[]):boolean {
       var _components = this._components;
       for (var i = 0, indicesLength = indices.length; i < indicesLength; i++) {
-        if (_components[indices[i]] === undefined) {
+        if (_components[indices[i]] == null) {
           return false;
         }
       }
@@ -198,7 +225,7 @@ module entitas {
     public hasAnyComponent(indices:number[]):boolean {
       var _components = this._components;
       for (var i = 0, indicesLength = indices.length; i < indicesLength; i++) {
-        if (_components[indices[i]] !== undefined) {
+        if (_components[indices[i]] != null) {
           return true;
         }
       }
@@ -207,26 +234,26 @@ module entitas {
     }
 
     public removeAllComponents() {
-      this._toStringCache = undefined;
+      this._toStringCache = null;
       var _components = this._components;
       for (var i = 0, componentsLength = _components.length; i < componentsLength; i++) {
-        if (_components[i] !== undefined) {
-          this._replaceComponent(i, undefined);
+        if (_components[i] != null) {
+          this._replaceComponent(i, null);
         }
       }
     }
 
     public destroy() {
       this.removeAllComponents();
-      this.onComponentAdded.clear();
-      this.onComponentReplaced.clear();
-      this.onComponentRemoved.clear();
+      //this.onComponentAdded.clear();
+      //this.onComponentReplaced.clear();
+      //this.onComponentRemoved.clear();
       this._isEnabled = false;
 
     }
 
     public toString() {
-      if (this._toStringCache === undefined) {
+      if (this._toStringCache == null) {
         var sb = [];
         const seperator = ", ";
         var components = this.getComponents();
@@ -252,8 +279,8 @@ module entitas {
     public release() {
       this._refCount -= 1;
       if (this._refCount === 0) {
-        var onEntityReleased:any = this.onEntityReleased;
-        if (onEntityReleased.active) onEntityReleased.dispatch(this);
+        //var onEntityReleased:any = this.onEntityReleased;
+        //if (onEntityReleased.active) onEntityReleased.dispatch(this);
 
       } else if (this._refCount < 0) {
         throw new EntityIsAlreadyReleasedException();

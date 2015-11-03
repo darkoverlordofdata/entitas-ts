@@ -1,38 +1,222 @@
-declare module entitas {
-    class Exception {
-        message: string;
-        constructor(message: any);
-        toString(): string;
-    }
-    class EntityAlreadyHasComponentException extends Exception {
-        constructor(message: string, index: number);
-    }
-    class EntityDoesNotHaveComponentException extends Exception {
-        constructor(message: string, index: number);
-    }
-    class EntityIsNotEnabledException extends Exception {
-        constructor(message: string);
-    }
-    class EntityIsAlreadyReleasedException extends Exception {
-        constructor();
-    }
-    class SingleEntityException extends Exception {
-        constructor(matcher: IMatcher);
-    }
-    class GroupObserverException extends Exception {
-        constructor(message: string);
-    }
-    class PoolDoesNotContainEntityException extends Exception {
-        constructor(entity: Entity, message: string);
-    }
-    class EntityIsNotDestroyedException extends Exception {
-        constructor(message: string);
-    }
-    class MatcherException extends Exception {
-        constructor(matcher: IMatcher);
+declare module entitas.utils {
+    class UUID {
+        /**
+         * Fast UUID generator, RFC4122 version 4 compliant
+         * format xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+         *
+         * @author Jeff Ward (jcward.com).
+         * @license MIT license
+         * @link http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
+         **/
+        static randomUUID(): string;
     }
 }
-declare module entitas {
+declare module entitas.utils {
+    interface Map<K, V> {
+        clear(): any;
+        containsKey(key: any): boolean;
+        containsValue(value: any): boolean;
+        get(key: any): any;
+        isEmpty(): boolean;
+        put(key: any, value: any): any;
+        remove(key: any): any;
+        size(): number;
+        values(): any;
+    }
+}
+declare module entitas.utils {
+    /**
+     * For documenting where Function refers to a class definition
+     */
+    interface Class extends Function {
+    }
+    /**
+     * Gets Class Metadata - Name
+     *
+     * @param {Function} klass
+     * @return {string}
+     */
+    function getClassName(klass: any): any;
+    /**
+     * HashMap
+     *
+     * Allow object as key.
+     */
+    class HashMap<K, V> implements Map<K, V> {
+        private map_;
+        private keys_;
+        constructor();
+        clear(): void;
+        values(): any[];
+        contains(value: any): boolean;
+        containsKey(key: any): boolean;
+        containsValue(value: any): boolean;
+        get(key: any): any;
+        isEmpty(): boolean;
+        keys(): any[];
+        /**
+         * if key is a string, use as is, else use key.id_ or key.name
+         */
+        put(key: any, value: any): void;
+        remove(key: any): any;
+        size(): number;
+    }
+}
+declare module entitas.utils {
+    interface ImmutableBag<E> {
+        get(index: number): E;
+        size(): number;
+        isEmpty(): boolean;
+        contains(e: E): boolean;
+    }
+}
+declare module entitas.utils {
+    /**
+     * Collection type a bit like ArrayList but does not preserve the order of its
+     * entities, speedwise it is very good, especially suited for games.
+     */
+    class Bag<E> extends Array implements ImmutableBag<E> {
+        size_: number;
+        /**
+         * Constructs an empty Bag with the specified initial capacity.
+         * Constructs an empty Bag with an initial capacity of 64.
+         *
+         * @param capacity
+         *            the initial capacity of Bag
+         */
+        constructor(capacity?: number);
+        /**
+         * Removes the element at the specified position in this Bag. does this by
+         * overwriting it was last element then removing last element
+         *
+         * @param index
+         *            the index of element to be removed
+         * @return element that was removed from the Bag
+         */
+        removeAt(index: number): E;
+        /**
+         * Removes the first occurrence of the specified element from this Bag, if
+         * it is present. If the Bag does not contain the element, it is unchanged.
+         * does this by overwriting it was last element then removing last element
+         *
+         * @param e
+         *            element to be removed from this list, if present
+         * @return <tt>true</tt> if this list contained the specified element
+         */
+        remove(e: E): boolean;
+        /**
+         * Remove and return the last object in the bag.
+         *
+         * @return the last object in the bag, null if empty.
+         */
+        removeLast(): E;
+        /**
+         * Check if bag contains this element.
+         *
+         * @param e
+         * @return
+         */
+        contains(e: E): boolean;
+        /**
+         * Removes from this Bag all of its elements that are contained in the
+         * specified Bag.
+         *
+         * @param bag
+         *            Bag containing elements to be removed from this Bag
+         * @return {@code true} if this Bag changed as a result of the call
+         */
+        removeAll(bag: ImmutableBag<E>): boolean;
+        /**
+         * Returns the element at the specified position in Bag.
+         *
+         * @param index
+         *            index of the element to return
+         * @return the element at the specified position in bag
+         *
+         * @throws ArrayIndexOutOfBoundsException
+         */
+        get(index: number): E;
+        /**
+         * Returns the element at the specified position in Bag. This method
+         * ensures that the bag grows if the requested index is outside the bounds
+         * of the current backing array.
+         *
+         * @param index
+         *      index of the element to return
+         *
+         * @return the element at the specified position in bag
+         *
+         */
+        safeGet(index: number): E;
+        /**
+         * Returns the number of elements in this bag.
+         *
+         * @return the number of elements in this bag
+         */
+        size(): number;
+        /**
+         * Returns the number of elements the bag can hold without growing.
+         *
+         * @return the number of elements the bag can hold without growing.
+         */
+        getCapacity(): number;
+        /**
+         * Checks if the internal storage supports this index.
+         *
+         * @param index
+         * @return
+         */
+        isIndexWithinBounds(index: number): boolean;
+        /**
+         * Returns true if this list contains no elements.
+         *
+         * @return true if this list contains no elements
+         */
+        isEmpty(): boolean;
+        /**
+         * Adds the specified element to the end of this bag. if needed also
+         * increases the capacity of the bag.
+         *
+         * @param e
+         *            element to be added to this list
+         */
+        add(e: E): void;
+        /**
+         * Set element at specified index in the bag.
+         *
+         * @param index position of element
+         * @param e the element
+         */
+        set(index: number, e: E): void;
+        grow(newCapacity?: number): void;
+        ensureCapacity(index: number): void;
+        /**
+         * Removes all of the elements from this bag. The bag will be empty after
+         * this call returns.
+         */
+        clear(): void;
+        /**
+         * Add all items into this bag.
+         * @param items
+         */
+        addAll(items: ImmutableBag<E>): void;
+    }
+}
+declare module entitas.utils {
+    class BitSet {
+        private words_;
+        constructor(nbits?: number);
+        nextSetBit(fromIndex: number): number;
+        intersects(set: BitSet): boolean;
+        hasAll(set: BitSet): boolean;
+        isEmpty(): boolean;
+        set(bitIndex: number, value?: boolean): number;
+        get(bitIndex: number): boolean;
+        clear(bitIndex?: number): number;
+    }
+}
+declare module entitas.utils {
+    import Bag = entitas.utils.Bag;
     interface ISignal<T> {
         dispatch(...args: any[]): void;
         add(listener: T): void;
@@ -40,10 +224,10 @@ declare module entitas {
         remove(listener: T): void;
     }
     class Signal<T> implements ISignal<T> {
-        private _listeners;
+        _listeners: Bag<T>;
         private _context;
-        private _size;
         private _alloc;
+        active: boolean;
         /**
          *
          * @param context
@@ -52,9 +236,14 @@ declare module entitas {
         constructor(context: any, alloc?: number);
         /**
          * Dispatch event
-         * @param args
+         *
+         * @param $0
+         * @param $1
+         * @param $2
+         * @param $3
+         * @param $4
          */
-        dispatch(...args: any[]): void;
+        dispatch($0?: any, $1?: any, $2?: any, $3?: any, $4?: any): void;
         /**
          * Add event listener
          * @param listener
@@ -71,7 +260,7 @@ declare module entitas {
         clear(): void;
     }
 }
-declare module entitas {
+declare module entitas.utils {
     class Stopwatch {
         isRunning: boolean;
         startTimeStamp: number;
@@ -134,6 +323,40 @@ declare module entitas {
     }
     interface IClearReactiveSystem {
         clearAfterExecute: boolean;
+    }
+}
+declare module entitas {
+    class Exception {
+        message: string;
+        constructor(message: any);
+        toString(): string;
+    }
+    class EntityAlreadyHasComponentException extends Exception {
+        constructor(message: string, index: number);
+    }
+    class EntityDoesNotHaveComponentException extends Exception {
+        constructor(message: string, index: number);
+    }
+    class EntityIsNotEnabledException extends Exception {
+        constructor(message: string);
+    }
+    class EntityIsAlreadyReleasedException extends Exception {
+        constructor();
+    }
+    class SingleEntityException extends Exception {
+        constructor(matcher: IMatcher);
+    }
+    class GroupObserverException extends Exception {
+        constructor(message: string);
+    }
+    class PoolDoesNotContainEntityException extends Exception {
+        constructor(entity: Entity, message: string);
+    }
+    class EntityIsNotDestroyedException extends Exception {
+        constructor(message: string);
+    }
+    class MatcherException extends Exception {
+        constructor(matcher: IMatcher);
     }
 }
 declare module entitas {
@@ -204,13 +427,8 @@ declare module entitas {
     }
 }
 declare module entitas {
-    import ISignal = entitas.ISignal;
+    import ISignal = entitas.utils.ISignal;
     import IComponent = entitas.IComponent;
-    import EntityChanged = Entity.EntityChanged;
-    import EntityReleased = Entity.EntityReleased;
-    import IEntityChanged = Entity.IEntityChanged;
-    import IEntityReleased = Entity.IEntityReleased;
-    import ComponentReplaced = Entity.ComponentReplaced;
     /**
      * event delegate boilerplate:
      */
@@ -236,20 +454,24 @@ declare module entitas {
     }
     class Entity {
         creationIndex: number;
-        onEntityReleased: IEntityReleased<EntityReleased>;
-        onComponentAdded: IEntityChanged<EntityChanged>;
-        onComponentRemoved: IEntityChanged<EntityChanged>;
-        onComponentReplaced: Entity.IComponentReplaced<ComponentReplaced>;
         name: string;
+        id: string;
         _creationIndex: number;
         _isEnabled: boolean;
-        _components: any;
+        _components: Array<IComponent>;
+        private _pool;
         private _componentsEnum;
         _componentsCache: any;
         _componentIndicesCache: number[];
         _toStringCache: string;
         _refCount: number;
+        static instanceIndex: number;
+        private static alloc;
+        private static first;
+        private componentIndex;
+        private instanceIndex;
         constructor(componentsEnum: any, totalComponents?: number);
+        static dim(count: number, size: number): void;
         addComponent(index: number, component: IComponent): Entity;
         removeComponent(index: number): Entity;
         replaceComponent(index: number, component: IComponent): Entity;
@@ -269,7 +491,7 @@ declare module entitas {
 }
 declare module entitas {
     import Entity = entitas.Entity;
-    import ISignal = entitas.ISignal;
+    import ISignal = entitas.utils.ISignal;
     import IMatcher = entitas.IMatcher;
     import IComponent = entitas.IComponent;
     import GroupChanged = Group.GroupChanged;
@@ -300,7 +522,7 @@ declare module entitas {
         matcher: IMatcher;
         _matcher: IMatcher;
         _entities: {};
-        _entitiesCache: Entity[];
+        _entitiesCache: Array<Entity>;
         _singleEntityCache: Entity;
         _toStringCache: string;
         /** Extension Points */
@@ -342,9 +564,10 @@ declare module entitas {
     }
 }
 declare module entitas {
+    import Bag = entitas.utils.Bag;
     import Group = entitas.Group;
     import Entity = entitas.Entity;
-    import ISignal = entitas.ISignal;
+    import ISignal = entitas.utils.ISignal;
     import IMatcher = entitas.IMatcher;
     import PoolChanged = Pool.PoolChanged;
     import IComponent = entitas.IComponent;
@@ -377,11 +600,12 @@ declare module entitas {
         onGroupCreated: Pool.IGroupChanged<GroupChanged>;
         _entities: {};
         _groups: {};
-        _groupsForIndex: Array<Array<Group>>;
-        _reusableEntities: Array<Entity>;
+        _groupsForIndex: Bag<Bag<Group>>;
+        _reusableEntities: Bag<Entity>;
         _retainedEntities: {};
         static componentsEnum: Object;
         static totalComponents: number;
+        static instance: Pool;
         _componentsEnum: Object;
         _totalComponents: number;
         _creationIndex: number;
@@ -481,8 +705,12 @@ declare module entitas.extensions {
 }
 declare module entitas.extensions {
 }
+/**
+ * Inspired by Unity
+ */
 declare module entitas.browser {
     import Pool = entitas.Pool;
+    /** todo: SystemObserver track time spent in ms by system */
     var gui: any;
     class VisualDebugging {
         static _controllers: any;
@@ -492,19 +720,34 @@ declare module entitas.browser {
         static init(pool: Pool): void;
     }
     /**
-     * Profiler
+     * Profiler class for Entities
      */
     class EntityBehavior {
         protected obj: any;
         name: string;
-        refCount: number;
         private _name;
         constructor(obj: any);
     }
+    /**
+     * Profiler class for Systems
+     */
+    class SystemObserver {
+        protected _systems: any;
+        name: string;
+        Systems: string;
+        initialize: string;
+        execute: string;
+        constructor(_systems: any);
+    }
+    /**
+     * Profiler class for Pools
+     */
     class PoolObserver {
         protected _pool: any;
         name: string;
         Pool: string;
+        entities: string;
+        reusable: string;
         protected _groups: any;
         constructor(_pool: any);
     }
