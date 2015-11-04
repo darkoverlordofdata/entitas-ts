@@ -1,26 +1,7 @@
 module example {
 
-  import CollisionSystem = example.CollisionSystem;
-  import ColorAnimationSystem = example.ColorAnimationSystem;
-  import EntitySpawningTimerSystem = example.EntitySpawningTimerSystem;
-  import ExpiringSystem = example.ExpiringSystem;
-  import HealthRenderSystem = example.HealthRenderSystem;
-  import HudRenderSystem = example.HudRenderSystem;
-  import MovementSystem = example.MovementSystem;
-  import ParallaxStarRepeatingSystem = example.ParallaxStarRepeatingSystem;
-  import PlayerInputSystem = example.PlayerInputSystem;
-  import RemoveOffscreenShipsSystem = example.RemoveOffscreenShipsSystem;
-  import ScaleAnimationSystem = example.ScaleAnimationSystem;
-  import SoundEffectSystem = example.SoundEffectSystem;
-  import SpriteRenderSystem = example.SpriteRenderSystem;
-  import AddViewSystem = example.AddViewSystem;
   import Pools = example.Pools;
   import Systems = entitas.Systems;
-  import Layer = example.Layer;
-
-  /** PIXI.Container */
-  declare var viewContainer;
-  declare var stuff;
 
   export class GameController {
 
@@ -35,21 +16,21 @@ module example {
 
     createSystems(pool) {
       return new Systems()
-        .add(pool.createSystem(MovementSystem))
-        .add(pool.createSystem(PlayerInputSystem))
-        .add(pool.createSystem(SoundEffectSystem))
-        .add(pool.createSystem(CollisionSystem))
-        .add(pool.createSystem(ExpiringSystem))
-        .add(pool.createSystem(EntitySpawningTimerSystem))
-        .add(pool.createSystem(ParallaxStarRepeatingSystem))
-        .add(pool.createSystem(ColorAnimationSystem))
-        .add(pool.createSystem(ScaleAnimationSystem))
-        .add(pool.createSystem(RemoveOffscreenShipsSystem))
-        .add(pool.createSystem(SpriteRenderSystem))
-        .add(pool.createSystem(AddViewSystem))
-        .add(pool.createSystem(HealthRenderSystem))
-        .add(pool.createSystem(HudRenderSystem))
-        .add(pool.createSystem(DestroySystem));
+        .add(pool.createSystem(example.MovementSystem))
+        .add(pool.createSystem(example.PlayerInputSystem))
+        .add(pool.createSystem(example.SoundEffectSystem))
+        .add(pool.createSystem(example.CollisionSystem))
+        .add(pool.createSystem(example.ExpiringSystem))
+        .add(pool.createSystem(example.EntitySpawningTimerSystem))
+        .add(pool.createSystem(example.ParallaxStarRepeatingSystem))
+        .add(pool.createSystem(example.ColorAnimationSystem))
+        .add(pool.createSystem(example.ScaleAnimationSystem))
+        .add(pool.createSystem(example.RemoveOffscreenShipsSystem))
+        .add(pool.createSystem(example.SpriteRenderSystem))
+        .add(pool.createSystem(example.AddViewSystem))
+        .add(pool.createSystem(example.HealthRenderSystem))
+        .add(pool.createSystem(example.HudRenderSystem))
+        .add(pool.createSystem(example.DestroySystem));
 
     }
 

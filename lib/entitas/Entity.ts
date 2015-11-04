@@ -76,13 +76,9 @@ module entitas {
     public _componentsCache;
     public _componentIndicesCache:number[];
     public _toStringCache:string;
+    public instanceIndex:number;
 
     public _refCount:number=0;
-    public static instanceIndex:number=0;
-    private static alloc:Array<Array<number>>;
-    private static first:boolean=true;
-    private componentIndex:number;
-    private instanceIndex:number;
 
     constructor(componentsEnum, totalComponents:number=16) {
 
@@ -91,32 +87,21 @@ module entitas {
       this.onComponentRemoved = new Signal<EntityChanged>(this);
       this.onComponentReplaced = new Signal<ComponentReplaced>(this);
       this._componentsEnum = componentsEnum;
-      if (Entity.instanceIndex === 0) Entity.dim(totalComponents, 100);
       this._pool = entitas.Pool.instance;
-      this.instanceIndex = Entity.instanceIndex++;
-      this._components = Entity.alloc[this.instanceIndex];
-
+      this._components = this.initialize(totalComponents);
     }
 
     /**
-     * allocate entity pool
+     * Initialize
      *
-     * @param count number of components
-     * @param size max number of entities
+     * Extension point to allocate enetity pool.
+     *
+     * @param totalComponents
+     * @returns {null}
      */
-    public static dim(count:number, size:number) {
-      if (!Entity.first) return;
-      Entity.first = false;
-
-      Entity.alloc = new Array(size);
-      for (var e=0; e<size; e++) {
-        Entity.alloc[e] = new Array(count);
-        for (var k=0; k<count; k++) {
-          Entity.alloc[e][k] = null;
-        }
-      }
+    public initialize(totalComponents:number):Array<IComponent> {
+      return null;
     }
-
     /**
      * AddComponent
      *

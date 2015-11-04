@@ -1,0 +1,1 @@
+bosco.start(example.config);

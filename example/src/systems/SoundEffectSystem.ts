@@ -5,45 +5,50 @@ module example {
   import Entity = entitas.Entity;
   import Matcher = entitas.Matcher;
   import Exception = entitas.Exception;
-  import TriggerOnEvent = entitas.TriggerOnEvent;
+  import IInitializeSystem = entitas.IInitializeSystem;
   import IExecuteSystem = entitas.IExecuteSystem;
   import ISetPool = entitas.ISetPool;
 
-  export class SoundEffectSystem implements IExecuteSystem, ISetPool {
+  export class SoundEffectSystem implements IInitializeSystem, IExecuteSystem, ISetPool {
 
     protected pool:Pool;
     protected group:Group;
+    private pew;
+    private asplode;
+    private smallasplode;
+    private playSfx:boolean=false;
+    private effect;
 
-    public execute() {
-      var entities = this.group.getEntities();
-      for (var i = 0, l = entities.length; i < l; i++) {
-        var e = entities[i];
-        var soundEffect:SoundEffectComponent = e.soundEffect;
-
-        switch (soundEffect.effect) {
-          case EFFECT.PEW:
-            //pew.play();
-            break;
-          case EFFECT.ASPLODE:
-            //asplode.play();
-            break;
-          case EFFECT.SMALLASPLODE:
-            //smallasplode.play();
-            break;
-          default:
-            break;
-        }
-
-        e.removeSoundEffect();
-      }
-    }
-    
     public setPool(pool:Pool) {
       this.pool = pool;
       this.group = pool.getGroup(Matcher.allOf(Matcher.SoundEffect));
     }
-    
 
 
+    public execute() {
+      //if (!this.playSfx) return;
+      var entities = this.group.getEntities();
+      for (var i = 0, l = entities.length; i < l; i++) {
+        var e = entities[i];
+        var soundEffect:SoundEffectComponent = e.soundEffect;
+        var sound = this.effect[soundEffect.effect];
+        if (sound) sound.play();
+        e.removeSoundEffect();
+      }
+    }
+
+    public initialize() {
+      var Howl = window['Howl'];
+
+      this.pew = new Howl({urls:['res/sounds/pew.ogg']});
+      this.asplode = new Howl({urls:['res/sounds/asplode.ogg']});
+      this.smallasplode = new Howl({urls:['res/sounds/smallasplode.ogg']});
+
+      this.effect = [];
+      this.effect[EFFECT.PEW] = this.pew;
+      this.effect[EFFECT.ASPLODE] = this.asplode;
+      this.effect[EFFECT.SMALLASPLODE] = this.smallasplode;
+
+    }
   }
 }

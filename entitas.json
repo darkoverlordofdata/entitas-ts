@@ -6,7 +6,10 @@
     "typescript": "example/src/generatedComponents.ts",
     "declaration": "example/ext/example.d.ts"
   },
-  "alloc": 200,
+  "alloc": {
+    "entities": 200,
+    "components": 128
+  },
   "components": {
     "Bounds": [
       "radius:number"

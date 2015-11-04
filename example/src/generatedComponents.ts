@@ -36,7 +36,7 @@ module example {
     TotalComponents
   }
 
-  Entity.dim(CoreComponentIds.TotalComponents, 200);
+  entitas.initialize(CoreComponentIds.TotalComponents, {"entities":200,"components":128});
 
 
   export class BoundsComponent implements IComponent {

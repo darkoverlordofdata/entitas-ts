@@ -16,6 +16,7 @@
     "example/ext/Tween.d.ts",
     "example/src/prolog.ts",
     "example/src/generatedComponents.ts",
+    "example/src/systems/AddViewSystem.ts",
     "example/src/systems/CollisionSystem.ts",
     "example/src/systems/ColorAnimationSystem.ts",
     "example/src/systems/EntitySpawningTimerSystem.ts",
@@ -30,6 +31,9 @@
     "example/src/systems/SoundEffectSystem.ts",
     "example/src/systems/SpriteRenderSystem.ts",
     "example/src/controllers/GameController.ts",
-    "example/src/systems/DestroySystem.ts"
+    "example/src/controllers/InputController.ts",
+    "example/src/controllers/ScoreLabelController.ts",
+    "example/src/systems/DestroySystem.ts",
+    "example/src/main.ts"
   ]
 }

@@ -25,6 +25,7 @@
   "dependencies": {
     "bosco": "git://github.com/darkoverlordofdata/bosco",
     "chromestoragedb": "git://github.com/darkoverlordofdata/chromeStorageDB",
+    "howler.js": "~1.1.26",
     "localstoragedb": "git://github.com/knadh/localStorageDB",
     "pixi.js": "~3.0.8",
     "stats.js": "*",
@@ -39,6 +40,7 @@
     "sources": {
       "bosco": "packages/bosco/build/bosco.js",
       "chromestoragedb": "packages/chromestoragedb/chromestoragedb.js",
+      "howler.js": "packages/howler.js/howler.min.js",
       "localstoragedb": "packages/localstoragedb/localstoragedb.min.js",
       "stats.min.js": "packages/stats.js/build/stats.min.js",
       "pixi.js": "packages/pixi.js/bin/pixi.min.js",

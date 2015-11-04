@@ -1004,44 +1004,53 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
+    var Signal = entitas.utils.Signal;
     var EntityIsNotEnabledException = entitas.EntityIsNotEnabledException;
     var EntityIsAlreadyReleasedException = entitas.EntityIsAlreadyReleasedException;
     var EntityAlreadyHasComponentException = entitas.EntityAlreadyHasComponentException;
     var EntityDoesNotHaveComponentException = entitas.EntityDoesNotHaveComponentException;
+    /**
+     * The basic game object. Everything is an entity with components that
+     * are added / removed as needed.
+     */
     var Entity = (function () {
         function Entity(componentsEnum, totalComponents) {
             if (totalComponents === void 0) { totalComponents = 16; }
             this._creationIndex = 0;
             this._isEnabled = true;
             this._refCount = 0;
-            //this.onEntityReleased = new Signal<EntityReleased>(this);
-            //this.onComponentAdded = new Signal<EntityChanged>(this);
-            //this.onComponentRemoved = new Signal<EntityChanged>(this);
-            //this.onComponentReplaced = new Signal<ComponentReplaced>(this);
+            this.onEntityReleased = new Signal(this);
+            this.onComponentAdded = new Signal(this);
+            this.onComponentRemoved = new Signal(this);
+            this.onComponentReplaced = new Signal(this);
             this._componentsEnum = componentsEnum;
-            if (Entity.instanceIndex === 0)
-                Entity.dim(totalComponents, 100);
             this._pool = entitas.Pool.instance;
-            this.instanceIndex = Entity.instanceIndex++;
-            this._components = Entity.alloc[this.instanceIndex];
+            this._components = this.initialize(totalComponents);
         }
         Object.defineProperty(Entity.prototype, "creationIndex", {
+            /** Entity count */
             get: function () { return this._creationIndex; },
             enumerable: true,
             configurable: true
         });
-        Entity.dim = function (count, size) {
-            if (!Entity.first)
-                return;
-            Entity.first = false;
-            Entity.alloc = new Array(size);
-            for (var e = 0; e < size; e++) {
-                Entity.alloc[e] = new Array(count);
-                for (var k = 0; k < count; k++) {
-                    Entity.alloc[e][k] = null;
-                }
-            }
+        /**
+         * Initialize
+         *
+         * Extension point to allocate enetity pool.
+         *
+         * @param totalComponents
+         * @returns {null}
+         */
+        Entity.prototype.initialize = function (totalComponents) {
+            return null;
         };
+        /**
+         * AddComponent
+         *
+         * @param index
+         * @param component
+         * @returns {entitas.Entity}
+         */
         Entity.prototype.addComponent = function (index, component) {
             if (!this._isEnabled) {
                 throw new EntityIsNotEnabledException("Cannot add component!");
@@ -1054,11 +1063,17 @@ var entitas;
             this._componentsCache = null;
             this._componentIndicesCache = null;
             this._toStringCache = null;
-            //var onComponentAdded:any = this.onComponentAdded;
-            //if (onComponentAdded.active) onComponentAdded.dispatch(this, index, component);
-            this._pool.updateGroupsComponentAddedOrRemoved(this, index, component);
+            var onComponentAdded = this.onComponentAdded;
+            if (onComponentAdded.active)
+                onComponentAdded.dispatch(this, index, component);
             return this;
         };
+        /**
+         * RemoveComponent
+         *
+         * @param index
+         * @returns {entitas.Entity}
+         */
         Entity.prototype.removeComponent = function (index) {
             if (!this._isEnabled) {
                 throw new EntityIsNotEnabledException("Cannot remove component!");
@@ -1070,6 +1085,13 @@ var entitas;
             this._replaceComponent(index, null);
             return this;
         };
+        /**
+         * ReplaceComponent
+         *
+         * @param index
+         * @param component
+         * @returns {entitas.Entity}
+         */
         Entity.prototype.replaceComponent = function (index, component) {
             if (!this._isEnabled) {
                 throw new EntityIsNotEnabledException("Cannot replace component!");
@@ -1086,7 +1108,9 @@ var entitas;
             var components = this._components;
             var previousComponent = components[index];
             if (previousComponent === replacement) {
-                this._pool.updateGroupsComponentReplaced(this, index, previousComponent, replacement);
+                var onComponentReplaced = this.onComponentReplaced;
+                if (onComponentReplaced.active)
+                    onComponentReplaced.dispatch(this, index, previousComponent, replacement);
             }
             else {
                 components[index] = replacement;
@@ -1095,13 +1119,23 @@ var entitas;
                     delete components[index];
                     this._componentIndicesCache = null;
                     this._toStringCache = null;
-                    this._pool.updateGroupsComponentAddedOrRemoved(this, index, previousComponent);
+                    var onComponentRemoved = this.onComponentRemoved;
+                    if (onComponentRemoved.active)
+                        onComponentRemoved.dispatch(this, index, previousComponent);
                 }
                 else {
-                    this._pool.updateGroupsComponentReplaced(this, index, previousComponent, replacement);
+                    var onComponentReplaced = this.onComponentReplaced;
+                    if (onComponentReplaced.active)
+                        onComponentReplaced.dispatch(this, index, previousComponent, replacement);
                 }
             }
         };
+        /**
+         * GetComponent
+         *
+         * @param index
+         * @returns {IComponent}
+         */
         Entity.prototype.getComponent = function (index) {
             if (!this.hasComponent(index)) {
                 var errorMsg = "Cannot get component at index " + index + " from " + this;
@@ -1109,6 +1143,11 @@ var entitas;
             }
             return this._components[index];
         };
+        /**
+         * GetComponents
+         *
+         * @returns {any}
+         */
         Entity.prototype.getComponents = function () {
             if (this._componentsCache == null) {
                 var components = [];
@@ -1123,6 +1162,11 @@ var entitas;
             }
             return this._componentsCache;
         };
+        /**
+         * GetComponentIndices
+         *
+         * @returns {number[]}
+         */
         Entity.prototype.getComponentIndices = function () {
             if (this._componentIndicesCache == null) {
                 var indices = [];
@@ -1136,9 +1180,21 @@ var entitas;
             }
             return this._componentIndicesCache;
         };
+        /**
+         * HasComponent
+         *
+         * @param index
+         * @returns {boolean}
+         */
         Entity.prototype.hasComponent = function (index) {
             return this._components[index] != null;
         };
+        /**
+         * HasComponents
+         *
+         * @param indices
+         * @returns {boolean}
+         */
         Entity.prototype.hasComponents = function (indices) {
             var _components = this._components;
             for (var i = 0, indicesLength = indices.length; i < indicesLength; i++) {
@@ -1148,6 +1204,12 @@ var entitas;
             }
             return true;
         };
+        /**
+         * HasAnyComponent
+         *
+         * @param indices
+         * @returns {boolean}
+         */
         Entity.prototype.hasAnyComponent = function (indices) {
             var _components = this._components;
             for (var i = 0, indicesLength = indices.length; i < indicesLength; i++) {
@@ -1157,6 +1219,10 @@ var entitas;
             }
             return false;
         };
+        /**
+         * RemoveAllComponents
+         *
+         */
         Entity.prototype.removeAllComponents = function () {
             this._toStringCache = null;
             var _components = this._components;
@@ -1166,13 +1232,22 @@ var entitas;
                 }
             }
         };
+        /**
+         * Destroy
+         *
+         */
         Entity.prototype.destroy = function () {
             this.removeAllComponents();
-            //this.onComponentAdded.clear();
-            //this.onComponentReplaced.clear();
-            //this.onComponentRemoved.clear();
+            this.onComponentAdded.clear();
+            this.onComponentReplaced.clear();
+            this.onComponentRemoved.clear();
             this._isEnabled = false;
         };
+        /**
+         * ToString
+         *
+         * @returns {string}
+         */
         Entity.prototype.toString = function () {
             if (this._toStringCache == null) {
                 var sb = [];
@@ -1189,20 +1264,30 @@ var entitas;
             }
             return this._toStringCache;
         };
+        /**
+         * AddRef
+         *
+         * @returns {entitas.Entity}
+         */
         Entity.prototype.addRef = function () {
             this._refCount += 1;
             return this;
         };
+        /**
+         * Release
+         *
+         */
         Entity.prototype.release = function () {
             this._refCount -= 1;
             if (this._refCount === 0) {
+                var onEntityReleased = this.onEntityReleased;
+                if (onEntityReleased.active)
+                    onEntityReleased.dispatch(this);
             }
             else if (this._refCount < 0) {
                 throw new EntityIsAlreadyReleasedException();
             }
         };
-        Entity.instanceIndex = 0;
-        Entity.first = true;
         return Entity;
     })();
     entitas.Entity = Entity;
@@ -1422,6 +1507,10 @@ var entitas;
     var Signal = entitas.utils.Signal;
     var EntityIsNotDestroyedException = entitas.EntityIsNotDestroyedException;
     var PoolDoesNotContainEntityException = entitas.PoolDoesNotContainEntityException;
+    /**
+     * A cached pool of entities and components.
+     * The games world.
+     */
     var Pool = (function () {
         function Pool(components, totalComponents, startCreationIndex) {
             var _this = this;
@@ -1432,6 +1521,12 @@ var entitas;
             this._retainedEntities = {};
             this._totalComponents = 0;
             this._creationIndex = 0;
+            /**
+             *
+             * @param entity
+             * @param index
+             * @param component
+             */
             this.updateGroupsComponentAddedOrRemoved = function (entity, index, component) {
                 var groups = _this._groupsForIndex[index];
                 if (groups != null) {
@@ -1440,6 +1535,13 @@ var entitas;
                     }
                 }
             };
+            /**
+             *
+             * @param entity
+             * @param index
+             * @param previousComponent
+             * @param newComponent
+             */
             this.updateGroupsComponentReplaced = function (entity, index, previousComponent, newComponent) {
                 var groups = _this._groupsForIndex[index];
                 if (groups != null) {
@@ -1448,11 +1550,15 @@ var entitas;
                     }
                 }
             };
+            /**
+             *
+             * @param entity
+             */
             this.onEntityReleased = function (entity) {
                 if (entity._isEnabled) {
                     throw new EntityIsNotDestroyedException("Cannot release entity.");
                 }
-                //entity.onEntityReleased.remove(this._cachedOnEntityReleased);
+                entity.onEntityReleased.remove(_this._cachedOnEntityReleased);
                 delete _this._retainedEntities[entity.id];
                 _this._reusableEntities.add(entity);
             };
@@ -1507,7 +1613,6 @@ var entitas;
             return s;
         };
         /**
-         *
          * @param name
          */
         Pool.prototype.createEntity = function (name) {
@@ -1519,10 +1624,10 @@ var entitas;
             entity.addRef();
             this._entities[entity.id] = entity;
             this._entitiesCache = null;
-            //entity.onComponentAdded.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
-            //entity.onComponentRemoved.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
-            //entity.onComponentReplaced.add(this._cachedUpdateGroupsComponentReplaced);
-            //entity.onEntityReleased.add(this._cachedOnEntityReleased);
+            entity.onComponentAdded.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
+            entity.onComponentRemoved.add(this._cachedUpdateGroupsComponentAddedOrRemoved);
+            entity.onComponentReplaced.add(this._cachedUpdateGroupsComponentReplaced);
+            entity.onEntityReleased.add(this._cachedOnEntityReleased);
             var onEntityCreated = this.onEntityCreated;
             if (onEntityCreated.active)
                 onEntityCreated.dispatch(this, entity);
@@ -1546,7 +1651,7 @@ var entitas;
             if (onEntityDestroyed.active)
                 onEntityDestroyed.dispatch(this, entity);
             if (entity._refCount === 1) {
-                //entity.onEntityReleased.remove(this._cachedOnEntityReleased);
+                entity.onEntityReleased.remove(this._cachedOnEntityReleased);
                 this._reusableEntities.add(entity);
             }
             else {
@@ -1554,15 +1659,27 @@ var entitas;
             }
             entity.release();
         };
+        /**
+         *
+         */
         Pool.prototype.destroyAllEntities = function () {
             var entities = this.getEntities();
             for (var i = 0, entitiesLength = entities.length; i < entitiesLength; i++) {
                 this.destroyEntity(entities[i]);
             }
         };
+        /**
+         *
+         * @param entity
+         * @returns {boolean}
+         */
         Pool.prototype.hasEntity = function (entity) {
             return entity.id in this._entities;
         };
+        /**
+         *
+         * @returns {any[]}
+         */
         Pool.prototype.getEntities = function () {
             if (this._entitiesCache == null) {
                 var entities = this._entities;
@@ -1576,6 +1693,11 @@ var entitas;
             }
             return entitiesCache;
         };
+        /**
+         *
+         * @param matcher
+         * @returns {Group}
+         */
         Pool.prototype.getGroup = function (matcher) {
             var group;
             if (matcher.id in this._groups) {
@@ -1708,20 +1830,16 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
-    function as(obj, method1) {
-        return method1 in obj ? obj : null;
+    /**
+     * As - Conditionally cast an object using duck typing
+     *
+     * @param object
+     * @param method
+     * @returns object
+     */
+    function as(object, method) {
+        return method in object ? object : null;
     }
-    (function (SystemType) {
-        SystemType[SystemType["IInitializeSystem"] = 1] = "IInitializeSystem";
-        SystemType[SystemType["IExecuteSystem"] = 2] = "IExecuteSystem";
-        SystemType[SystemType["IReactiveExecuteSystem"] = 4] = "IReactiveExecuteSystem";
-        SystemType[SystemType["IMultiReactiveSystem"] = 8] = "IMultiReactiveSystem";
-        SystemType[SystemType["IReactiveSystem"] = 16] = "IReactiveSystem";
-        SystemType[SystemType["IEnsureComponents"] = 32] = "IEnsureComponents";
-        SystemType[SystemType["IExcludeComponents"] = 64] = "IExcludeComponents";
-        SystemType[SystemType["IClearReactiveSystem"] = 128] = "IClearReactiveSystem";
-    })(entitas.SystemType || (entitas.SystemType = {}));
-    var SystemType = entitas.SystemType;
     var Systems = (function () {
         function Systems() {
             this._initializeSystems = [];
@@ -1797,6 +1915,43 @@ var entitas;
         })(Array);
         extensions.Collection = Collection;
     })(extensions = entitas.extensions || (entitas.extensions = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var Entity = entitas.Entity;
+    function initialize(totalComponents, options) {
+        var MAX_ENTITIES = 100;
+        var instanceIndex = 0;
+        var alloc = null;
+        /**
+         * allocate entity pool
+         *
+         * @param count number of components
+         * @param size max number of entities
+         */
+        function dim(count, size) {
+            alloc = new Array(size);
+            for (var e = 0; e < size; e++) {
+                alloc[e] = new Array(count);
+                for (var k = 0; k < count; k++) {
+                    alloc[e][k] = null;
+                }
+            }
+        }
+        /**
+         * Returns the next entity pool entry
+         *
+         * @param totalComponents
+         * @returns {Array<IComponent>}
+         */
+        Entity.prototype.initialize = function (totalComponents) {
+            if (alloc == null)
+                dim(totalComponents, MAX_ENTITIES);
+            this.instanceIndex = instanceIndex++;
+            return alloc[this.instanceIndex];
+        };
+    }
+    entitas.initialize = initialize;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {

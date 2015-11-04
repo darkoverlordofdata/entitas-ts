@@ -71,6 +71,7 @@ module.exports =
     js.push "  var CoreComponentIds = #{config.namespace}.CoreComponentIds;"
     ###
      * Components Enum
+     * Components Enum
     ###
     ts.push ""
     ts.push "  export enum CoreComponentIds {"
@@ -79,7 +80,7 @@ module.exports =
     ts.push "    TotalComponents"
     ts.push "  }"
     ts.push ""
-    ts.push "  Entity.dim(CoreComponentIds.TotalComponents, #{config.alloc});"
+    ts.push "  entitas.initialize(CoreComponentIds.TotalComponents, #{JSON.stringify(config.alloc)});"
     ts.push ""
 
     ###
@@ -140,7 +141,7 @@ module.exports =
         else
           js.push "  Entity._#{name}ComponentPool = new Bag();"
           js.push "  (function() {"
-          js.push "    for (var i=0; i<64; i++) {"
+          js.push "    for (var i=0; i<#{config.alloc.components}; i++) {"
           js.push "      Entity._#{name}ComponentPool.add(new #{Name}Component());"
           js.push "    }"
           js.push "  })();"

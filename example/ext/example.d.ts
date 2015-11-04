@@ -555,22 +555,42 @@ declare module entitas {
 declare module entitas {
     import ISignal = entitas.utils.ISignal;
     import IComponent = entitas.IComponent;
+    import EntityChanged = Entity.EntityChanged;
+    import EntityReleased = Entity.EntityReleased;
+    import IEntityChanged = Entity.IEntityChanged;
+    import IEntityReleased = Entity.IEntityReleased;
+    import ComponentReplaced = Entity.ComponentReplaced;
     /**
      * event delegate boilerplate:
      */
     module Entity {
+        /**
+         * Event EntityReleased
+         *
+         * All references to the entity have been released
+         */
         interface EntityReleased {
             (e: Entity): void;
         }
         interface IEntityReleased<T> extends ISignal<T> {
             dispatch(e: Entity): void;
         }
+        /**
+         * Event EntityChanged
+         *
+         * The entity has been changed
+         */
         interface EntityChanged {
             (e: Entity, index: number, component: IComponent): void;
         }
         interface IEntityChanged<T> extends ISignal<T> {
             dispatch(e: Entity, index: number, component: IComponent): void;
         }
+        /**
+         * Event ComponentReplaced
+         *
+         * A component was replaced
+         */
         interface ComponentReplaced {
             (e: Entity, index: number, component: IComponent, replacement: IComponent): void;
         }
@@ -578,6 +598,10 @@ declare module entitas {
             dispatch(e: Entity, index: number, component: IComponent, replacement: IComponent): void;
         }
     }
+    /**
+     * The basic game object. Everything is an entity with components that
+     * are added / removed as needed.
+     */
     class Entity {
 /** Entity Extensions for example */
         static _boundsComponentPool;
@@ -696,7 +720,12 @@ declare module entitas {
         addLayer(ordinal:number);
         replaceLayer(ordinal:number);
         removeLayer();
+        /** Entity count */
         creationIndex: number;
+        onEntityReleased: IEntityReleased<EntityReleased>;
+        onComponentAdded: IEntityChanged<EntityChanged>;
+        onComponentRemoved: IEntityChanged<EntityChanged>;
+        onComponentReplaced: Entity.IComponentReplaced<ComponentReplaced>;
         name: string;
         id: string;
         _creationIndex: number;
@@ -707,28 +736,108 @@ declare module entitas {
         _componentsCache: any;
         _componentIndicesCache: number[];
         _toStringCache: string;
+        instanceIndex: number;
         _refCount: number;
-        static instanceIndex: number;
-        private static alloc;
-        private static first;
-        private componentIndex;
-        private instanceIndex;
         constructor(componentsEnum: any, totalComponents?: number);
-        static dim(count: number, size: number): void;
+        /**
+         * Initialize
+         *
+         * Extension point to allocate enetity pool.
+         *
+         * @param totalComponents
+         * @returns {null}
+         */
+        initialize(totalComponents: number): Array<IComponent>;
+        /**
+         * AddComponent
+         *
+         * @param index
+         * @param component
+         * @returns {entitas.Entity}
+         */
         addComponent(index: number, component: IComponent): Entity;
+        /**
+         * RemoveComponent
+         *
+         * @param index
+         * @returns {entitas.Entity}
+         */
         removeComponent(index: number): Entity;
+        /**
+         * ReplaceComponent
+         *
+         * @param index
+         * @param component
+         * @returns {entitas.Entity}
+         */
         replaceComponent(index: number, component: IComponent): Entity;
         protected _replaceComponent(index: number, replacement: IComponent): void;
+        /**
+         * GetComponent
+         *
+         * @param index
+         * @returns {IComponent}
+         */
         getComponent(index: number): IComponent;
+        /**
+         * GetComponents
+         *
+         * @returns {any}
+         */
         getComponents(): IComponent[];
+        /**
+         * GetComponentIndices
+         *
+         * @returns {number[]}
+         */
         getComponentIndices(): number[];
+        /**
+         * HasComponent
+         *
+         * @param index
+         * @returns {boolean}
+         */
         hasComponent(index: number): boolean;
+        /**
+         * HasComponents
+         *
+         * @param indices
+         * @returns {boolean}
+         */
         hasComponents(indices: number[]): boolean;
+        /**
+         * HasAnyComponent
+         *
+         * @param indices
+         * @returns {boolean}
+         */
         hasAnyComponent(indices: number[]): boolean;
+        /**
+         * RemoveAllComponents
+         *
+         */
         removeAllComponents(): void;
+        /**
+         * Destroy
+         *
+         */
         destroy(): void;
+        /**
+         * ToString
+         *
+         * @returns {string}
+         */
         toString(): string;
+        /**
+         * AddRef
+         *
+         * @returns {entitas.Entity}
+         */
         addRef(): Entity;
+        /**
+         * Release
+         *
+         */
         release(): void;
     }
 }
@@ -819,12 +928,22 @@ declare module entitas {
      * event delegate boilerplate:
      */
     module Pool {
+        /**
+         * Event PoolChanged
+         *
+         * Pool has changed
+         */
         interface PoolChanged {
             (pool: Pool, entity: Entity): void;
         }
         interface IPoolChanged<T> extends ISignal<T> {
             dispatch(pool: Pool, entity: Entity): void;
         }
+        /**
+         * Event GroupChanged
+         *
+         * Group has changed
+         */
         interface GroupChanged {
             (pool: Pool, group: Group): void;
         }
@@ -832,6 +951,10 @@ declare module entitas {
             dispatch(pool: Pool, group: Group): void;
         }
     }
+    /**
+     * A cached pool of entities and components.
+     * The games world.
+     */
     class Pool {
 /** Pool Extensions for example */
         scoreEntity: Entity;
@@ -856,6 +979,7 @@ declare module entitas {
         onEntityWillBeDestroyed: Pool.IPoolChanged<PoolChanged>;
         onEntityDestroyed: Pool.IPoolChanged<PoolChanged>;
         onGroupCreated: Pool.IGroupChanged<GroupChanged>;
+        name: string;
         _entities: {};
         _groups: {};
         _groupsForIndex: Bag<Bag<Group>>;
@@ -888,21 +1012,50 @@ declare module entitas {
          */
         static groupDesc(group: Group): string;
         /**
-         *
          * @param name
          */
-        createEntity(name: any): Entity;
+        createEntity(name: string): Entity;
         /**
          *
          * @param entity
          */
         destroyEntity(entity: Entity): void;
+        /**
+         *
+         */
         destroyAllEntities(): void;
+        /**
+         *
+         * @param entity
+         * @returns {boolean}
+         */
         hasEntity(entity: Entity): boolean;
+        /**
+         *
+         * @param matcher
+         * @returns {Group}
+         */
         getGroup(matcher: IMatcher): Group;
-        updateGroupsComponentAddedOrRemoved: (entity: Entity, index: number, component: IComponent) => void;
-        updateGroupsComponentReplaced: (entity: Entity, index: number, previousComponent: IComponent, newComponent: IComponent) => void;
-        onEntityReleased: (entity: Entity) => void;
+        /**
+         *
+         * @param entity
+         * @param index
+         * @param component
+         */
+        protected updateGroupsComponentAddedOrRemoved: (entity: Entity, index: number, component: IComponent) => void;
+        /**
+         *
+         * @param entity
+         * @param index
+         * @param previousComponent
+         * @param newComponent
+         */
+        protected updateGroupsComponentReplaced: (entity: Entity, index: number, previousComponent: IComponent, newComponent: IComponent) => void;
+        /**
+         *
+         * @param entity
+         */
+        protected onEntityReleased: (entity: Entity) => void;
     }
 }
 declare module entitas {
@@ -929,16 +1082,6 @@ declare module entitas {
     import ISystem = entitas.ISystem;
     import IExecuteSystem = entitas.IExecuteSystem;
     import IInitializeSystem = entitas.IInitializeSystem;
-    enum SystemType {
-        IInitializeSystem = 1,
-        IExecuteSystem = 2,
-        IReactiveExecuteSystem = 4,
-        IMultiReactiveSystem = 8,
-        IReactiveSystem = 16,
-        IEnsureComponents = 32,
-        IExcludeComponents = 64,
-        IClearReactiveSystem = 128,
-    }
     class Systems implements IInitializeSystem, IExecuteSystem {
         protected _initializeSystems: Array<IInitializeSystem>;
         protected _executeSystems: Array<IExecuteSystem>;
@@ -956,6 +1099,9 @@ declare module entitas.extensions {
         constructor($0: any);
         singleEntity(): Entity;
     }
+}
+declare module entitas {
+    function initialize(totalComponents: number, options: any): void;
 }
 declare module entitas.extensions {
 }
