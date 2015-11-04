@@ -13,11 +13,6 @@ module example {
   import Rnd = bosco.utils.Rnd;
   import Timer = bosco.utils.Timer;
 
-  import Sprite = PIXI.Sprite;
-  import Texture = PIXI.Texture;
-
-  declare var viewContainer;
-
   export class EntitySpawningTimerSystem implements IExecuteSystem, IInitializeSystem, ISetPool {
 
     protected pool:Pool;
@@ -41,16 +36,13 @@ module example {
 
         var x = Rnd.nextInt(bosco.config.width);
         var y = bosco.config.height/2 - 200;
-        var sprite:Sprite = bosco.prefab('enemy1');
-        sprite.position.set(~~x, ~~y);
-        viewContainer.addChild(sprite);
-
         this.pool.createEntity("Enemy1")
+          .addBounds(20)
           .addPosition(~~x, ~~y)
           .addVelocity(0, -40)
-          .addBounds(20)
+          .addLayer(Layer.ACTORS_1)
+          .addResource('enemy1')
           .addHealth(10, 10)
-          .addSprite(Layer.ACTORS_1, sprite)
           .setEnemy(true);
       };
 
@@ -59,16 +51,13 @@ module example {
 
         var x = Rnd.nextInt(bosco.config.width);
         var y = bosco.config.height/2 - 100;
-        var sprite:Sprite = bosco.prefab('enemy2');
-        sprite.position.set(~~x, ~~y);
-        viewContainer.addChild(sprite);
-
         this.pool.createEntity("Enemy2")
+          .addBounds(40)
           .addPosition(~~x, ~~y)
           .addVelocity(0, -30)
-          .addBounds(40)
+          .addLayer(Layer.ACTORS_2)
+          .addResource('enemy2')
           .addHealth(20, 20)
-          .addSprite(Layer.ACTORS_2, sprite)
           .setEnemy(true);
       };
 
@@ -77,16 +66,13 @@ module example {
 
         var x = Rnd.nextInt(bosco.config.width);
         var y = bosco.config.height/2 - 50;
-        var sprite:Sprite = bosco.prefab('enemy3');
-        sprite.position.set(~~x, ~~y);
-        viewContainer.addChild(sprite);
-
         this.pool.createEntity("Enemy3")
+          .addBounds(70)
           .addPosition(~~x, ~~y)
           .addVelocity(0, -20)
-          .addBounds(70)
+          .addLayer(Layer.ACTORS_3)
+          .addResource('enemy3')
           .addHealth(60, 60)
-          .addSprite(Layer.ACTORS_3, sprite)
           .setEnemy(true);
       };
 

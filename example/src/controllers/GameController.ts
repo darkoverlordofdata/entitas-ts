@@ -13,6 +13,7 @@ module example {
   import ScaleAnimationSystem = example.ScaleAnimationSystem;
   import SoundEffectSystem = example.SoundEffectSystem;
   import SpriteRenderSystem = example.SpriteRenderSystem;
+  import AddViewSystem = example.AddViewSystem;
   import Pools = example.Pools;
   import Systems = entitas.Systems;
   import Layer = example.Layer;
@@ -45,6 +46,7 @@ module example {
         .add(pool.createSystem(ScaleAnimationSystem))
         .add(pool.createSystem(RemoveOffscreenShipsSystem))
         .add(pool.createSystem(SpriteRenderSystem))
+        .add(pool.createSystem(AddViewSystem))
         .add(pool.createSystem(HealthRenderSystem))
         .add(pool.createSystem(HudRenderSystem))
         .add(pool.createSystem(DestroySystem));

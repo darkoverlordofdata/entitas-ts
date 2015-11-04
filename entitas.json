@@ -6,7 +6,7 @@
     "typescript": "example/src/generatedComponents.ts",
     "declaration": "example/ext/example.d.ts"
   },
-  "alloc": 800,
+  "alloc": 200,
   "components": {
     "Bounds": [
       "radius:number"
@@ -78,6 +78,9 @@
     ],
     "Resource": [
       "name:string"
+    ],
+    "Layer": [
+      "ordinal:number"
     ]
   },
   "systems": {
@@ -94,7 +97,8 @@
     "SpriteRenderSystem": true,
     "HealthRenderSystem": true,
     "HudRenderSystem": true,
-    "DestroySystem": true
+    "DestroySystem": true,
+    "AddViewSystem": true
   },
   "entities": {
     "Score": true,

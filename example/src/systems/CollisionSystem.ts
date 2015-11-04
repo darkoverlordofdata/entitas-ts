@@ -12,10 +12,7 @@ module example {
   import Layer = example.Layer;
   import Rnd = bosco.utils.Rnd;
 
-  import Sprite = PIXI.Sprite;
-  import Texture = PIXI.Texture;
   const Tau = Math.PI * 2;
-  declare var viewContainer;
 
   export class CollisionSystem implements IInitializeSystem, IExecuteSystem, ISetPool {
 
@@ -83,16 +80,13 @@ module example {
      * @param y
      */
     protected explode(name: string, scale: number, x: number, y: number) {
-      var sprite: Sprite = bosco.prefab('explosion');
-      sprite.position.set(~~x, ~~y);
-      sprite.scale.set(scale, scale);
-      viewContainer.addChild(sprite);
-
       this.pool.createEntity(name)
-        .addPosition(~~x, ~~y)
         .addExpires(0.5)
-        .addSprite(Layer.PARTICLES, sprite)
-        .addScaleAnimation(scale / 100, scale, -3, false, true);
+        .addScaleAnimation(scale / 100, scale, -3, false, true)
+        .addPosition(~~x, ~~y)
+        .addScale(scale, scale)
+        .addLayer(Layer.PARTICLES)
+        .addResource('explosion');
     }
 
     /**
@@ -107,18 +101,14 @@ module example {
       var velocityY = magnitude * Math.sin(radians);
       var scale = Rnd.random(0.5, 1);
 
-      var sprite: Sprite = bosco.prefab('particle');
-      sprite.scale.set(scale, scale);
-      sprite.position.set(~~x, ~~y);
-      viewContainer.addChild(sprite);
-
       this.pool.createEntity('particle')
+        .addExpires(1)
+        .addColorAnimation(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, false, false, false, true, true)
         .addPosition(~~x, ~~y)
         .addVelocity(velocityX, velocityY)
-        .addExpires(1)
-        .addSprite(Layer.PARTICLES, sprite)
-        .addColorAnimation(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, false, false, false, true, true);
-
+        .addScale(scale, scale)
+        .addLayer(Layer.PARTICLES)
+        .addResource('particle');
     }
   }
 

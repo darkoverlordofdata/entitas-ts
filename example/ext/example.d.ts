@@ -360,6 +360,9 @@ declare module entitas {
     class ResourceComponent implements IComponent {
       public name:string;
     }
+    class LayerComponent implements IComponent {
+      public ordinal:number;
+    }
 
 }
 declare module entitas {
@@ -488,6 +491,8 @@ declare module entitas {
         static Scale: Matcher;
         static _matcherResource;
         static Resource: Matcher;
+        static _matcherLayer;
+        static Layer: Matcher;
         id: number;
         static uniqueId: number;
         indices: number[];
@@ -684,6 +689,13 @@ declare module entitas {
         addResource(name:string);
         replaceResource(name:string);
         removeResource();
+        static _layerComponentPool;
+        static clearLayerComponentPool();
+        layer: LayerComponent;
+        hasLayer: boolean;
+        addLayer(ordinal:number);
+        replaceLayer(ordinal:number);
+        removeLayer();
         creationIndex: number;
         name: string;
         id: string;

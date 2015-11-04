@@ -12,11 +12,6 @@ module example {
   import Container = PIXI.Container;
   import Layer = example.Layer;
 
-  import Sprite = PIXI.Sprite;
-  import Texture = PIXI.Texture;
-
-  declare var viewContainer;
-
   export class PlayerInputSystem implements IExecuteSystem, IInitializeSystem, ISetPool {
     protected pool:Pool;
     protected group:Group;
@@ -58,6 +53,19 @@ module example {
       }
     }
 
+    protected createBullet(x:number, y:number) {
+      this.pool.createEntity('bullet')
+        .addPosition(~~x, ~~y)
+        .addVelocity(0, 800)
+        .addBounds(5)
+        .addExpires(1)
+        .addSoundEffect(EFFECT.PEW)
+        .addLayer(Layer.PARTICLES)
+        .addResource('bullet')
+        .setBullet(true);
+
+    }
+
     public initialize() {
       document.addEventListener('touchstart', this.onTouchStart, true);
       document.addEventListener('touchmove', this.onTouchMove, true);
@@ -65,7 +73,13 @@ module example {
       document.addEventListener('mousedown', this.onTouchStart, true);
       document.addEventListener('mousemove', this.onTouchMove, true);
       document.addEventListener('mouseup', this.onTouchEnd, true);
-      this.createPlayer();
+      this.pool.createEntity('Player')
+        .addBounds(43)
+        .addVelocity(0, 0)
+        .addPosition(~~(bosco.config.width/4), ~~(bosco.config.height-80))
+        .addLayer(Layer.ACTORS_3)
+        .addResource('fighter')
+        .setPlayer(true);
     }
     
     public setPool(pool:Pool) {
@@ -97,38 +111,5 @@ module example {
     protected onTouchEnd = (event) => {
       this.shoot = false;
     };
-
-    protected createPlayer() {
-      var x = bosco.config.width/4;
-      var y = bosco.config.height-80;
-
-      var sprite:Sprite = bosco.prefab('fighter');
-      sprite.position.set(~~x, ~~y);
-      viewContainer.addChild(sprite);
-
-      this.pool.createEntity('Player')
-        .addPosition(~~x, ~~y)
-        .addVelocity(0, 0)
-        .addBounds(43)
-        .addSprite(Layer.ACTORS_3, sprite)
-        .setPlayer(true);
-
-    }
-
-    protected createBullet(x:number, y:number) {
-      var sprite:Sprite = bosco.prefab('bullet');
-      sprite.position.set(~~x, ~~y);
-      viewContainer.addChild(sprite);
-
-      this.pool.createEntity('bullet')
-        .addPosition(~~x, ~~y)
-        .addVelocity(0, 800)
-        .addBounds(5)
-        .addExpires(1)
-        .addSoundEffect(EFFECT.PEW)
-        .addSprite(Layer.PARTICLES, sprite)
-        .setBullet(true);
-
-    }
   }
 }

@@ -32,6 +32,7 @@
     "example/src/controllers/GameController.ts",
     "example/src/controllers/InputController.ts",
     "example/src/controllers/ScoreLabelController.ts",
-    "example/src/systems/DestroySystem.ts"
+    "example/src/systems/DestroySystem.ts",
+    "example/src/systems/AddViewSystem.ts"
   ]
 }

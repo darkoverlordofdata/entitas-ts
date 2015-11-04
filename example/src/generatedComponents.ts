@@ -32,10 +32,11 @@ module example {
     Mouse,
     Scale,
     Resource,
+    Layer,
     TotalComponents
   }
 
-    Entity.dim(CoreComponentIds.TotalComponents, 800);
+  Entity.dim(CoreComponentIds.TotalComponents, 200);
 
 
   export class BoundsComponent implements IComponent {
@@ -114,6 +115,9 @@ module example {
   }
   export class ResourceComponent implements IComponent {
     public name:string;
+  }
+  export class LayerComponent implements IComponent {
+    public ordinal:number;
   }
 
 
