@@ -24,9 +24,9 @@ module example {
 
     public initialize() {
       var font = {font: '36px Radio Stars', align: 'left'};
-      this.activeEntities = new BitmapText("Active entities:           ", font);
+      this.activeEntities = new BitmapText("Active entitiez:           ", font);
       this.totalCreated = new BitmapText("Total created:          ", font);
-      this.totalDeleted = new BitmapText("Total alloc:            ", font);
+      this.totalDeleted = new BitmapText("Total deleted:          ", font);
 
       this.activeEntities.scale.set(0.5);
       this.totalCreated.scale.set(0.5);
@@ -39,19 +39,21 @@ module example {
       viewContainer.addChild(this.activeEntities);
       viewContainer.addChild(this.totalCreated);
       viewContainer.addChild(this.totalDeleted);
-      
+
     }
-    
+
     public execute() {
-      this.activeEntities.text = "Active entities: " + Object.keys(this.pool._entities).length;
-      this.totalDeleted.text = "Total created: " + this.pool._creationIndex;
-      this.totalCreated.text = "Total alloc:   " + Entity.instanceIndex;
+      var pool:Pool = this.pool;
+      var size:number = pool.count;
+      this.activeEntities.text = "Active entities: " + size;
+      this.totalCreated.text = "Total created: " + pool.reusableEntitiesCount;
+      this.totalDeleted.text = "Total deleted: " + (pool._creationIndex-size);
     }
-    
+
     public setPool(pool:Pool) {
       this.pool = pool;
     }
-    
+
 
 
   }

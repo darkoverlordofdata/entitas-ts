@@ -6,7 +6,7 @@
     "typescript": "example/src/generatedComponents.ts",
     "declaration": "example/ext/example.d.ts"
   },
-  "alloc": 300,
+  "alloc": 800,
   "components": {
     "Bounds": [
       "radius:number"
@@ -35,6 +35,7 @@
     "Expires": [
       "delay:number"
     ],
+    "Firing": false,
     "Health": [
       "health:number",
       "maximumHealth:number"
@@ -71,7 +72,13 @@
       "x:number",
       "y:number"
     ],
-    "Firing": false
+    "Scale": [
+      "x:number",
+      "y:number"
+    ],
+    "Resource": [
+      "name:string"
+    ]
   },
   "systems": {
     "MovementSystem": true,

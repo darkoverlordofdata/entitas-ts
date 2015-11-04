@@ -24,21 +24,6 @@ module example {
     private timer1:Timer;
     private timer2:Timer;
     private timer3:Timer;
-    protected cache = {};
-
-    constructor() {
-      var sprite:Sprite = new Sprite(Texture.fromFrame('enemy1.png'));
-      sprite.tint = 0xff008e;
-      this.cache['enemy1'] = sprite.generateTexture(bosco['renderer']);
-
-      var sprite:Sprite = new Sprite(Texture.fromFrame('enemy2.png'));
-      sprite.tint = 0xff008e;
-      this.cache['enemy2'] = sprite.generateTexture(bosco['renderer']);
-
-      var sprite:Sprite = new Sprite(Texture.fromFrame('enemy3.png'));
-      sprite.tint = 0xff008e;
-      this.cache['enemy3'] = sprite.generateTexture(bosco['renderer']);
-    }
 
     public execute() {
       var rnd = Math.random();
@@ -53,12 +38,13 @@ module example {
     public initialize() {
       this.timer1 = new Timer(2, true);
       this.timer1.execute = () => {
+
         var x = Rnd.nextInt(bosco.config.width);
         var y = bosco.config.height/2 - 200;
-        var sprite:Sprite = new Sprite(this.cache['enemy1']);
-        sprite.anchor.set(0.5, 0.5);
+        var sprite:Sprite = bosco.prefab('enemy1');
         sprite.position.set(~~x, ~~y);
         viewContainer.addChild(sprite);
+
         this.pool.createEntity("Enemy1")
           .addPosition(~~x, ~~y)
           .addVelocity(0, -40)
@@ -70,12 +56,13 @@ module example {
 
       this.timer2 = new Timer(6, true);
       this.timer2.execute = () => {
+
         var x = Rnd.nextInt(bosco.config.width);
         var y = bosco.config.height/2 - 100;
-        var sprite:Sprite = new Sprite(this.cache['enemy2']);
-        sprite.anchor.set(0.5, 0.5);
+        var sprite:Sprite = bosco.prefab('enemy2');
         sprite.position.set(~~x, ~~y);
         viewContainer.addChild(sprite);
+
         this.pool.createEntity("Enemy2")
           .addPosition(~~x, ~~y)
           .addVelocity(0, -30)
@@ -87,12 +74,13 @@ module example {
 
       this.timer3 = new Timer(12, true);
       this.timer3.execute = () => {
+
         var x = Rnd.nextInt(bosco.config.width);
         var y = bosco.config.height/2 - 50;
-        var sprite:Sprite = new Sprite(this.cache['enemy3']);
-        sprite.anchor.set(0.5, 0.5);
+        var sprite:Sprite = bosco.prefab('enemy3');
         sprite.position.set(~~x, ~~y);
         viewContainer.addChild(sprite);
+
         this.pool.createEntity("Enemy3")
           .addPosition(~~x, ~~y)
           .addVelocity(0, -20)

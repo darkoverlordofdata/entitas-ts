@@ -9,6 +9,7 @@ module example {
   import IInitializeSystem = entitas.IInitializeSystem;
   import IExecuteSystem = entitas.IExecuteSystem;
   import ISetPool = entitas.ISetPool;
+  import Layer = example.Layer;
   import Rnd = bosco.utils.Rnd;
 
   import Sprite = PIXI.Sprite;
@@ -18,25 +19,12 @@ module example {
 
   export class CollisionSystem implements IInitializeSystem, IExecuteSystem, ISetPool {
 
-    protected pool:Pool;
-    protected group:Group;
-    protected bullets:Group;
-    protected enemies:Group;
-    protected collisionPairs:Array<CollisionPair>;
-    protected cache = {};
+    protected pool: Pool;
+    protected group: Group;
+    protected bullets: Group;
+    protected enemies: Group;
+    protected collisionPairs: Array<CollisionPair>;
 
-    /**
-     * Load texture caches
-     */
-    constructor() {
-      var sprite:Sprite = new Sprite(Texture.fromFrame('explosion.png'));
-      sprite.tint = 0xffd80080;
-      this.cache['explosion'] = sprite.generateTexture(bosco['renderer']);
-
-      var sprite:Sprite = new Sprite(Texture.fromFrame('particle.png'));
-      sprite.tint = 0xffd800ff;
-      this.cache['particle'] = sprite.generateTexture(bosco['renderer']);
-    }
 
     /**
      * Check for Collision
@@ -60,10 +48,10 @@ module example {
       this.collisionPairs = [];
       this.collisionPairs.push(new CollisionPair(this, this.bullets, this.enemies, {
 
-        handleCollision: (bullet:Entity, ship:Entity) => {
-          var bp:PositionComponent = bullet.position;
-          var health:HealthComponent = ship.health;
-          var position:PositionComponent = ship.position;
+        handleCollision: (bullet: Entity, ship: Entity) => {
+          var bp: PositionComponent = bullet.position;
+          var health: HealthComponent = ship.health;
+          var position: PositionComponent = ship.position;
           var x = bp.x;
           var y = bp.y;
 
@@ -71,19 +59,19 @@ module example {
           var i = 5;
           while (--i > 0) this.particle(x, y);
 
-          bullet.isDestroy = true;
+          bullet.setDestroy(true);
           health.health -= 1;
           if (health.health < 0) {
-            var score:ScoreComponent = <ScoreComponent>(this.pool.score);
+            var score: ScoreComponent = <ScoreComponent>(this.pool.score);
             this.pool.replaceScore(score.value + ship.health.maximumHealth);
-            ship.isDestroy = true;
+            ship.setDestroy(true);
             this.explode("big", 0.5, position.x, position.y);
           }
         }
       }));
     }
 
-    public setPool(pool:Pool) {
+    public setPool(pool: Pool) {
       this.pool = pool;
     }
 
@@ -94,9 +82,8 @@ module example {
      * @param x
      * @param y
      */
-    protected explode(name:string, scale:number, x:number, y:number)  {
-      var sprite:Sprite = new Sprite(this.cache['explosion']);
-      sprite.anchor.set(0.5, 0.5);
+    protected explode(name: string, scale: number, x: number, y: number) {
+      var sprite: Sprite = bosco.prefab('explosion');
       sprite.position.set(~~x, ~~y);
       sprite.scale.set(scale, scale);
       viewContainer.addChild(sprite);
@@ -105,7 +92,7 @@ module example {
         .addPosition(~~x, ~~y)
         .addExpires(0.5)
         .addSprite(Layer.PARTICLES, sprite)
-        .addScaleAnimation(scale/100, scale, -3, false, true);
+        .addScaleAnimation(scale / 100, scale, -3, false, true);
     }
 
     /**
@@ -113,15 +100,14 @@ module example {
      * @param x
      * @param y
      */
-    protected particle(x:number, y:number) {
-      var radians:number = Math.random()*Tau;
-      var magnitude:number = Rnd.random(200);
+    protected particle(x: number, y: number) {
+      var radians: number = Math.random() * Tau;
+      var magnitude: number = Rnd.random(200);
       var velocityX = magnitude * Math.cos(radians);
       var velocityY = magnitude * Math.sin(radians);
       var scale = Rnd.random(0.5, 1);
 
-      var sprite:Sprite = new Sprite(this.cache['particle']);
-      sprite.anchor.set(0.5, 0.5);
+      var sprite: Sprite = bosco.prefab('particle');
       sprite.scale.set(scale, scale);
       sprite.position.set(~~x, ~~y);
       viewContainer.addChild(sprite);
@@ -141,12 +127,12 @@ module example {
    *
    */
   class CollisionPair {
-    private groupEntitiesA:Group;
-    private groupEntitiesB:Group;
-    private handler:CollisionHandler;
-    private cs:CollisionSystem;
+    private groupEntitiesA: Group;
+    private groupEntitiesB: Group;
+    private handler: CollisionHandler;
+    private cs: CollisionSystem;
 
-    constructor(cs:CollisionSystem, group1, group2, handler:CollisionHandler) {
+    constructor(cs: CollisionSystem, group1, group2, handler: CollisionHandler) {
       this.groupEntitiesA = group1;
       this.groupEntitiesB = group2;
       this.handler = handler;
@@ -161,9 +147,9 @@ module example {
       var sizeB = groupEntitiesB.length;
 
       for (var a = 0; sizeA > a; a++) {
-        var entityA:Entity = groupEntitiesA[a];
+        var entityA: Entity = groupEntitiesA[a];
         for (var b = 0; sizeB > b; b++) {
-          var entityB:Entity = groupEntitiesB[b];
+          var entityB: Entity = groupEntitiesB[b];
           if (this.collisionExists(entityA, entityB)) {
             handler.handleCollision(entityA, entityB);
           }
@@ -171,15 +157,15 @@ module example {
       }
     }
 
-    private collisionExists(e1:Entity, e2:Entity):boolean {
+    private collisionExists(e1: Entity, e2: Entity): boolean {
 
       if (e1 === null || e2 === null) return false;
 
-      var p1:PositionComponent = e1.position;
-      var p2:PositionComponent = e2.position;
+      var p1: PositionComponent = e1.position;
+      var p2: PositionComponent = e2.position;
 
-      var b1:BoundsComponent = e1.bounds;
-      var b2:BoundsComponent = e2.bounds;
+      var b1: BoundsComponent = e1.bounds;
+      var b2: BoundsComponent = e2.bounds;
 
       var a = p1.x - p2.x;
       var b = p1.y - p2.y;
@@ -188,6 +174,6 @@ module example {
   }
 
   interface CollisionHandler {
-    handleCollision(a:Entity, b:Entity);
+    handleCollision(a: Entity, b: Entity);
   }
 }

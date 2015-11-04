@@ -21,7 +21,6 @@ module example {
         var delta = bosco.delta;
         e.position.x += (e.velocity.x * delta);
         e.position.y -= (e.velocity.y * delta);
-        //console.log(e.name, delta, e.position.x, e.position.y, e.velocity.x, e.velocity.y);
       }
     }
     

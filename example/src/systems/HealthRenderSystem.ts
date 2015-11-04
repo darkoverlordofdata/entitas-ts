@@ -27,6 +27,13 @@ module example {
       this.texts = {};
     }
 
+    public setPool(pool:Pool) {
+      this.pool = pool;
+      this.group = pool.getGroup(Matcher.allOf(Matcher.Position, Matcher.Health));
+      pool.getGroup(Matcher.Enemy).onEntityAdded.add(this.onEntityAdded);
+      pool.getGroup(Matcher.Enemy).onEntityRemoved.add(this.onEntityRemoved);
+    }
+
     public execute() {
       var entities = this.group.getEntities();
       for (var i = 0, l = entities.length; i < l; i++) {
@@ -58,13 +65,6 @@ module example {
       this.texts[e.id] = null;
       delete this.texts[e.id];
     };
-
-    public setPool(pool:Pool) {
-      this.pool = pool;
-      this.group = pool.getGroup(Matcher.allOf(Matcher.Position, Matcher.Health));
-      pool.getGroup(Matcher.Enemy).onEntityAdded.add(this.onEntityAdded);
-      pool.getGroup(Matcher.Enemy).onEntityRemoved.add(this.onEntityRemoved);
-    }
 
   }
 }

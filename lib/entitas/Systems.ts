@@ -5,19 +5,15 @@ module entitas {
   import IExecuteSystem = entitas.IExecuteSystem;
   import IInitializeSystem = entitas.IInitializeSystem;
 
-  function as(obj, method1:string) {
-    return method1 in obj ? obj : null;
-  }
-
-  export enum SystemType {
-    IInitializeSystem=1,          //  ::initialize()
-    IExecuteSystem=2,             //  ::execute()
-    IReactiveExecuteSystem=4,
-    IMultiReactiveSystem=8,       //  ::triggers
-    IReactiveSystem=16,           //  ::trigger
-    IEnsureComponents=32,         //  ::ensureComponents
-    IExcludeComponents=64,        //  ::excludeComponents
-    IClearReactiveSystem=128
+  /**
+   * As - Conditionally cast an object using duck typing
+   *
+   * @param object
+   * @param method
+   * @returns object
+   */
+  function as(object, method:string) {
+    return method in object ? object : null;
   }
 
   export class Systems implements IInitializeSystem, IExecuteSystem {

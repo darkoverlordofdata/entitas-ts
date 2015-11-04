@@ -25,17 +25,6 @@ module example {
     protected shoot:boolean;
     protected timeToFire:number=0;
     protected mouseVector;
-    protected cache = {};
-
-    constructor() {
-      var sprite:Sprite = new Sprite(Texture.fromFrame('bullet.png'));
-      sprite.tint = 0xffffff;
-      this.cache['bullet'] = sprite.generateTexture(bosco['renderer']);
-
-      var sprite:Sprite = new Sprite(Texture.fromFrame('fighter.png'));
-      sprite.tint = 0x5dff81;
-      this.cache['fighter'] = sprite.generateTexture(bosco['renderer']);
-    }
 
     public execute() {
       var entities = this.group.getEntities();
@@ -113,34 +102,32 @@ module example {
       var x = bosco.config.width/4;
       var y = bosco.config.height-80;
 
-      var sprite:Sprite = new Sprite(this.cache['fighter']);
-      sprite.anchor.set(0.5, 0.5);
+      var sprite:Sprite = bosco.prefab('fighter');
       sprite.position.set(~~x, ~~y);
       viewContainer.addChild(sprite);
 
       this.pool.createEntity('Player')
-        .setPlayer(true)
         .addPosition(~~x, ~~y)
         .addVelocity(0, 0)
         .addBounds(43)
-        .addSprite(Layer.ACTORS_3, sprite);
+        .addSprite(Layer.ACTORS_3, sprite)
+        .setPlayer(true);
 
     }
 
     protected createBullet(x:number, y:number) {
-      var sprite:Sprite = new Sprite(this.cache['bullet']);
-      sprite.anchor.set(0.5, 0.5);
+      var sprite:Sprite = bosco.prefab('bullet');
       sprite.position.set(~~x, ~~y);
       viewContainer.addChild(sprite);
 
       this.pool.createEntity('bullet')
-        .setBullet(true)
         .addPosition(~~x, ~~y)
         .addVelocity(0, 800)
         .addBounds(5)
         .addExpires(1)
         .addSoundEffect(EFFECT.PEW)
-        .addSprite(Layer.PARTICLES, sprite);
+        .addSprite(Layer.PARTICLES, sprite)
+        .setBullet(true);
 
     }
   }

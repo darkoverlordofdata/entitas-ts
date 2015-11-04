@@ -23,4 +23,5 @@ module example {
     ENEMY_BULLETS
   }
 
+
 }

@@ -17,7 +17,9 @@ module example {
   import Systems = entitas.Systems;
   import Layer = example.Layer;
 
+  /** PIXI.Container */
   declare var viewContainer;
+  declare var stuff;
 
   export class GameController {
 
@@ -45,8 +47,7 @@ module example {
         .add(pool.createSystem(SpriteRenderSystem))
         .add(pool.createSystem(HealthRenderSystem))
         .add(pool.createSystem(HudRenderSystem))
-        .add(pool.createSystem(DestroySystem))
-        ;
+        .add(pool.createSystem(DestroySystem));
 
     }
 
@@ -55,4 +56,3 @@ module example {
     }
   }
 }
-

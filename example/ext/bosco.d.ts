@@ -84,17 +84,7 @@ declare module bosco.utils {
  *
  */
 declare module bosco {
-    import Sprite = PIXI.Sprite;
-    import Container = PIXI.Container;
     function isMobile(): boolean;
-
-    /**
-     *
-     * @param name
-     * @param parent
-     * @param options
-     */
-    function prefab(name: any, parent: boolean|Container, options?:any): Sprite;
 }
 /**
  * Properties.ts
@@ -126,6 +116,7 @@ declare module bosco {
  *
  */
 declare module bosco {
+    import Sprite = PIXI.Sprite;
     import Container = PIXI.Container;
     import SystemRenderer = PIXI.SystemRenderer;
     enum ScaleType {
@@ -139,6 +130,17 @@ declare module bosco {
      * Load assets and start
      */
     function start(config: any): void;
+    /**
+     * prefab
+     *
+     * Make a sprite from a prefabricated texture
+     * and then configure it.
+     *
+     * @param name
+     * @param parent
+     * @returns {PIXI.Sprite}
+     */
+    function prefab(name: any, parent?: any): Sprite;
     class Game {
         stage: Container;
         sprites: Container;

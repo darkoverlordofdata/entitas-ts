@@ -18,6 +18,7 @@ module example {
     ColorAnimation,
     Enemy,
     Expires,
+    Firing,
     Health,
     ParallaxStar,
     Player,
@@ -29,11 +30,12 @@ module example {
     Score,
     Destroy,
     Mouse,
-    Firing,
+    Scale,
+    Resource,
     TotalComponents
   }
 
-    Entity.dim(CoreComponentIds.TotalComponents, 300);
+    Entity.dim(CoreComponentIds.TotalComponents, 800);
 
 
   export class BoundsComponent implements IComponent {
@@ -64,6 +66,8 @@ module example {
   }
   export class ExpiresComponent implements IComponent {
     public delay:number;
+  }
+  export class FiringComponent implements IComponent {
   }
   export class HealthComponent implements IComponent {
     public health:number;
@@ -104,7 +108,12 @@ module example {
     public x:number;
     public y:number;
   }
-  export class FiringComponent implements IComponent {
+  export class ScaleComponent implements IComponent {
+    public x:number;
+    public y:number;
+  }
+  export class ResourceComponent implements IComponent {
+    public name:string;
   }
 
 

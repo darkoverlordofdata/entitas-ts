@@ -20,30 +20,50 @@ module entitas {
    */
   export module Entity {
 
+    /**
+     * Event EntityReleased
+     *
+     * All references to the entity have been released
+     */
     export interface EntityReleased {(e:Entity):void;}
     export interface IEntityReleased<T> extends ISignal<T> {
       dispatch(e:Entity):void;
     }
 
+    /**
+     * Event EntityChanged
+     *
+     * The entity has been changed
+     */
     export interface EntityChanged {(e:Entity, index:number, component:IComponent):void;}
     export interface IEntityChanged<T> extends ISignal<T> {
       dispatch(e:Entity, index:number, component:IComponent):void;
     }
 
+    /**
+     * Event ComponentReplaced
+     *
+     * A component was replaced
+     */
     export interface ComponentReplaced {(e:Entity, index:number, component:IComponent, replacement:IComponent):void;}
     export interface IComponentReplaced<T> extends ISignal<T> {
       dispatch(e:Entity, index:number, component:IComponent, replacement:IComponent):void;
     }
   }
 
+  /**
+   * The basic game object. Everything is an entity with components that
+   * are added / removed as needed.
+   */
   export class Entity {
 
+    /** Entity count */
     public get creationIndex():number {return this._creationIndex;}
 
-    //public onEntityReleased:IEntityReleased<EntityReleased>;
-    //public onComponentAdded:IEntityChanged<EntityChanged>;
-    //public onComponentRemoved:IEntityChanged<EntityChanged>;
-    //public onComponentReplaced:Entity.IComponentReplaced<ComponentReplaced>;
+    public onEntityReleased:IEntityReleased<EntityReleased>;
+    public onComponentAdded:IEntityChanged<EntityChanged>;
+    public onComponentRemoved:IEntityChanged<EntityChanged>;
+    public onComponentReplaced:Entity.IComponentReplaced<ComponentReplaced>;
 
     public name:string;
     public id:string;
@@ -66,10 +86,10 @@ module entitas {
 
     constructor(componentsEnum, totalComponents:number=16) {
 
-      //this.onEntityReleased = new Signal<EntityReleased>(this);
-      //this.onComponentAdded = new Signal<EntityChanged>(this);
-      //this.onComponentRemoved = new Signal<EntityChanged>(this);
-      //this.onComponentReplaced = new Signal<ComponentReplaced>(this);
+      this.onEntityReleased = new Signal<EntityReleased>(this);
+      this.onComponentAdded = new Signal<EntityChanged>(this);
+      this.onComponentRemoved = new Signal<EntityChanged>(this);
+      this.onComponentReplaced = new Signal<ComponentReplaced>(this);
       this._componentsEnum = componentsEnum;
       if (Entity.instanceIndex === 0) Entity.dim(totalComponents, 100);
       this._pool = entitas.Pool.instance;
@@ -78,6 +98,12 @@ module entitas {
 
     }
 
+    /**
+     * allocate entity pool
+     *
+     * @param count number of components
+     * @param size max number of entities
+     */
     public static dim(count:number, size:number) {
       if (!Entity.first) return;
       Entity.first = false;
@@ -91,6 +117,13 @@ module entitas {
       }
     }
 
+    /**
+     * AddComponent
+     *
+     * @param index
+     * @param component
+     * @returns {entitas.Entity}
+     */
     public addComponent(index:number, component:IComponent):Entity {
       if (!this._isEnabled) {
         throw new EntityIsNotEnabledException("Cannot add component!");
@@ -103,13 +136,18 @@ module entitas {
       this._componentsCache = null;
       this._componentIndicesCache = null;
       this._toStringCache = null;
-      //var onComponentAdded:any = this.onComponentAdded;
-      //if (onComponentAdded.active) onComponentAdded.dispatch(this, index, component);
-      this._pool.updateGroupsComponentAddedOrRemoved(this, index, component);
+      var onComponentAdded:any = this.onComponentAdded;
+      if (onComponentAdded.active) onComponentAdded.dispatch(this, index, component);
 
       return this;
     }
 
+    /**
+     * RemoveComponent
+     *
+     * @param index
+     * @returns {entitas.Entity}
+     */
     public removeComponent(index:number):Entity {
       if (!this._isEnabled) {
         throw new EntityIsNotEnabledException("Cannot remove component!");
@@ -123,6 +161,13 @@ module entitas {
     }
 
 
+    /**
+     * ReplaceComponent
+     *
+     * @param index
+     * @param component
+     * @returns {entitas.Entity}
+     */
     public replaceComponent(index:number, component:IComponent):Entity {
       if (!this._isEnabled) {
         throw new EntityIsNotEnabledException("Cannot replace component!");
@@ -140,9 +185,8 @@ module entitas {
       var components = this._components;
       var previousComponent = components[index];
       if (previousComponent === replacement) {
-        this._pool.updateGroupsComponentReplaced(this, index, previousComponent, replacement);
-        //var onComponentReplaced:any = this.onComponentReplaced;
-        //if (onComponentReplaced.active) onComponentReplaced.dispatch(this, index, previousComponent, replacement);
+        var onComponentReplaced:any = this.onComponentReplaced;
+        if (onComponentReplaced.active) onComponentReplaced.dispatch(this, index, previousComponent, replacement);
 
       } else {
         components[index] = replacement;
@@ -151,19 +195,23 @@ module entitas {
           delete components[index];
           this._componentIndicesCache = null;
           this._toStringCache = null;
-          this._pool.updateGroupsComponentAddedOrRemoved(this, index, previousComponent);
-          //var onComponentRemoved:any = this.onComponentRemoved;
-          //if (onComponentRemoved.active) onComponentRemoved.dispatch(this, index, previousComponent);
+          var onComponentRemoved:any = this.onComponentRemoved;
+          if (onComponentRemoved.active) onComponentRemoved.dispatch(this, index, previousComponent);
 
         } else {
-          this._pool.updateGroupsComponentReplaced(this, index, previousComponent, replacement);
-          //var onComponentReplaced:any = this.onComponentReplaced;
-          //if (onComponentReplaced.active) onComponentReplaced.dispatch(this, index, previousComponent, replacement);
+          var onComponentReplaced:any = this.onComponentReplaced;
+          if (onComponentReplaced.active) onComponentReplaced.dispatch(this, index, previousComponent, replacement);
         }
       }
 
     }
 
+    /**
+     * GetComponent
+     *
+     * @param index
+     * @returns {IComponent}
+     */
     public getComponent(index:number):IComponent {
       if (!this.hasComponent(index)) {
         var errorMsg = "Cannot get component at index " + index + " from " + this;
@@ -172,6 +220,11 @@ module entitas {
       return this._components[index];
     }
 
+    /**
+     * GetComponents
+     *
+     * @returns {any}
+     */
     public getComponents():IComponent[] {
       if (this._componentsCache == null) {
         var components = [];
@@ -190,6 +243,11 @@ module entitas {
 
     }
 
+    /**
+     * GetComponentIndices
+     *
+     * @returns {number[]}
+     */
     public getComponentIndices():number[] {
       if (this._componentIndicesCache == null) {
         var indices = [];
@@ -207,10 +265,22 @@ module entitas {
 
     }
 
+    /**
+     * HasComponent
+     *
+     * @param index
+     * @returns {boolean}
+     */
     public hasComponent(index:number):boolean {
       return this._components[index] != null;
     }
 
+    /**
+     * HasComponents
+     *
+     * @param indices
+     * @returns {boolean}
+     */
     public hasComponents(indices:number[]):boolean {
       var _components = this._components;
       for (var i = 0, indicesLength = indices.length; i < indicesLength; i++) {
@@ -222,6 +292,12 @@ module entitas {
       return true;
     }
 
+    /**
+     * HasAnyComponent
+     *
+     * @param indices
+     * @returns {boolean}
+     */
     public hasAnyComponent(indices:number[]):boolean {
       var _components = this._components;
       for (var i = 0, indicesLength = indices.length; i < indicesLength; i++) {
@@ -233,6 +309,10 @@ module entitas {
       return false;
     }
 
+    /**
+     * RemoveAllComponents
+     *
+     */
     public removeAllComponents() {
       this._toStringCache = null;
       var _components = this._components;
@@ -243,15 +323,24 @@ module entitas {
       }
     }
 
+    /**
+     * Destroy
+     *
+     */
     public destroy() {
       this.removeAllComponents();
-      //this.onComponentAdded.clear();
-      //this.onComponentReplaced.clear();
-      //this.onComponentRemoved.clear();
+      this.onComponentAdded.clear();
+      this.onComponentReplaced.clear();
+      this.onComponentRemoved.clear();
       this._isEnabled = false;
 
     }
 
+    /**
+     * ToString
+     *
+     * @returns {string}
+     */
     public toString() {
       if (this._toStringCache == null) {
         var sb = [];
@@ -271,16 +360,25 @@ module entitas {
       return this._toStringCache;
     }
 
+    /**
+     * AddRef
+     *
+     * @returns {entitas.Entity}
+     */
     public addRef():Entity {
       this._refCount += 1;
       return this;
     }
 
+    /**
+     * Release
+     *
+     */
     public release() {
       this._refCount -= 1;
       if (this._refCount === 0) {
-        //var onEntityReleased:any = this.onEntityReleased;
-        //if (onEntityReleased.active) onEntityReleased.dispatch(this);
+        var onEntityReleased:any = this.onEntityReleased;
+        if (onEntityReleased.active) onEntityReleased.dispatch(this);
 
       } else if (this._refCount < 0) {
         throw new EntityIsAlreadyReleasedException();

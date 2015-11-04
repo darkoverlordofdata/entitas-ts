@@ -312,6 +312,8 @@ declare module entitas {
     class ExpiresComponent implements IComponent {
       public delay:number;
     }
+    class FiringComponent implements IComponent {
+    }
     class HealthComponent implements IComponent {
       public health:number;
       public maximumHealth:number;
@@ -351,7 +353,12 @@ declare module entitas {
       public x:number;
       public y:number;
     }
-    class FiringComponent implements IComponent {
+    class ScaleComponent implements IComponent {
+      public x:number;
+      public y:number;
+    }
+    class ResourceComponent implements IComponent {
+      public name:string;
     }
 
 }
@@ -453,6 +460,8 @@ declare module entitas {
         static Enemy: Matcher;
         static _matcherExpires;
         static Expires: Matcher;
+        static _matcherFiring;
+        static Firing: Matcher;
         static _matcherHealth;
         static Health: Matcher;
         static _matcherParallaxStar;
@@ -475,8 +484,10 @@ declare module entitas {
         static Destroy: Matcher;
         static _matcherMouse;
         static Mouse: Matcher;
-        static _matcherFiring;
-        static Firing: Matcher;
+        static _matcherScale;
+        static Scale: Matcher;
+        static _matcherResource;
+        static Resource: Matcher;
         id: number;
         static uniqueId: number;
         indices: number[];
@@ -591,6 +602,9 @@ declare module entitas {
         addExpires(delay:number);
         replaceExpires(delay:number);
         removeExpires();
+        static firingComponent: FiringComponent;
+        isFiring: boolean;
+        setFiring(value: boolean);
         static _healthComponentPool;
         static clearHealthComponentPool();
         health: HealthComponent;
@@ -656,9 +670,20 @@ declare module entitas {
         addMouse(x:number, y:number);
         replaceMouse(x:number, y:number);
         removeMouse();
-        static firingComponent: FiringComponent;
-        isFiring: boolean;
-        setFiring(value: boolean);
+        static _scaleComponentPool;
+        static clearScaleComponentPool();
+        scale: ScaleComponent;
+        hasScale: boolean;
+        addScale(x:number, y:number);
+        replaceScale(x:number, y:number);
+        removeScale();
+        static _resourceComponentPool;
+        static clearResourceComponentPool();
+        resource: ResourceComponent;
+        hasResource: boolean;
+        addResource(name:string);
+        replaceResource(name:string);
+        removeResource();
         creationIndex: number;
         name: string;
         id: string;

@@ -27,7 +27,7 @@ Typescript implementation ported from https://github.com/sschmid/Entitas-CSharp
                      |     e      |
                      |  e     e   |
                      +------------+
-    
+
 ### Live Demo
 https://darkoverlordofdata.com/entitas-ts-example/
 
@@ -40,18 +40,18 @@ use entitas cli to generate empty components & extensions:
 
 
     Usage:
-      entitas init namespace 
-      entitas create -c name field:type... 
+      entitas init namespace
+      entitas create -c name field:type...
       entitas create -s name path interface...
-      entitas create -e name 
+      entitas create -e name
       entitas generate
-    
+
     Options:
       -c  [--component] # create a component
       -s  [--system]    # create a system
       -e  [--entity]    # create entity
       -x  [--extension] # create an extension
-    
+
 Components classes are generated from json configuration, enforcing data oriented design.
 
 Default template is equivalent to:

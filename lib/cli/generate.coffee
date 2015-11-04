@@ -79,7 +79,7 @@ module.exports =
     ts.push "    TotalComponents"
     ts.push "  }"
     ts.push ""
-    ts.push "    Entity.dim(CoreComponentIds.TotalComponents, #{config.alloc});"
+    ts.push "  Entity.dim(CoreComponentIds.TotalComponents, #{config.alloc});"
     ts.push ""
 
     ###
