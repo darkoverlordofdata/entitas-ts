@@ -1920,9 +1920,9 @@ var entitas;
 (function (entitas) {
     var Entity = entitas.Entity;
     function initialize(totalComponents, options) {
-        var MAX_ENTITIES = 100;
         var instanceIndex = 0;
         var alloc = null;
+        var size = options.entities || 100;
         /**
          * allocate entity pool
          *
@@ -1945,10 +1945,21 @@ var entitas;
          * @returns {Array<IComponent>}
          */
         Entity.prototype.initialize = function (totalComponents) {
+            var mem;
             if (alloc == null)
-                dim(totalComponents, MAX_ENTITIES);
+                dim(totalComponents, size);
             this.instanceIndex = instanceIndex++;
-            return alloc[this.instanceIndex];
+            if (mem = alloc[this.instanceIndex])
+                return mem;
+            console.log('Insufficient memory allocation at ', this.instanceIndex, '. Allocating ', size, ' entities.');
+            for (var i = this.instanceIndex, l = i + size; i < l; i++) {
+                alloc[i] = new Array(totalComponents);
+                for (var k = 0; k < totalComponents; k++) {
+                    alloc[i][k] = null;
+                }
+            }
+            mem = alloc[this.instanceIndex];
+            return mem;
         };
     }
     entitas.initialize = initialize;
