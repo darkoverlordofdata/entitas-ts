@@ -22,6 +22,10 @@ module example {
     protected enemies: Group;
     protected collisionPairs: Array<CollisionPair>;
 
+    public setPool(pool: Pool) {
+      this.pool = pool;
+    }
+
 
     /**
      * Check for Collision
@@ -66,10 +70,6 @@ module example {
           }
         }
       }));
-    }
-
-    public setPool(pool: Pool) {
-      this.pool = pool;
     }
 
     /**
