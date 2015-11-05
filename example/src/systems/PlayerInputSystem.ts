@@ -9,8 +9,6 @@ module example {
   import IExecuteSystem = entitas.IExecuteSystem;
   import IInitializeSystem = entitas.IInitializeSystem;
   import ISetPool = entitas.ISetPool;
-  import Container = PIXI.Container;
-  import Layer = example.Layer;
 
   export class PlayerInputSystem implements IExecuteSystem, IInitializeSystem, ISetPool {
     protected pool:Pool;
@@ -40,8 +38,8 @@ module example {
 
       if (this.shoot) {
         if (this.timeToFire <= 0) {
-          this.createBullet(position.x - 27, position.y + 2);
-          this.createBullet(position.x + 27, position.y + 2);
+          this.pool.createBullet(position.x - 27, position.y + 2);
+          this.pool.createBullet(position.x + 27, position.y + 2);
           this.timeToFire = PlayerInputSystem.FireRate;
         }
       }
@@ -53,19 +51,6 @@ module example {
       }
     }
 
-    protected createBullet(x:number, y:number) {
-      this.pool.createEntity('bullet')
-        .addPosition(~~x, ~~y)
-        .addVelocity(0, 800)
-        .addBounds(5)
-        .addExpires(1)
-        .addSoundEffect(EFFECT.PEW)
-        .addLayer(Layer.PARTICLES)
-        .addResource('bullet')
-        .setBullet(true);
-
-    }
-
     public initialize() {
       document.addEventListener('touchstart', this.onTouchStart, true);
       document.addEventListener('touchmove', this.onTouchMove, true);
@@ -73,13 +58,7 @@ module example {
       document.addEventListener('mousedown', this.onTouchStart, true);
       document.addEventListener('mousemove', this.onTouchMove, true);
       document.addEventListener('mouseup', this.onTouchEnd, true);
-      this.pool.createEntity('Player')
-        .addBounds(43)
-        .addVelocity(0, 0)
-        .addPosition(~~(bosco.config.width/4), ~~(bosco.config.height-80))
-        .addLayer(Layer.ACTORS_3)
-        .addResource('fighter')
-        .setPlayer(true);
+      this.pool.createPlayer();
     }
     
     public setPool(pool:Pool) {

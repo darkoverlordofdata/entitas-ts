@@ -23,7 +23,7 @@ module.exports =
   run: (namespace, flag, type) ->
 
     flag = flag || '-t'
-    type = type || 'default'
+    type = type || 'none'
 
     content = """
 {

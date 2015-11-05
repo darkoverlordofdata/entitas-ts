@@ -9,7 +9,6 @@ module example {
   import IExecuteSystem = entitas.IExecuteSystem;
   import IInitializeSystem = entitas.IInitializeSystem;
   import ISetPool = entitas.ISetPool;
-  import Layer = example.Layer;
   import Rnd = bosco.utils.Rnd;
   import Timer = bosco.utils.Timer;
 
@@ -33,47 +32,17 @@ module example {
     public initialize() {
       this.timer1 = new Timer(2, true);
       this.timer1.execute = () => {
-
-        var x = Rnd.nextInt(bosco.config.width);
-        var y = bosco.config.height/2 - 200;
-        this.pool.createEntity("Enemy1")
-          .addBounds(20)
-          .addPosition(~~x, ~~y)
-          .addVelocity(0, -40)
-          .addLayer(Layer.ACTORS_1)
-          .addResource('enemy1')
-          .addHealth(10, 10)
-          .setEnemy(true);
+        this.pool.createEnemy1();
       };
 
       this.timer2 = new Timer(6, true);
       this.timer2.execute = () => {
-
-        var x = Rnd.nextInt(bosco.config.width);
-        var y = bosco.config.height/2 - 100;
-        this.pool.createEntity("Enemy2")
-          .addBounds(40)
-          .addPosition(~~x, ~~y)
-          .addVelocity(0, -30)
-          .addLayer(Layer.ACTORS_2)
-          .addResource('enemy2')
-          .addHealth(20, 20)
-          .setEnemy(true);
+        this.pool.createEnemy2();
       };
 
       this.timer3 = new Timer(12, true);
       this.timer3.execute = () => {
-
-        var x = Rnd.nextInt(bosco.config.width);
-        var y = bosco.config.height/2 - 50;
-        this.pool.createEntity("Enemy3")
-          .addBounds(70)
-          .addPosition(~~x, ~~y)
-          .addVelocity(0, -20)
-          .addLayer(Layer.ACTORS_3)
-          .addResource('enemy3')
-          .addHealth(60, 60)
-          .setEnemy(true);
+        this.pool.createEnemy3();
       };
 
     }

@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>3.9.4</string>
         <key>fileName</key>
-        <string>/home/bruce/Git/schmupwarz/lib/res/images.tps</string>
+        <string>/home/bruce/Git/entitas/example/res/images.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">

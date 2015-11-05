@@ -10,15 +10,20 @@ module example {
   import ISetPool = entitas.ISetPool;
   import IComponent = entitas.IComponent;
 
-  declare var viewContainer;
   import Container = PIXI.Container;
   import Sprite = PIXI.Sprite;
 
-  export class AddViewSystem implements ISetPool {
+  declare var viewContainer:Container;
 
+  export class AddViewSystem implements ISetPool {
     protected pool:Pool;
     protected group:Group;
 
+    /**
+     * Watch for Resource Added
+     *
+     * @param pool
+     */
     public setPool(pool:Pool) {
       this.pool = pool;
       pool.getGroup(Matcher.Resource).onEntityAdded.add(this.onEntityAdded);
@@ -27,13 +32,15 @@ module example {
     /**
      * OnEntityAdded - Resource component.
      *
+     * Load & configure the sprite for this resource component
+     *
      * @param group
      * @param e
      * @param index
      * @param component
      */
     protected onEntityAdded = (group:Group, e:Entity, index:number, component:IComponent) => {
-      var sprite:Sprite = bosco.prefab(e.resource.name);
+      var sprite:Sprite = bosco.prefab(e.resource.name, false);
       var position = e.position;
 
       sprite.position.set(position.x, position.y);
@@ -41,8 +48,21 @@ module example {
         var scale = e.scale;
         sprite.scale.set(scale.x, scale.y);
       }
+      var layer = sprite['layer'] = e.layer.ordinal;
+      var sprites = viewContainer.children;
+
+      /**
+       * Insert sprite in layer order
+       */
+      for (var i=0, l=sprites.length; i<l; i++) {
+        if (layer <= sprites[i]['layer']) {
+          viewContainer.addChildAt(sprite, i);
+          e.addSprite(layer, sprite);
+          return;
+        }
+      }
       viewContainer.addChild(sprite);
-      e.addSprite(e.layer.ordinal, sprite)
+      e.addSprite(layer, sprite);
     };
 
 

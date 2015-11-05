@@ -956,6 +956,15 @@ declare module entitas {
      * The games world.
      */
     class Pool {
+/*** Extensions for example.Pool */
+        createPlayer():void;
+        createBullet(x:number, y:number):void;
+        createParticle(x:number, y:number):void;
+        createSmallExplosion(x:number, y:number):void;
+        createBigExplosion(x:number, y:number):void;
+        createEnemy1():void;
+        createEnemy2():void;
+        createEnemy3():void;
 /** Pool Extensions for example */
         scoreEntity: Entity;
         score: ScoreComponent;

@@ -107,5 +107,29 @@
     "Score": true,
     "Mouse": true,
     "Firing": true
+  },
+  "extensions": {
+    "Pool": {
+      "createPlayer:void": [],
+      "createBullet:void": [
+        "x:number",
+        "y:number"
+      ],
+      "createParticle:void": [
+        "x:number",
+        "y:number"
+      ],
+      "createSmallExplosion:void": [
+        "x:number",
+        "y:number"
+      ],
+      "createBigExplosion:void": [
+        "x:number",
+        "y:number"
+      ],
+      "createEnemy1:void": [],
+      "createEnemy2:void": [],
+      "createEnemy3:void": []
+    }
   }
 }

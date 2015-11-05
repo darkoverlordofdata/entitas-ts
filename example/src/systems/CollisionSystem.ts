@@ -9,10 +9,6 @@ module example {
   import IInitializeSystem = entitas.IInitializeSystem;
   import IExecuteSystem = entitas.IExecuteSystem;
   import ISetPool = entitas.ISetPool;
-  import Layer = example.Layer;
-  import Rnd = bosco.utils.Rnd;
-
-  const Tau = Math.PI * 2;
 
   export class CollisionSystem implements IInitializeSystem, IExecuteSystem, ISetPool {
 
@@ -56,9 +52,9 @@ module example {
           var x = bp.x;
           var y = bp.y;
 
-          this.explode("small", .1, x, y);
+          this.pool.createSmallExplosion(x, y);
           var i = 5;
-          while (--i > 0) this.particle(x, y);
+          while (--i > 0) this.pool.createParticle(x, y);
 
           bullet.setDestroy(true);
           health.health -= 1;
@@ -66,49 +62,10 @@ module example {
             var score: ScoreComponent = <ScoreComponent>(this.pool.score);
             this.pool.replaceScore(score.value + ship.health.maximumHealth);
             ship.setDestroy(true);
-            this.explode("big", 0.5, position.x, position.y);
+            this.pool.createBigExplosion(position.x, position.y);
           }
         }
       }));
-    }
-
-    /**
-     * Create an explosion
-     * @param name
-     * @param size
-     * @param x
-     * @param y
-     */
-    protected explode(name: string, scale: number, x: number, y: number) {
-      this.pool.createEntity(name)
-        .addExpires(0.5)
-        .addScaleAnimation(scale / 100, scale, -3, false, true)
-        .addPosition(~~x, ~~y)
-        .addScale(scale, scale)
-        .addLayer(Layer.PARTICLES)
-        .addResource('explosion');
-    }
-
-    /**
-     * Bullet hit - create some shrapnel particles
-     * @param x
-     * @param y
-     */
-    protected particle(x: number, y: number) {
-      var radians: number = Math.random() * Tau;
-      var magnitude: number = Rnd.random(200);
-      var velocityX = magnitude * Math.cos(radians);
-      var velocityY = magnitude * Math.sin(radians);
-      var scale = Rnd.random(0.5, 1);
-
-      this.pool.createEntity('particle')
-        .addExpires(1)
-        .addColorAnimation(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, false, false, false, true, true)
-        .addPosition(~~x, ~~y)
-        .addVelocity(velocityX, velocityY)
-        .addScale(scale, scale)
-        .addLayer(Layer.PARTICLES)
-        .addResource('particle');
     }
   }
 
