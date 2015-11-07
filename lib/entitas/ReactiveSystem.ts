@@ -11,8 +11,16 @@ module entitas {
   import IClearReactiveSystem = entitas.IClearReactiveSystem;
   import IReactiveExecuteSystem = entitas.IReactiveExecuteSystem;
 
-  function as(obj, method1:string) {
-    return method1 in obj ? obj : null;
+  /**
+   * As
+   * Retuns the object if it implements the interface, else null
+   *
+   * @param object
+   * @param method
+   * @returns Object
+   */
+  function as(object, method:string) {
+    return method in object ? object : null;
   }
 
   export class ReactiveSystem implements IExecuteSystem {

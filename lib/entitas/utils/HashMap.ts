@@ -8,7 +8,7 @@ module entitas.utils {
   /**
    * Gets Class Metadata - Name
    *
-   * @param {Function} klass
+   * @param klass
    * @return {string}
    */
   export function getClassName(klass) {

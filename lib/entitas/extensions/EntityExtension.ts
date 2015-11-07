@@ -29,7 +29,7 @@ module entitas {
      * Returns the next entity pool entry
      *
      * @param totalComponents
-     * @returns {Array<IComponent>}
+     * @returns Array<IComponent>
      */
     Entity.prototype.initialize = function(totalComponents:number):Array<IComponent> {
       var mem;

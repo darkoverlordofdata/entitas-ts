@@ -13,6 +13,7 @@
     "example/ext/bosco.d.ts",
     "example/ext/pixi.js.d.ts",
     "example/ext/example.d.ts",
+    "example/ext/EZGUI.d.ts",
     "example/ext/Tween.d.ts",
     "example/src/prolog.ts",
     "example/src/generatedComponents.ts",
@@ -31,9 +32,11 @@
     "example/src/systems/SoundEffectSystem.ts",
     "example/src/systems/SpriteRenderSystem.ts",
     "example/src/controllers/GameController.ts",
+    "example/src/controllers/MenuController.ts",
     "example/src/controllers/InputController.ts",
     "example/src/controllers/ScoreLabelController.ts",
     "example/src/systems/DestroySystem.ts",
+    "example/src/extensions/Pool.ts",
     "example/src/main.ts"
   ]
 }

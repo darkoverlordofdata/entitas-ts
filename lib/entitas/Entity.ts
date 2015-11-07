@@ -1,3 +1,7 @@
+/**
+ * entitas ecs
+ * @const
+ */
 module entitas {
 
   import Pool = entitas.Pool;
@@ -15,9 +19,6 @@ module entitas {
   import EntityAlreadyHasComponentException = entitas.EntityAlreadyHasComponentException;
   import EntityDoesNotHaveComponentException = entitas.EntityDoesNotHaveComponentException;
 
-  /**
-   * event delegate boilerplate:
-   */
   export module Entity {
 
     /**
@@ -34,7 +35,7 @@ module entitas {
      * Event EntityChanged
      *
      * The entity has been changed
-     */
+     **/
     export interface EntityChanged {(e:Entity, index:number, component:IComponent):void;}
     export interface IEntityChanged<T> extends ISignal<T> {
       dispatch(e:Entity, index:number, component:IComponent):void;
@@ -57,7 +58,6 @@ module entitas {
    */
   export class Entity {
 
-    /** Entity count */
     public get creationIndex():number {return this._creationIndex;}
 
     public onEntityReleased:IEntityReleased<EntityReleased>;
@@ -77,7 +77,6 @@ module entitas {
     public _componentIndicesCache:number[];
     public _toStringCache:string;
     public instanceIndex:number;
-
     public _refCount:number=0;
 
     constructor(componentsEnum, totalComponents:number=16) {
@@ -97,7 +96,7 @@ module entitas {
      * Extension point to allocate enetity pool.
      *
      * @param totalComponents
-     * @returns {null}
+     * @returns Array<entitas.IComponent>
      */
     public initialize(totalComponents:number):Array<IComponent> {
       return null;
@@ -107,7 +106,7 @@ module entitas {
      *
      * @param index
      * @param component
-     * @returns {entitas.Entity}
+     * @returns entitas.Entity
      */
     public addComponent(index:number, component:IComponent):Entity {
       if (!this._isEnabled) {
@@ -131,7 +130,7 @@ module entitas {
      * RemoveComponent
      *
      * @param index
-     * @returns {entitas.Entity}
+     * @returns entitas.Entity
      */
     public removeComponent(index:number):Entity {
       if (!this._isEnabled) {
@@ -151,7 +150,7 @@ module entitas {
      *
      * @param index
      * @param component
-     * @returns {entitas.Entity}
+     * @returns entitas.Entity
      */
     public replaceComponent(index:number, component:IComponent):Entity {
       if (!this._isEnabled) {
@@ -195,7 +194,7 @@ module entitas {
      * GetComponent
      *
      * @param index
-     * @returns {IComponent}
+     * @param component
      */
     public getComponent(index:number):IComponent {
       if (!this.hasComponent(index)) {
@@ -208,7 +207,7 @@ module entitas {
     /**
      * GetComponents
      *
-     * @returns {any}
+     * @returns Array<entitas.IComponent>
      */
     public getComponents():IComponent[] {
       if (this._componentsCache == null) {
@@ -231,7 +230,7 @@ module entitas {
     /**
      * GetComponentIndices
      *
-     * @returns {number[]}
+     * @returns Array<number>
      */
     public getComponentIndices():number[] {
       if (this._componentIndicesCache == null) {
@@ -254,7 +253,7 @@ module entitas {
      * HasComponent
      *
      * @param index
-     * @returns {boolean}
+     * @returns boolean
      */
     public hasComponent(index:number):boolean {
       return this._components[index] != null;
@@ -264,7 +263,7 @@ module entitas {
      * HasComponents
      *
      * @param indices
-     * @returns {boolean}
+     * @returns boolean
      */
     public hasComponents(indices:number[]):boolean {
       var _components = this._components;
@@ -281,7 +280,7 @@ module entitas {
      * HasAnyComponent
      *
      * @param indices
-     * @returns {boolean}
+     * @returns boolean
      */
     public hasAnyComponent(indices:number[]):boolean {
       var _components = this._components;
@@ -324,7 +323,7 @@ module entitas {
     /**
      * ToString
      *
-     * @returns {string}
+     * @returns string
      */
     public toString() {
       if (this._toStringCache == null) {
@@ -348,7 +347,7 @@ module entitas {
     /**
      * AddRef
      *
-     * @returns {entitas.Entity}
+     * @returns entitas.Entity
      */
     public addRef():Entity {
       this._refCount += 1;

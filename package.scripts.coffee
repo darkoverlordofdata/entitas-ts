@@ -133,6 +133,17 @@ module.exports = (project, options = {}) ->
             --compilation_level #{options.compile} \
             --js_output_file build/#{LIB_NAME}.min.js
       """
+      files = require(JSCONFIG).files.join(" LF ")
+      step.push """
+        cat #{files} > build/web/example.js
+      """
+#      step.push """
+#        cat #{files} > build/web/example.js
+#        cat #{files} | \
+#          java -jar #{COMPILER_JAR} \
+#            --compilation_level #{options.compile} \
+#            --js_output_file build/web/example.min.js
+#      """
 
     else
       ###
@@ -275,7 +286,11 @@ module.exports = (project, options = {}) ->
         step.push "coffee -o web/src/#{LIB_NAME} -cm lib"
         step.push "coffee -o web/src/example -cm example" if fs.existsSync('./example')
         return step
-        
+
+  typedoc: """
+    typedoc --theme minimal --module commonjs --target ES5 --out ./build/doc lib/#{LIB_NAME}
+    cp -f ./build/doc/index.html ./build/web/index.html
+  """
 
 
 ###

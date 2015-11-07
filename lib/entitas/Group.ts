@@ -28,22 +28,36 @@ module entitas {
 
   export class Group {
 
+    /** @type {entitas.utils.ISignal} */
     public onEntityAdded:Group.IGroupChanged<GroupChanged>;
+    /** @type {entitas.utils.ISignal} */
     public onEntityRemoved:Group.IGroupChanged<GroupChanged>;
+    /** @type {entitas.utils.ISignal} */
     public onEntityUpdated:Group.IGroupUpdated<GroupUpdated>;
 
+    /** @type {number} */
     public get count():number {return Object.keys(this._entities).length;}
+    /** @type {entitas.IMatcher} */
     public get matcher():IMatcher {return this._matcher;}
 
+    /** @type {entitas.IMatcher} */
     public _matcher:IMatcher;
+    /** @type {Object<string,entitas.Entity>} */
     public _entities = {};
+    /** @type {entitas.Entity<Array>} */
     public _entitiesCache:Array<Entity>;
+    /** @type {entitas.Entity} */
     public _singleEntityCache:Entity;
+    /** @type {string} */
     public _toStringCache:string;
 
-    /** Extension Points */
+    /** @type {entitas.GroupObserver} Extension Points */
     public createObserver(eventType:GroupEventType):GroupObserver;
 
+    /**
+     * @constructor
+     * @param matcher
+     */
     constructor(matcher:IMatcher) {
       this.onEntityAdded = new Signal<GroupChanged>(this);
       this.onEntityRemoved = new Signal<GroupChanged>(this);
@@ -51,6 +65,10 @@ module entitas {
       this._matcher = matcher;
     }
 
+    /**
+     * Handle entity without raising events
+     * @param entity
+     */
     public handleEntitySilently(entity:Entity) {
       if (this._matcher.matches(entity)) {
         this.addEntitySilently(entity);
@@ -59,6 +77,12 @@ module entitas {
       }
     }
 
+    /**
+     * Handle entity and raise events
+     * @param entity
+     * @param index
+     * @param component
+     */
     public handleEntity(entity:Entity, index:number, component:IComponent) {
       if (this._matcher.matches(entity)) {
         this.addEntity(entity, index, component);
@@ -67,6 +91,13 @@ module entitas {
       }
     }
 
+    /**
+     * Update entity and raise events
+     * @param entity
+     * @param index
+     * @param previousComponent
+     * @param newComponent
+     */
     public updateEntity(entity:Entity, index:number, previousComponent:IComponent, newComponent:IComponent) {
       if (entity.id in this._entities) {
 
@@ -80,6 +111,10 @@ module entitas {
       }
     }
 
+    /**
+     * Add entity without raising events
+     * @param entity
+     */
     public addEntitySilently(entity:Entity) {
       if (!(entity.id in this._entities)) {
         this._entities[entity.id] = entity;
@@ -89,6 +124,12 @@ module entitas {
       }
     }
 
+    /**
+     * Add entity and raise events
+     * @param entity
+     * @param index
+     * @param component
+     */
     public addEntity(entity:Entity, index:number, component:IComponent) {
       if (!(entity.id in this._entities)) {
         this._entities[entity.id] = entity;
@@ -101,6 +142,10 @@ module entitas {
       }
     }
 
+    /**
+     * Remove entity without raising events
+     * @param entity
+     */
     public removeEntitySilently(entity:Entity) {
       if (entity.id in this._entities) {
         delete this._entities[entity.id];
@@ -110,6 +155,12 @@ module entitas {
       }
     }
 
+    /**
+     * Remove entity and raise events
+     * @param entity
+     * @param index
+     * @param component
+     */
     public removeEntity(entity:Entity, index:number, component:IComponent) {
       if (entity.id in this._entities) {
         delete this._entities[entity.id];
@@ -121,10 +172,21 @@ module entitas {
       }
     }
 
+    /**
+     * Check if group has this entity
+     *
+     * @param entity
+     * @returns boolean
+     */
     public containsEntity(entity:Entity):boolean {
       return entity.id in this._entities;
     }
 
+    /**
+     * Get the entities in this group
+     *
+     * @returns Array<entitas.Entity>
+     */
     public getEntities():Entity[] {
       if (this._entitiesCache == null) {
         var entities = this._entities;
@@ -138,6 +200,12 @@ module entitas {
       return this._entitiesCache;
     }
 
+    /**
+     * Gets a single entity.
+     * If a group has more than 1 entity, this is an error condition.
+     *
+     * @returns entitas.Entity
+     */
     public getSingleEntity():Entity {
       if (this._singleEntityCache == null) {
         var enumerator = Object.keys(this._entities);
@@ -154,6 +222,10 @@ module entitas {
       return this._singleEntityCache;
     }
 
+    /**
+     *
+     * @returns string
+     */
     public toString():string {
       if (this._toStringCache == null) {
         this._toStringCache = "Group(" + this._matcher + ")";

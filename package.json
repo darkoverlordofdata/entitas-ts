@@ -7,12 +7,16 @@
     "entitas": "./bin/entitas"
   },
   "config": {
-    "build": []
+    "build": [
+      "cp -f web/index_build.html build/web/example.html",
+      "cp -fr web/assets build/web",
+      "cp -fr web/res build/web"
+    ]
   },
   "scripts": {
     "_vscode_build": "tsc --watch",
     "android": "",
-    "build": "tsc -p . --outFile build/entitas.js -d && cat build/entitas.js | java -jar packages/closure-compiler/lib/vendor/compiler.jar --compilation_level WHITESPACE_ONLY --js_output_file build/entitas.min.js",
+    "build": "cp -f web/index_build.html build/web/example.html && cp -fr web/assets build/web && cp -fr web/res build/web && tsc -p . --outFile build/entitas.js -d && cat build/entitas.js | java -jar packages/closure-compiler/lib/vendor/compiler.jar --compilation_level WHITESPACE_ONLY --js_output_file build/entitas.min.js && cat web/src/stats.js/stats.min.js LF web/src/pixi.js/pixi.min.js LF web/src/howler.js/howler.min.js LF web/src/tween.ts/tween.min.js LF web/src/localstoragedb/localstoragedb.min.js LF web/src/chromestoragedb/chromestoragedb.js LF web/src/ezgui/EZGUI.js LF web/src/bosco/bosco.js LF web/src/entitas/utils/UUID.js LF web/src/entitas/utils/Map.js LF web/src/entitas/utils/HashMap.js LF web/src/entitas/utils/ImmutableBag.js LF web/src/entitas/utils/Bag.js LF web/src/entitas/utils/BitSet.js LF web/src/entitas/utils/Signal.js LF web/src/entitas/utils/Stopwatch.js LF web/src/entitas/interfaces/IComponent.js LF web/src/entitas/interfaces/IMatcher.js LF web/src/entitas/interfaces/ISystem.js LF web/src/entitas/interfaces/IExecuteSystem.js LF web/src/entitas/interfaces/IInitializeSystem.js LF web/src/entitas/interfaces/IReactiveSystem.js LF web/src/entitas/Exceptions.js LF web/src/entitas/matcher/Matcher.js LF web/src/entitas/matcher/MatcherInterfaces.js LF web/src/entitas/matcher/TriggerOnEvent.js LF web/src/entitas/Entity.js LF web/src/entitas/Group.js LF web/src/entitas/GroupObserver.js LF web/src/entitas/Pool.js LF web/src/entitas/ReactiveSystem.js LF web/src/entitas/Systems.js LF web/src/entitas/extensions/CollectionExtension.js LF web/src/entitas/extensions/EntityExtension.js LF web/src/entitas/extensions/GroupExtension.js LF web/src/entitas/extensions/MatcherExtension.js LF web/src/entitas/extensions/PoolExtension.js LF web/src/entitas/browser/VisualDebugging.js LF web/src/example/prolog.js LF web/src/example/generatedComponents.js LF web/src/example/generatedExtensions.js LF web/src/example/systems/AddViewSystem.js LF web/src/example/systems/CollisionSystem.js LF web/src/example/systems/ColorAnimationSystem.js LF web/src/example/systems/DestroySystem.js LF web/src/example/systems/EntitySpawningTimerSystem.js LF web/src/example/systems/ExpiringSystem.js LF web/src/example/systems/HealthRenderSystem.js LF web/src/example/systems/HudRenderSystem.js LF web/src/example/systems/MovementSystem.js LF web/src/example/systems/ParallaxStarRepeatingSystem.js LF web/src/example/systems/PlayerInputSystem.js LF web/src/example/systems/RemoveOffscreenShipsSystem.js LF web/src/example/systems/ScaleAnimationSystem.js LF web/src/example/systems/SoundEffectSystem.js LF web/src/example/systems/SpriteRenderSystem.js LF web/src/example/controllers/GameController.js LF web/src/example/controllers/MenuController.js LF web/src/example/extensions/Pool.js LF web/src/example/main.js > build/web/example.js",
     "clean": "rm -rf build/* && mkdir -p build && mkdir -p build/web && mkdir -p build/lib",
     "closure": "npm run transpile && tools/convert && java -jar tools/plovr.jar build config.js",
     "deploy": "cp -rf web/res ./web/frameworks/runtime-src/proj.android-studio/app/assets && cp -rf web/src ./web/frameworks/runtime-src/proj.android-studio/app/assets && cp -f web/main.js ./web/frameworks/runtime-src/proj.android-studio/app/assets && cp -f web/project.json ./web/frameworks/runtime-src/proj.android-studio/app/assets",
@@ -30,7 +34,8 @@
     "start": "tools/server web",
     "serve": "tools/server build/web",
     "test": "NODE_ENV=test mocha --compilers coffee:coffee-script --require test/test_helper.js --recursive",
-    "transpile": "tsc"
+    "transpile": "tsc",
+    "typedoc": "typedoc --theme minimal --module commonjs --target ES5 --out ./build/doc lib/entitas && cp -f ./build/doc/index.html ./build/web/index.html"
   },
   "author": "darkoverlordofdata@gmail.com",
   "license": "MIT",

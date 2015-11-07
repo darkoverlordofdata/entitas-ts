@@ -3,9 +3,10 @@ module entitas {
   import Group = entitas.Group;
   import Entity = entitas.Entity;
   import Matcher = entitas.Matcher;
-  import Component = entitas.IComponent;
+  import IComponent = entitas.IComponent;
   import GroupObserverException = entitas.GroupObserverException;
 
+  /** @typedef {Object<string|number>} */
   export enum GroupEventType {
     OnEntityAdded,
     OnEntityRemoved,
@@ -13,13 +14,23 @@ module entitas {
   }
 
   export class GroupObserver {
+    /** @type {Object<string,entitas.Entity>}*/
     public get collectedEntities() {return this._collectedEntities;}
 
+    /** @type {Object<string,entitas.Entity>}*/
     private _collectedEntities = {};
+    /** @type {Array<entitas.Group} */
     public _groups:Array<Group>;
+    /** @type {Array<entitas.GroupEventType} */
     public _eventTypes:Array<GroupEventType>;
+    /** @type {Array<entitas.Group.GroupChanged} */
     public _addEntityCache:Group.GroupChanged;
 
+    /**
+     *
+     * @param groups
+     * @param eventTypes
+     */
     constructor(groups, eventTypes) {
       this._groups = Array.isArray(groups) ? groups : [groups];
       this._eventTypes = Array.isArray(eventTypes) ? eventTypes : [eventTypes];
@@ -80,7 +91,14 @@ module entitas {
       this._collectedEntities = {};
     }
 
-    addEntity = (group:Group, entity:Entity, index:number, component:Component) => {
+    /**
+     *
+     * @param group
+     * @param {entitas.Entity}entity
+     * @param index
+     * @param {entitas.IComponent}component
+     */
+    addEntity = (group:Group, entity:Entity, index:number, component:IComponent) => {
       if (!(entity.id in this._collectedEntities)) {
         this._collectedEntities[entity.id] = entity;
         entity.addRef();

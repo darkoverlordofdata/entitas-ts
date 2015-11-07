@@ -6,11 +6,12 @@ module entitas {
   import IInitializeSystem = entitas.IInitializeSystem;
 
   /**
-   * As - Conditionally cast an object using duck typing
+   * As
+   * Retuns the object if it implements the interface, else null
    *
    * @param object
    * @param method
-   * @returns object
+   * @returns Object
    */
   function as(object, method:string) {
     return method in object ? object : null;

@@ -9,7 +9,7 @@
 		"default": {
 			"outputSourceFiles" : true
 		},
-		"applicationName": "Template.coffee",
+		"applicationName": "EntitasTS",
 		"disqus": "",
 		"googleAnalytics": "",
 		"openGraph": {
@@ -20,9 +20,9 @@
 			"url": ""
 		},
 		"meta": {
-			"title": "Template.coffee",
-			"description": "{{ description }}",
-			"keyword": "coffeescript ash"
+			"title": "EntitasTS",
+			"description": "Entitas ECS",
+			"keyword": "typescript ecs"
 		},
 		"linenums": false
 	},

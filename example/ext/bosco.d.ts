@@ -1,3 +1,21 @@
+/**
+ * Properties.ts
+ *
+ * Persist properties using LocalStorage
+ *
+ */
+declare module bosco {
+    class Properties {
+        private static db;
+        private static dbname;
+        private static properties;
+        static init(name: any, properties: any): void;
+        static get(prop: any): any;
+        static set: (prop: any, value: any) => void;
+        static setScore(score: any): void;
+        static getLeaderboard(count: any): any;
+    }
+}
 declare module bosco.utils {
     class Input {
         private static _input;
@@ -87,24 +105,6 @@ declare module bosco {
     function isMobile(): boolean;
 }
 /**
- * Properties.ts
- *
- * Persist properties using LocalStorage
- *
- */
-declare module bosco {
-    class Properties {
-        private static db;
-        private static dbname;
-        private static properties;
-        static init(name: any, properties: any): void;
-        static get(prop: any): any;
-        static set: (prop: any, value: any) => void;
-        static setScore(score: any): void;
-        static getLeaderboard(count: any): any;
-    }
-}
-/**
  * Bosco.ts
  *
  * Game Shell
@@ -119,32 +119,35 @@ declare module bosco {
     import Sprite = PIXI.Sprite;
     import Container = PIXI.Container;
     import SystemRenderer = PIXI.SystemRenderer;
-    enum ScaleType {
-        FILL = 0,
-        FIXED = 1,
-    }
+    /** @type Object raw configuration hash */
     var config: any;
+    /** @type number time change in ms for current frame */
     var delta: number;
+    /** @type number frames per second */
     var fps: number;
+    /**
+     * Set the current controller group
+     *
+     * @param name
+     */
+    function controller(name: any): void;
     /**
      * Load assets and start
      */
     function start(config: any): void;
     /**
-     * prefab
+     * Prefab -
      *
-     * Make a sprite from a prefabricated texture
-     * and then configure it.
-     *
+     * Composite an image
      * @param name
      * @param parent
      * @returns {PIXI.Sprite}
      */
-    function prefab(name: any, parent?: any): Sprite;
+    function prefab(name: string, parent?: Container): Sprite;
     class Game {
         stage: Container;
         sprites: Container;
-        fore: Container;
+        foreground: Container;
         renderer: SystemRenderer;
         stats: any;
         config: any;

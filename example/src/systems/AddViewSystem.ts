@@ -40,7 +40,7 @@ module example {
      * @param component
      */
     protected onEntityAdded = (group:Group, e:Entity, index:number, component:IComponent) => {
-      var sprite:Sprite = bosco.prefab(e.resource.name, false);
+      var sprite:Sprite = bosco.prefab(e.resource.name, null);
       var position = e.position;
 
       sprite.position.set(position.x, position.y);

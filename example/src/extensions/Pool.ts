@@ -7,7 +7,7 @@ module example.extensions {
 
   import Entity = entitas.Entity;
   import Layer = example.Layer;
-  import EFFECT = example.EFFECT;
+  import Effect = example.Effect;
   import Rnd = bosco.utils.Rnd;
 
   /**
@@ -35,7 +35,7 @@ module example.extensions {
       .addVelocity(0, 800)
       .addBounds(5)
       .addExpires(1)
-      .addSoundEffect(EFFECT.PEW)
+      .addSoundEffect(Effect.PEW)
       .addLayer(Layer.PARTICLES)
       .addResource('bullet')
       .setBullet(true);

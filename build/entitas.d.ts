@@ -33,7 +33,7 @@ declare module entitas.utils {
     /**
      * Gets Class Metadata - Name
      *
-     * @param {Function} klass
+     * @param klass
      * @return {string}
      */
     function getClassName(klass: any): any;
@@ -81,8 +81,7 @@ declare module entitas.utils {
          * Constructs an empty Bag with the specified initial capacity.
          * Constructs an empty Bag with an initial capacity of 64.
          *
-         * @param capacity
-         *            the initial capacity of Bag
+         * @param capacity the initial capacity of Bag
          */
         constructor(capacity?: number);
         /**
@@ -91,7 +90,7 @@ declare module entitas.utils {
          *
          * @param index
          *            the index of element to be removed
-         * @return element that was removed from the Bag
+         * @return {Object} element that was removed from the Bag
          */
         removeAt(index: number): E;
         /**
@@ -101,20 +100,20 @@ declare module entitas.utils {
          *
          * @param e
          *            element to be removed from this list, if present
-         * @return <tt>true</tt> if this list contained the specified element
+         * @return {boolean} true if this list contained the specified element
          */
         remove(e: E): boolean;
         /**
          * Remove and return the last object in the bag.
          *
-         * @return the last object in the bag, null if empty.
+         * @return {Object} the last object in the bag, null if empty.
          */
         removeLast(): E;
         /**
          * Check if bag contains this element.
          *
          * @param e
-         * @return
+         * @return {boolean}
          */
         contains(e: E): boolean;
         /**
@@ -123,7 +122,7 @@ declare module entitas.utils {
          *
          * @param bag
          *            Bag containing elements to be removed from this Bag
-         * @return {@code true} if this Bag changed as a result of the call
+         * @return {boolean} true if this Bag changed as a result of the call
          */
         removeAll(bag: ImmutableBag<E>): boolean;
         /**
@@ -131,9 +130,7 @@ declare module entitas.utils {
          *
          * @param index
          *            index of the element to return
-         * @return the element at the specified position in bag
-         *
-         * @throws ArrayIndexOutOfBoundsException
+         * @return {Object} the element at the specified position in bag
          */
         get(index: number): E;
         /**
@@ -144,33 +141,33 @@ declare module entitas.utils {
          * @param index
          *      index of the element to return
          *
-         * @return the element at the specified position in bag
+         * @return {Object} the element at the specified position in bag
          *
          */
         safeGet(index: number): E;
         /**
          * Returns the number of elements in this bag.
          *
-         * @return the number of elements in this bag
+         * @return {number} the number of elements in this bag
          */
         size(): number;
         /**
          * Returns the number of elements the bag can hold without growing.
          *
-         * @return the number of elements the bag can hold without growing.
+         * @return {number} the number of elements the bag can hold without growing.
          */
         getCapacity(): number;
         /**
          * Checks if the internal storage supports this index.
          *
          * @param index
-         * @return
+         * @return {boolean}
          */
         isIndexWithinBounds(index: number): boolean;
         /**
          * Returns true if this list contains no elements.
          *
-         * @return true if this list contains no elements
+         * @return {boolean} true if this list contains no elements
          */
         isEmpty(): boolean;
         /**
@@ -327,35 +324,84 @@ declare module entitas {
 }
 declare module entitas {
     class Exception {
+        /** @type {string} */
         message: string;
         constructor(message: any);
+        /** @return {string} */
         toString(): string;
     }
     class EntityAlreadyHasComponentException extends Exception {
+        /**
+         * Entity Already Has Component Exception
+         * @constructor
+         * @param message
+         * @param index
+         */
         constructor(message: string, index: number);
     }
     class EntityDoesNotHaveComponentException extends Exception {
+        /**
+         * Entity Does Not Have Component Exception
+         * @constructor
+         * @param message
+         * @param index
+         */
         constructor(message: string, index: number);
     }
     class EntityIsNotEnabledException extends Exception {
+        /**
+         * Entity Is Not Enabled Exception
+         * @constructor
+         * @param message
+         */
         constructor(message: string);
     }
     class EntityIsAlreadyReleasedException extends Exception {
+        /**
+         * Entity Is Already Released Exception
+         * @constructor
+         */
         constructor();
     }
     class SingleEntityException extends Exception {
+        /**
+         * Single Entity Exception
+         * @constructor
+         * @param matcher
+         */
         constructor(matcher: IMatcher);
     }
     class GroupObserverException extends Exception {
+        /**
+         * Group Observer Exception
+         * @constructor
+         * @param message
+         */
         constructor(message: string);
     }
     class PoolDoesNotContainEntityException extends Exception {
+        /**
+         * Pool Does Not Contain Entity Exception
+         * @constructor
+         * @param entity
+         * @param message
+         */
         constructor(entity: Entity, message: string);
     }
     class EntityIsNotDestroyedException extends Exception {
+        /**
+         * Entity Is Not Destroyed Exception
+         * @constructor
+         * @param message
+         */
         constructor(message: string);
     }
     class MatcherException extends Exception {
+        /**
+         * Matcher Exception
+         * @constructor
+         * @param matcher
+         */
         constructor(matcher: IMatcher);
     }
 }
@@ -426,6 +472,10 @@ declare module entitas {
         constructor(trigger: IMatcher, eventType: GroupEventType);
     }
 }
+/**
+ * entitas ecs
+ * @const
+ */
 declare module entitas {
     import ISignal = entitas.utils.ISignal;
     import IComponent = entitas.IComponent;
@@ -434,9 +484,6 @@ declare module entitas {
     import IEntityChanged = Entity.IEntityChanged;
     import IEntityReleased = Entity.IEntityReleased;
     import ComponentReplaced = Entity.ComponentReplaced;
-    /**
-     * event delegate boilerplate:
-     */
     module Entity {
         /**
          * Event EntityReleased
@@ -453,7 +500,7 @@ declare module entitas {
          * Event EntityChanged
          *
          * The entity has been changed
-         */
+         **/
         interface EntityChanged {
             (e: Entity, index: number, component: IComponent): void;
         }
@@ -477,7 +524,6 @@ declare module entitas {
      * are added / removed as needed.
      */
     class Entity {
-        /** Entity count */
         creationIndex: number;
         onEntityReleased: IEntityReleased<EntityReleased>;
         onComponentAdded: IEntityChanged<EntityChanged>;
@@ -502,7 +548,7 @@ declare module entitas {
          * Extension point to allocate enetity pool.
          *
          * @param totalComponents
-         * @returns {null}
+         * @returns Array<entitas.IComponent>
          */
         initialize(totalComponents: number): Array<IComponent>;
         /**
@@ -510,14 +556,14 @@ declare module entitas {
          *
          * @param index
          * @param component
-         * @returns {entitas.Entity}
+         * @returns entitas.Entity
          */
         addComponent(index: number, component: IComponent): Entity;
         /**
          * RemoveComponent
          *
          * @param index
-         * @returns {entitas.Entity}
+         * @returns entitas.Entity
          */
         removeComponent(index: number): Entity;
         /**
@@ -525,7 +571,7 @@ declare module entitas {
          *
          * @param index
          * @param component
-         * @returns {entitas.Entity}
+         * @returns entitas.Entity
          */
         replaceComponent(index: number, component: IComponent): Entity;
         protected _replaceComponent(index: number, replacement: IComponent): void;
@@ -533,40 +579,40 @@ declare module entitas {
          * GetComponent
          *
          * @param index
-         * @returns {IComponent}
+         * @param component
          */
         getComponent(index: number): IComponent;
         /**
          * GetComponents
          *
-         * @returns {any}
+         * @returns Array<entitas.IComponent>
          */
         getComponents(): IComponent[];
         /**
          * GetComponentIndices
          *
-         * @returns {number[]}
+         * @returns Array<number>
          */
         getComponentIndices(): number[];
         /**
          * HasComponent
          *
          * @param index
-         * @returns {boolean}
+         * @returns boolean
          */
         hasComponent(index: number): boolean;
         /**
          * HasComponents
          *
          * @param indices
-         * @returns {boolean}
+         * @returns boolean
          */
         hasComponents(indices: number[]): boolean;
         /**
          * HasAnyComponent
          *
          * @param indices
-         * @returns {boolean}
+         * @returns boolean
          */
         hasAnyComponent(indices: number[]): boolean;
         /**
@@ -582,13 +628,13 @@ declare module entitas {
         /**
          * ToString
          *
-         * @returns {string}
+         * @returns string
          */
         toString(): string;
         /**
          * AddRef
          *
-         * @returns {entitas.Entity}
+         * @returns entitas.Entity
          */
         addRef(): Entity;
         /**
@@ -624,52 +670,142 @@ declare module entitas {
         }
     }
     class Group {
+        /** @type {entitas.utils.ISignal} */
         onEntityAdded: Group.IGroupChanged<GroupChanged>;
+        /** @type {entitas.utils.ISignal} */
         onEntityRemoved: Group.IGroupChanged<GroupChanged>;
+        /** @type {entitas.utils.ISignal} */
         onEntityUpdated: Group.IGroupUpdated<GroupUpdated>;
+        /** @type {number} */
         count: number;
+        /** @type {entitas.IMatcher} */
         matcher: IMatcher;
+        /** @type {entitas.IMatcher} */
         _matcher: IMatcher;
+        /** @type {Object<string,entitas.Entity>} */
         _entities: {};
+        /** @type {entitas.Entity<Array>} */
         _entitiesCache: Array<Entity>;
+        /** @type {entitas.Entity} */
         _singleEntityCache: Entity;
+        /** @type {string} */
         _toStringCache: string;
-        /** Extension Points */
+        /** @type {entitas.GroupObserver} Extension Points */
         createObserver(eventType: GroupEventType): GroupObserver;
+        /**
+         * @constructor
+         * @param matcher
+         */
         constructor(matcher: IMatcher);
+        /**
+         * Handle entity without raising events
+         * @param entity
+         */
         handleEntitySilently(entity: Entity): void;
+        /**
+         * Handle entity and raise events
+         * @param entity
+         * @param index
+         * @param component
+         */
         handleEntity(entity: Entity, index: number, component: IComponent): void;
+        /**
+         * Update entity and raise events
+         * @param entity
+         * @param index
+         * @param previousComponent
+         * @param newComponent
+         */
         updateEntity(entity: Entity, index: number, previousComponent: IComponent, newComponent: IComponent): void;
+        /**
+         * Add entity without raising events
+         * @param entity
+         */
         addEntitySilently(entity: Entity): void;
+        /**
+         * Add entity and raise events
+         * @param entity
+         * @param index
+         * @param component
+         */
         addEntity(entity: Entity, index: number, component: IComponent): void;
+        /**
+         * Remove entity without raising events
+         * @param entity
+         */
         removeEntitySilently(entity: Entity): void;
+        /**
+         * Remove entity and raise events
+         * @param entity
+         * @param index
+         * @param component
+         */
         removeEntity(entity: Entity, index: number, component: IComponent): void;
+        /**
+         * Check if group has this entity
+         *
+         * @param entity
+         * @returns boolean
+         */
         containsEntity(entity: Entity): boolean;
+        /**
+         * Get the entities in this group
+         *
+         * @returns Array<entitas.Entity>
+         */
         getEntities(): Entity[];
+        /**
+         * Gets a single entity.
+         * If a group has more than 1 entity, this is an error condition.
+         *
+         * @returns entitas.Entity
+         */
         getSingleEntity(): Entity;
+        /**
+         *
+         * @returns string
+         */
         toString(): string;
     }
 }
 declare module entitas {
     import Group = entitas.Group;
     import Entity = entitas.Entity;
-    import Component = entitas.IComponent;
+    import IComponent = entitas.IComponent;
+    /** @typedef {Object<string|number>} */
     enum GroupEventType {
         OnEntityAdded = 0,
         OnEntityRemoved = 1,
         OnEntityAddedOrRemoved = 2,
     }
     class GroupObserver {
+        /** @type {Object<string,entitas.Entity>}*/
         collectedEntities: {};
+        /** @type {Object<string,entitas.Entity>}*/
         private _collectedEntities;
+        /** @type {Array<entitas.Group} */
         _groups: Array<Group>;
+        /** @type {Array<entitas.GroupEventType} */
         _eventTypes: Array<GroupEventType>;
+        /** @type {Array<entitas.Group.GroupChanged} */
         _addEntityCache: Group.GroupChanged;
+        /**
+         *
+         * @param groups
+         * @param eventTypes
+         */
         constructor(groups: any, eventTypes: any);
         activate(): void;
         deactivate(): void;
         clearCollectedEntities(): void;
-        addEntity: (group: Group, entity: Entity, index: number, component: Component) => void;
+        /**
+         *
+         * @param group
+         * @param {entitas.Entity}entity
+         * @param index
+         * @param {entitas.IComponent}component
+         */
+        addEntity: (group: Group, entity: Entity, index: number, component: IComponent) => void;
     }
 }
 declare module entitas {
@@ -713,29 +849,53 @@ declare module entitas {
      * The games world.
      */
     class Pool {
+        /** @type {number} */
         totalComponents: number;
+        /** @type {number} */
         count: number;
+        /** @type {number} */
         reusableEntitiesCount: number;
+        /** @type {number} */
         retainedEntitiesCount: number;
+        /** @type {entitas.utils.ISignal} */
         onEntityCreated: Pool.IPoolChanged<PoolChanged>;
+        /** @type {entitas.utils.ISignal} */
         onEntityWillBeDestroyed: Pool.IPoolChanged<PoolChanged>;
+        /** @type {entitas.utils.ISignal} */
         onEntityDestroyed: Pool.IPoolChanged<PoolChanged>;
+        /** @type {entitas.utils.ISignal} */
         onGroupCreated: Pool.IGroupChanged<GroupChanged>;
+        /** @type {string} */
         name: string;
+        /** @type {Object<string,entitas.Entity>} */
         _entities: {};
+        /** @type {Object<string,entitas.Group>} */
         _groups: {};
+        /** @type {entitas.util.Bag<Group>} */
         _groupsForIndex: Bag<Bag<Group>>;
+        /** @type {entitas.util.Bag<Entity>} */
         _reusableEntities: Bag<Entity>;
+        /** @type {Object<string,entitas.Entity>} */
         _retainedEntities: {};
+        /** @type {Object<string,number>} */
         static componentsEnum: Object;
+        /** @type {number} */
         static totalComponents: number;
+        /** @type {entitas.Pool} */
         static instance: Pool;
+        /** @type {Object<string,number>} */
         _componentsEnum: Object;
+        /** @type {number} */
         _totalComponents: number;
+        /** @type {number} */
         _creationIndex: number;
+        /** @type {Array<entitas.Entity?} */
         _entitiesCache: Array<Entity>;
+        /** @type {Function} */
         _cachedUpdateGroupsComponentAddedOrRemoved: Entity.EntityChanged;
+        /** @type {Function} */
         _cachedUpdateGroupsComponentReplaced: Entity.ComponentReplaced;
+        /** @type {Function} */
         _cachedOnEntityReleased: Entity.EntityReleased;
         /** Extension Points */
         getEntities(matcher: IMatcher): Entity[];
@@ -743,50 +903,49 @@ declare module entitas {
         createSystem(system: ISystem): any;
         createSystem(system: Function): any;
         static setPool(system: ISystem, pool: Pool): any;
+        /**
+         *
+         * @param components
+         * @param totalComponents
+         * @param startCreationIndex
+         */
         constructor(components: {}, totalComponents: number, startCreationIndex?: number);
         /**
-         * groupDesc
-         *
-         * expand out the group tostring for better debug info
-         *
-         * @param group
-         * @returns {string}
-         */
-        static groupDesc(group: Group): string;
-        /**
+         * Create a new entity
          * @param name
+         * @returns entitas.Entity
          */
         createEntity(name: string): Entity;
         /**
-         *
+         * Destroy an entity
          * @param entity
          */
         destroyEntity(entity: Entity): void;
         /**
-         *
+         * Destroy All Entities
          */
         destroyAllEntities(): void;
         /**
+         * Check if pool has this entity
          *
          * @param entity
-         * @returns {boolean}
+         * @returns boolean
          */
         hasEntity(entity: Entity): boolean;
         /**
+         * Gets all of the entities that match
          *
          * @param matcher
-         * @returns {Group}
+         * @returns entitas.Group
          */
         getGroup(matcher: IMatcher): Group;
         /**
-         *
          * @param entity
          * @param index
          * @param component
          */
         protected updateGroupsComponentAddedOrRemoved: (entity: Entity, index: number, component: IComponent) => void;
         /**
-         *
          * @param entity
          * @param index
          * @param previousComponent
@@ -794,7 +953,6 @@ declare module entitas {
          */
         protected updateGroupsComponentReplaced: (entity: Entity, index: number, previousComponent: IComponent, newComponent: IComponent) => void;
         /**
-         *
          * @param entity
          */
         protected onEntityReleased: (entity: Entity) => void;

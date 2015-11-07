@@ -50,34 +50,58 @@ module entitas {
    */
   export class Pool {
 
+    /** @type {number} */
     public get totalComponents(): number { return this._totalComponents; }
+    /** @type {number} */
     public get count(): number { return Object.keys(this._entities).length; }
+    /** @type {number} */
     public get reusableEntitiesCount(): number { return this._reusableEntities.size(); }
+    /** @type {number} */
     public get retainedEntitiesCount(): number { return Object.keys(this._retainedEntities).length; }
 
+    /** @type {entitas.utils.ISignal} */
     public onEntityCreated: Pool.IPoolChanged<PoolChanged>;
+    /** @type {entitas.utils.ISignal} */
     public onEntityWillBeDestroyed: Pool.IPoolChanged<PoolChanged>;
+    /** @type {entitas.utils.ISignal} */
     public onEntityDestroyed: Pool.IPoolChanged<PoolChanged>;
+    /** @type {entitas.utils.ISignal} */
     public onGroupCreated: Pool.IGroupChanged<GroupChanged>;
 
+    /** @type {string} */
     public name: string;
+    /** @type {Object<string,entitas.Entity>} */
     public _entities = {};
+    /** @type {Object<string,entitas.Group>} */
     public _groups = {};
+    /** @type {entitas.util.Bag<Group>} */
     public _groupsForIndex: Bag<Bag<Group>>;
+    /** @type {entitas.util.Bag<Entity>} */
     public _reusableEntities: Bag<Entity> = new Bag<Entity>();
+    /** @type {Object<string,entitas.Entity>} */
     public _retainedEntities = {};
 
+    /** @type {Object<string,number>} */
     public static componentsEnum: Object;
+    /** @type {number} */
     public static totalComponents: number = 0;
+    /** @type {entitas.Pool} */
     public static instance: Pool;
 
+    /** @type {Object<string,number>} */
     public _componentsEnum: Object;
+    /** @type {number} */
     public _totalComponents: number = 0;
+    /** @type {number} */
     public _creationIndex: number = 0;
+    /** @type {Array<entitas.Entity?} */
     public _entitiesCache: Array<Entity>;
 
+    /** @type {Function} */
     public _cachedUpdateGroupsComponentAddedOrRemoved: Entity.EntityChanged;
+    /** @type {Function} */
     public _cachedUpdateGroupsComponentReplaced: Entity.ComponentReplaced;
+    /** @type {Function} */
     public _cachedOnEntityReleased: Entity.EntityReleased;
 
     /** Extension Points */
@@ -87,7 +111,12 @@ module entitas {
     public createSystem(system: Function);
     public static setPool(system: ISystem, pool: Pool);
 
-
+    /**
+     *
+     * @param components
+     * @param totalComponents
+     * @param startCreationIndex
+     */
     constructor(components: {}, totalComponents: number, startCreationIndex: number = 0) {
       Pool.instance = this;
       this.onGroupCreated = new Signal<GroupChanged>(this);
@@ -102,30 +131,15 @@ module entitas {
       this._cachedUpdateGroupsComponentAddedOrRemoved = this.updateGroupsComponentAddedOrRemoved;
       this._cachedUpdateGroupsComponentReplaced = this.updateGroupsComponentReplaced;
       this._cachedOnEntityReleased = this.onEntityReleased;
-
       Pool.componentsEnum = components;
       Pool.totalComponents = totalComponents;
 
     }
 
     /**
-     * groupDesc
-     *
-     * expand out the group tostring for better debug info
-     *
-     * @param group
-     * @returns {string}
-     */
-    static groupDesc(group: Group): string {
-      var s: string = group.toString();
-      for (var c = Pool.totalComponents; c > -1; c--) {
-        s = s.replace('' + c, Pool.componentsEnum[c]);
-      }
-      return s;
-    }
-
-    /**
+     * Create a new entity
      * @param name
+     * @returns entitas.Entity
      */
     public createEntity(name: string): Entity {
       var entity = this._reusableEntities.size() > 0 ? this._reusableEntities.removeLast() : new Entity(this._componentsEnum, this._totalComponents);
@@ -147,7 +161,7 @@ module entitas {
     }
 
     /**
-     *
+     * Destroy an entity
      * @param entity
      */
     public destroyEntity(entity: Entity) {
@@ -175,7 +189,7 @@ module entitas {
     }
 
     /**
-     *
+     * Destroy All Entities
      */
     public destroyAllEntities() {
       var entities = this.getEntities();
@@ -185,18 +199,19 @@ module entitas {
     }
 
     /**
+     * Check if pool has this entity
      *
      * @param entity
-     * @returns {boolean}
+     * @returns boolean
      */
     public hasEntity(entity: Entity): boolean {
       return entity.id in this._entities
     }
 
-
     /**
+     * Gets all of the entities
      *
-     * @returns {any[]}
+     * @returns Array<entitas.Entity>
      */
     public getEntities(): Entity[] {
       if (this._entitiesCache == null) {
@@ -215,11 +230,12 @@ module entitas {
     }
 
     /**
+     * Gets all of the entities that match
      *
      * @param matcher
-     * @returns {Group}
+     * @returns entitas.Group
      */
-    public getGroup(matcher: IMatcher) {
+    public getGroup(matcher: IMatcher):Group {
       var group: Group;
 
       if (matcher.id in this._groups) {
@@ -247,7 +263,6 @@ module entitas {
     }
 
     /**
-     *
      * @param entity
      * @param index
      * @param component
@@ -263,7 +278,6 @@ module entitas {
 
 
     /**
-     *
      * @param entity
      * @param index
      * @param previousComponent
@@ -279,7 +293,6 @@ module entitas {
     };
 
     /**
-     *
      * @param entity
      */
     protected onEntityReleased = (entity: Entity) => {

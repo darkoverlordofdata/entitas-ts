@@ -12,8 +12,7 @@ module entitas.utils {
      * Constructs an empty Bag with the specified initial capacity.
      * Constructs an empty Bag with an initial capacity of 64.
      *
-     * @param capacity
-     *            the initial capacity of Bag
+     * @param capacity the initial capacity of Bag
      */
     constructor(capacity:number = 64) {
       super();
@@ -26,7 +25,7 @@ module entitas.utils {
      *
      * @param index
      *            the index of element to be removed
-     * @return element that was removed from the Bag
+     * @return {Object} element that was removed from the Bag
      */
     removeAt(index:number):E {
 
@@ -44,7 +43,7 @@ module entitas.utils {
      *
      * @param e
      *            element to be removed from this list, if present
-     * @return <tt>true</tt> if this list contained the specified element
+     * @return {boolean} true if this list contained the specified element
      */
     remove(e:E):boolean {
       var i:number;
@@ -67,7 +66,7 @@ module entitas.utils {
     /**
      * Remove and return the last object in the bag.
      *
-     * @return the last object in the bag, null if empty.
+     * @return {Object} the last object in the bag, null if empty.
      */
     removeLast():E {
       if (this.size_ > 0) {
@@ -83,7 +82,7 @@ module entitas.utils {
      * Check if bag contains this element.
      *
      * @param e
-     * @return
+     * @return {boolean}
      */
     contains(e:E):boolean {
       var i:number;
@@ -103,7 +102,7 @@ module entitas.utils {
      *
      * @param bag
      *            Bag containing elements to be removed from this Bag
-     * @return {@code true} if this Bag changed as a result of the call
+     * @return {boolean} true if this Bag changed as a result of the call
      */
     removeAll(bag:ImmutableBag<E>):boolean {
       var modified:boolean = false;
@@ -136,9 +135,7 @@ module entitas.utils {
      *
      * @param index
      *            index of the element to return
-     * @return the element at the specified position in bag
-     *
-     * @throws ArrayIndexOutOfBoundsException
+     * @return {Object} the element at the specified position in bag
      */
     get(index:number):E {
       if (index >= this.length) {
@@ -155,7 +152,7 @@ module entitas.utils {
      * @param index
      *      index of the element to return
      *
-     * @return the element at the specified position in bag
+     * @return {Object} the element at the specified position in bag
      *
      */
     safeGet(index:number):E {
@@ -168,7 +165,7 @@ module entitas.utils {
     /**
      * Returns the number of elements in this bag.
      *
-     * @return the number of elements in this bag
+     * @return {number} the number of elements in this bag
      */
     size():number {
       return this.size_;
@@ -177,7 +174,7 @@ module entitas.utils {
     /**
      * Returns the number of elements the bag can hold without growing.
      *
-     * @return the number of elements the bag can hold without growing.
+     * @return {number} the number of elements the bag can hold without growing.
      */
     getCapacity():number {
       return this.length;
@@ -187,7 +184,7 @@ module entitas.utils {
      * Checks if the internal storage supports this index.
      *
      * @param index
-     * @return
+     * @return {boolean}
      */
     isIndexWithinBounds(index:number):boolean {
       return index < this.getCapacity();
@@ -196,7 +193,7 @@ module entitas.utils {
     /**
      * Returns true if this list contains no elements.
      *
-     * @return true if this list contains no elements
+     * @return {boolean} true if this list contains no elements
      */
     isEmpty():boolean {
       return this.size_ == 0;

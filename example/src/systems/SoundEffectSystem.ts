@@ -45,9 +45,9 @@ module example {
       this.smallasplode = new Howl({urls:['res/sounds/smallasplode.ogg']});
 
       this.effect = [];
-      this.effect[EFFECT.PEW] = this.pew;
-      this.effect[EFFECT.ASPLODE] = this.asplode;
-      this.effect[EFFECT.SMALLASPLODE] = this.smallasplode;
+      this.effect[Effect.PEW] = this.pew;
+      this.effect[Effect.ASPLODE] = this.asplode;
+      this.effect[Effect.SMALLASPLODE] = this.smallasplode;
 
     }
   }

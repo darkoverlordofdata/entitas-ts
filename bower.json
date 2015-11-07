@@ -27,6 +27,7 @@
     "chromestoragedb": "git://github.com/darkoverlordofdata/chromeStorageDB",
     "howler.js": "~1.1.26",
     "localstoragedb": "git://github.com/knadh/localStorageDB",
+    "ezgui":"git://github.com/Ezelia/EZGUI/",
     "pixi.js": "~3.0.8",
     "stats.js": "*",
     "tween.ts": "~0.1.2"
@@ -42,6 +43,7 @@
       "chromestoragedb": "packages/chromestoragedb/chromestoragedb.js",
       "howler.js": "packages/howler.js/howler.min.js",
       "localstoragedb": "packages/localstoragedb/localstoragedb.min.js",
+      "ezgui": "packages/ezgui/dist/EZGUI.js",
       "stats.min.js": "packages/stats.js/build/stats.min.js",
       "pixi.js": "packages/pixi.js/bin/pixi.min.js",
       "tween.ts": "packages/tween.ts/build/tween.min.js"

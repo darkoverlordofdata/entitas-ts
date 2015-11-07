@@ -28,8 +28,14 @@ Typescript implementation ported from https://github.com/sschmid/Entitas-CSharp
                      |  e     e   |
                      +------------+
 
-### Live Demo
-https://darkoverlordofdata.com/entitas-ts-example/
+### Live Demos
+* https://darkoverlordofdata.com/entitas-ts-example/
+    port of https://github.com/sschmid/Entitas-CSharp-Example
+* https://darkoverlordofdata.com/entitas-ts-match-one/
+    port of https://github.com/sschmid/Match-One
+* [Spaceship Warriors](example.html) 
+    port of artemis https://github.com/Flet/spaceship-warrior-redux
+
 
 ### Visual Debugging
 Include dat.gui, and entitas-ts will display live stats for entities, pools, and systems.
@@ -54,33 +60,12 @@ use entitas cli to generate empty components & extensions:
 
 Components classes are generated from json configuration, enforcing data oriented design.
 
-Default template is equivalent to:
-
-      entitas create -c Player
-      entitas create -c Position x:number y:number
-      entitas create -c View sprite:Object
-      entitas create -c Velocity x:number y:number
-      entitas create -c Movable
-      entitas create -c Destroy
-      entitas create -c Input x:number y:number
-      entitas create -c Interactive
-      entitas create -c Resource name:string
-      entitas create -c Score value:number
-      entitas create -s DestroySystem IReactiveSystem ISetPool
-      entitas create -s ProcessInputSystem IReactiveSystem ISetPool
-      entitas create -s RenderPositionSystem IReactiveSystem
-      entitas create -s AddViewSystem IReactiveSystem
-      entitas create -s RemoveViewSystem IReactiveSystem ISetPool IEnsureComponents
-      entitas create -s ScoreSystem IInitializeSystem IReactiveSystem ISetPool
-
-
-### Status
-
-Working...
 
 # MIT License
 
 Copyright (c) 2015 Bruce Davidson &lt;darkoverlordofdata@gmail.com&gt;
+
+Copyright (c) 2014 Simon Schmid
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
