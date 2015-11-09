@@ -1,4 +1,4 @@
-module entitas.browser {
+module entitas.viewer {
 
   /**
    * Profiler class for Entities

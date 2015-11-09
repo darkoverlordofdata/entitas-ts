@@ -24,21 +24,10 @@ module entitas {
      * @type {Object<string,entitas.Entity>}
      * @name entitas.GroupObserver#collectedEntities */
     public get collectedEntities() {return this._collectedEntities;}
+
     private _collectedEntities = {};
-
-    /**
-     * groups being observed
-     * @type {Array<entitas.Group>} */
     protected _groups:Array<Group> = null;
-
-    /**
-     * Signal array
-     * @type {Array<entitas.GroupEventType>} */
     protected _eventTypes:Array<GroupEventType> = null;
-
-    /**
-     * GroupChanged Event
-     * @type {entitas.Group.GroupChanged} */
     protected _addEntityCache:Group.GroupChanged = null;
 
 

@@ -9,7 +9,7 @@
 		"default": {
 			"outputSourceFiles" : true
 		},
-		"applicationName": "EntitasTS",
+		"applicationName": "Entitas ECS",
 		"disqus": "",
 		"googleAnalytics": "",
 		"openGraph": {
@@ -20,7 +20,7 @@
 			"url": ""
 		},
 		"meta": {
-			"title": "EntitasTS",
+			"title": "Entitas ECS",
 			"description": "Entitas ECS",
 			"keyword": "typescript ecs"
 		},

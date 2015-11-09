@@ -1,4 +1,4 @@
-module entitas.browser {
+module entitas.viewer {
 
   /** todo: SystemObserver track time spent in ms by system */
 

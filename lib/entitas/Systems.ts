@@ -37,6 +37,11 @@ module entitas {
     public add(system:ISystem);
     public add(system:Function);
 
+    /**
+     * Add System
+     * @param system
+     * @returns {entitas.Systems}
+     */
     public add(system) {
 
       if ('function' === typeof system) {
@@ -63,12 +68,18 @@ module entitas {
       return this;
     }
 
+    /**
+     * Initialize Systems
+     */
     public initialize() {
       for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
         this._initializeSystems[i].initialize();
       }
     }
 
+    /**
+     * Execute sustems
+     */
     public execute() {
       var executeSystems = this._executeSystems;
       for (var i = 0, exeSysCount = executeSystems.length; i < exeSysCount; i++) {
@@ -77,6 +88,9 @@ module entitas {
     }
 
 
+    /**
+     * Clear subsystems
+     */
     public clearReactiveSystems() {
       for (var i = 0, exeSysCount = this._executeSystems.length; i < exeSysCount; i++) {
         var reactiveSystem = as(this._executeSystems[i], 'subsystem');

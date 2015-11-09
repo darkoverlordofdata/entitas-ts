@@ -1,7 +1,7 @@
 /**
  * Inspired by Unity
  */
-module entitas.browser {
+module entitas.viewer {
 
   declare var dat;
   declare var example;
@@ -9,9 +9,9 @@ module entitas.browser {
   import Pool = entitas.Pool;
   import Systems = entitas.Systems;
   import Stopwatch = entitas.utils.Stopwatch;
-  import EntityBehavior = entitas.browser.EntityBehavior;
-  import SystemObserver = entitas.browser.SystemObserver;
-  import PoolObserver = entitas.browser.PoolObserver;
+  import EntityBehavior = entitas.viewer.EntityBehavior;
+  import SystemObserver = entitas.viewer.SystemObserver;
+  import PoolObserver = entitas.viewer.PoolObserver;
 
   export var gui;
   /**

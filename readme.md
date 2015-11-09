@@ -1,4 +1,4 @@
-# entitas-ts
+# Entitas ECS
 
 Entitas ECS
 Typescript implementation ported from https://github.com/sschmid/Entitas-CSharp
@@ -42,7 +42,7 @@ Include dat.gui, and entitas-ts will display live stats for entities, pools, and
  * http://code.google.com/p/dat-gui
 
 ### Entitas cli
-use entitas cli to generate empty components & extensions:
+use entitas cli to generate empty components, extensions & typescript declarations:
 
 
     Usage:
@@ -60,10 +60,12 @@ use entitas cli to generate empty components & extensions:
 
 Components classes are generated from json configuration, enforcing data oriented design.
 
-jsdoc web/src/entitas -r --template ../jaguarjs-jsdoc --configure ./conf.json --readme ./readme.md --destination ./lib/doc
+### Install
 
-tools/ts2goog
-jsdoc lib/goog -r --template ../jaguarjs-jsdoc --configure ./conf.json --readme ./readme.md --destination ./lib/doc
+git clone git@github.com:darkoverlordofdata/entitas-ts.git
+cd entitas-ts
+npm install . -g
+
 
 # MIT License
 

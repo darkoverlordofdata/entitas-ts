@@ -137,7 +137,7 @@ module example {
     static get pool():Pool {
       if (Pools._pool == null) {
         Pools._pool = new Pool(CoreComponentIds, CoreComponentIds.TotalComponents);
-        entitas.browser.VisualDebugging.init(Pools._pool);
+        entitas.viewer.VisualDebugging.init(Pools._pool);
       }
     
       return Pools._pool;

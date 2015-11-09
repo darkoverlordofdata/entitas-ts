@@ -19,6 +19,52 @@ module entitas {
   import EntityAlreadyHasComponentException = entitas.exceptions.EntityAlreadyHasComponentException;
   import EntityDoesNotHaveComponentException = entitas.exceptions.EntityDoesNotHaveComponentException;
 
+
+  export function initialize(totalComponents:number, options) {
+
+    var instanceIndex:number = 0;
+    var alloc:Array<Array<IComponent>> = null;
+    var size:number = options.entities || 100;
+
+    /**
+     * allocate entity pool
+     *
+     * @param count number of components
+     * @param size max number of entities
+     */
+    function dim(count:number, size:number): void {
+      alloc = new Array(size);
+      for (var e=0; e<size; e++) {
+        alloc[e] = new Array(count);
+        for (var k=0; k<count; k++) {
+          alloc[e][k] = null;
+        }
+      }
+    }
+    /**
+     * Returns the next entity pool entry
+     *
+     * @param totalComponents
+     * @returns Array<IComponent>
+     */
+    Entity.prototype.initialize = function(totalComponents:number):Array<IComponent> {
+      var mem;
+      if (alloc == null) dim(totalComponents, size);
+      this.instanceIndex = instanceIndex++;
+      if (mem = alloc[this.instanceIndex]) return mem;
+
+      console.log('Insufficient memory allocation at ', this.instanceIndex, '. Allocating ', size, ' entities.')
+      for (var i=this.instanceIndex, l=i+size; i<l; i++) {
+        alloc[i] = new Array(totalComponents);
+        for (var k=0; k<totalComponents; k++) {
+          alloc[i][k] = null;
+        }
+      }
+      mem = alloc[this.instanceIndex];
+      return mem;
+    };
+  }
+  
   export module Entity {
 
     /**
@@ -60,24 +106,50 @@ module entitas {
      * @name entitas.Entity#creationIndex */
     public get creationIndex():number {return this._creationIndex;}
 
-    public onEntityReleased:IEntityReleased<EntityReleased>;
-    public onComponentAdded:IEntityChanged<EntityChanged>;
-    public onComponentRemoved:IEntityChanged<EntityChanged>;
-    public onComponentReplaced:Entity.IComponentReplaced<ComponentReplaced>;
+    /**
+     * Subscribe to Entity Released Event
+     * @type {entitas.ISignal} */
+    public onEntityReleased:IEntityReleased<EntityReleased> = null;
 
-    public name:string;
-    public id:string;
+    /**
+     * Subscribe to Component Added Event
+     * @type {entitas.ISignal} */
+    public onComponentAdded:IEntityChanged<EntityChanged> = null;
+
+    /**
+     * Subscribe to Component Removed Event
+     * @type {entitas.ISignal} */
+    public onComponentRemoved:IEntityChanged<EntityChanged> = null;
+
+    /**
+     * Subscribe to Component Replaced Event
+     * @type {entitas.ISignal} */
+    public onComponentReplaced:Entity.IComponentReplaced<ComponentReplaced> = null;
+
+    /**
+     * Entity name
+     * @type {string} */
+    public name:string = '';
+
+    /**
+     *  Entity Id
+     * @type {string} */
+    public id:string = '';
+
+    /**
+     *  Instance index
+     * @type {number} */
+    public instanceIndex:number = 0;
+
     public _creationIndex:number=0;
     public _isEnabled:boolean=true;
-    public _components:Array<IComponent>;
-    private _pool:Pool;
-
-    private _componentsEnum:{};
-    public _componentsCache;
-    public _componentIndicesCache:number[];
-    public _toStringCache:string;
-    public instanceIndex:number;
-    public _refCount:number=0;
+    public _components:Array<IComponent> = null;
+    public _componentsCache = null;
+    public _componentIndicesCache:number[] = null;
+    public _toStringCache:string = '';
+    public _refCount:number = 0;
+    private _pool:Pool = null;
+    private _componentsEnum:{} = null;
 
     /**
      * The basic game object. Everything is an entity with components that

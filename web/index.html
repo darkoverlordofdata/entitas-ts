@@ -82,10 +82,18 @@
 <script src="src/entitas/interfaces/IExecuteSystem.js"></script>
 <script src="src/entitas/interfaces/IInitializeSystem.js"></script>
 <script src="src/entitas/interfaces/IReactiveSystem.js"></script>
-<script src="src/entitas/Exceptions.js"></script>
-<script src="src/entitas/matcher/Matcher.js"></script>
-<script src="src/entitas/matcher/MatcherInterfaces.js"></script>
-<script src="src/entitas/matcher/TriggerOnEvent.js"></script>
+<script src="src/entitas/exceptions/Exception.js"></script>
+<script src="src/entitas/exceptions/EntityAlreadyHasComponentException.js"></script>
+<script src="src/entitas/exceptions/EntityDoesNotHaveComponentException.js"></script>
+<script src="src/entitas/exceptions/EntityIsAlreadyReleasedException.js"></script>
+<script src="src/entitas/exceptions/EntityIsNotDestroyedException.js"></script>
+<script src="src/entitas/exceptions/EntityIsNotEnabledException.js"></script>
+<script src="src/entitas/exceptions/GroupObserverException.js"></script>
+<script src="src/entitas/exceptions/MatcherException.js"></script>
+<script src="src/entitas/exceptions/PoolDoesNotContainEntityException.js"></script>
+<script src="src/entitas/exceptions/SingleEntityException.js"></script>
+<script src="src/entitas/Matcher.js"></script>
+<script src="src/entitas/TriggerOnEvent.js"></script>
 <script src="src/entitas/Entity.js"></script>
 <script src="src/entitas/Group.js"></script>
 <script src="src/entitas/GroupObserver.js"></script>
@@ -97,10 +105,10 @@
 <script src="src/entitas/extensions/GroupExtension.js"></script>
 <script src="src/entitas/extensions/MatcherExtension.js"></script>
 <script src="src/entitas/extensions/PoolExtension.js"></script>
-<script src="src/entitas/browser/VisualDebugging.js"></script>
-<script src="src/entitas/browser/EntityBehavior.js"></script>
-<script src="src/entitas/browser/PoolObserver.js"></script>
-<script src="src/entitas/browser/SystemObserver.js"></script>
+<script src="src/entitas/viewer/VisualDebugging.js"></script>
+<script src="src/entitas/viewer/EntityBehavior.js"></script>
+<script src="src/entitas/viewer/PoolObserver.js"></script>
+<script src="src/entitas/viewer/SystemObserver.js"></script>
 <!--
         Demo
 -->

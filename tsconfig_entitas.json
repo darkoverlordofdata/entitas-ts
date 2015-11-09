@@ -24,10 +24,18 @@
     "lib/entitas/interfaces/IExecuteSystem.ts",
     "lib/entitas/interfaces/IInitializeSystem.ts",
     "lib/entitas/interfaces/IReactiveSystem.ts",
-    "lib/entitas/Exceptions.ts",
-    "lib/entitas/matcher/Matcher.ts",
-    "lib/entitas/matcher/MatcherInterfaces.ts",
-    "lib/entitas/matcher/TriggerOnEvent.ts",
+    "lib/entitas/exceptions/Exception.ts",
+    "lib/entitas/exceptions/EntityAlreadyHasComponentException.ts",
+    "lib/entitas/exceptions/EntityDoesNotHaveComponentException.ts",
+    "lib/entitas/exceptions/EntityIsNotEnabledException.ts",
+    "lib/entitas/exceptions/EntityIsAlreadyReleasedException.ts",
+    "lib/entitas/exceptions/SingleEntityException.ts",
+    "lib/entitas/exceptions/GroupObserverException.ts",
+    "lib/entitas/exceptions/PoolDoesNotContainEntityException.ts",
+    "lib/entitas/exceptions/EntityIsNotDestroyedException.ts",
+    "lib/entitas/exceptions/MatcherException.ts",
+    "lib/entitas/Matcher.ts",
+    "lib/entitas/TriggerOnEvent.ts",
     "lib/entitas/Entity.ts",
     "lib/entitas/Group.ts",
     "lib/entitas/GroupObserver.ts",
@@ -39,6 +47,9 @@
     "lib/entitas/extensions/GroupExtension.ts",
     "lib/entitas/extensions/MatcherExtension.ts",
     "lib/entitas/extensions/PoolExtension.ts",
-    "lib/entitas/browser/VisualDebugging.ts"
+    "lib/entitas/viewer/PoolObserver.ts",
+    "lib/entitas/viewer/SystemObserver.ts",
+    "lib/entitas/viewer/EntityBehavior.ts",
+    "lib/entitas/viewer/VisualDebugging.ts"
   ]
 }

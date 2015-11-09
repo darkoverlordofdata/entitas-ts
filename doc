@@ -1,0 +1,5 @@
+jsdoc web/src/entitas -r --template ../jaguarjs-jsdoc --configure ./conf.json --readme ./readme.md --destination ./lib/doc
+
+tools/ts2goog
+jsdoc lib/goog -r --template ../jaguarjs-jsdoc --configure ./conf.json --readme ./readme.md --destination ./lib/doc
+

@@ -46,36 +46,18 @@ module entitas {
      * @type {number}
      * @name entitas.Group#count */
     public get count():number {return Object.keys(this._entities).length;}
-    private _entities = {};
 
     /**
      * Get the Matcher for this group
      * @type {entitas.IMatcher}
      * @name entitas.Group#matcher */
     public get matcher():IMatcher {return this._matcher;}
+
+    private _entities = {};
     private _matcher:IMatcher = null;
-
-    /**
-     * Cache of entities for this group
-     * @type {entitas.Entity<Array>} */
     public _entitiesCache:Array<Entity> = null;
-
-    /**
-     * Cache the single entity for singletons
-     * @type {entitas.Entity} */
     public _singleEntityCache:Entity = null;
-
-
-    /**
-     * Cache the toString() results for the current entity set
-     * @type {string} */
     public _toStringCache:string = '';
-
-    /**
-     * Create an Observer for the event type on this group
-     * @param eventType
-     */
-    public createObserver(eventType:GroupEventType):GroupObserver;
 
     /**
      * @constructor
@@ -88,6 +70,16 @@ module entitas {
       this.onEntityUpdated = new Signal<GroupUpdated>(this);
       this._matcher = matcher;
     }
+
+    /**
+     * Create an Observer for the event type on this group
+     * @param eventType
+     */
+    public createObserver(eventType:GroupEventType):GroupObserver {
+      if (eventType === undefined) eventType = GroupEventType.OnEntityAdded;
+      return new GroupObserver(this, eventType); 
+    }
+
 
     /**
      * Handle adding and removing component from the entity without raising events

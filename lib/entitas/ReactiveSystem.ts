@@ -24,6 +24,11 @@ module entitas {
   }
 
   export class ReactiveSystem implements IExecuteSystem {
+
+    /**
+     * Get subsystems
+     * @type {entitas.IReactiveExecuteSystem}
+     * @name entitas.Pool#subsystem */
     public get subsystem():entitas.IReactiveExecuteSystem {return this._subsystem;}
 
     private _subsystem:IReactiveExecuteSystem;
@@ -80,6 +85,9 @@ module entitas {
     }
 
 
+    /**
+     * execute
+     */
     public execute() {
 
       var collectedEntities = this._observer.collectedEntities;

@@ -18,6 +18,10 @@ module entitas {
   import EntityIsNotDestroyedException = entitas.exceptions.EntityIsNotDestroyedException;
   import PoolDoesNotContainEntityException = entitas.exceptions.PoolDoesNotContainEntityException;
 
+  function as(obj, method1:string) {
+    return method1 in obj ? obj : null;
+  }
+
   /**
    * event delegate boilerplate:
    */
@@ -100,31 +104,6 @@ module entitas {
     public name: string = '';
 
     /**
-     * Collection of all entities by Id
-     * @type {Object<string,entitas.Entity>} */
-    public _entities = {};
-
-    /**
-     * Collection of all groups by matcher Id
-     * @type {Object<string,entitas.Group>} */
-    public _groups = {};
-
-    /**
-     * Bag of groups by index
-     * @type {entitas.util.Bag<Group>} */
-    public _groupsForIndex: Bag<Bag<Group>> = null;
-
-    /**
-     * Bag of entities waiting to be recycled
-     * @type {entitas.util.Bag<Entity>} */
-    public _reusableEntities: Bag<Entity> = new Bag<Entity>();
-
-    /**
-     * Collection of entities waiting to be released
-     * @type {Object<string,entitas.Entity>} */
-    public _retainedEntities = {};
-
-    /**
      * An enum of valid component types
      * @type {Object<string,number>} */
     public static componentsEnum: Object = null;
@@ -139,68 +118,37 @@ module entitas {
      * @type {entitas.Pool} */
     public static instance: Pool = null;
 
-    /**
-     * An enum of valid component types
-     * @type {Object<string,number>} */
+    public _entities = {};
+    public _groups = {};
+    public _groupsForIndex: Bag<Bag<Group>> = null;
+    public _reusableEntities: Bag<Entity> = new Bag<Entity>();
+    public _retainedEntities = {};
     public _componentsEnum: Object = null;
-
-    /**
-     * Count of components
-     * @type {number} */
     public _totalComponents: number = 0;
-
-    /**
-     * Next entity index
-     * @type {number} */
     public _creationIndex: number = 0;
-
-    /**
-     * A list of all the entities
-     * @type {Array<entitas.Entity?} */
     public _entitiesCache: Array<Entity> = null;
-
-    /** @type {Function} */
     public _cachedUpdateGroupsComponentAddedOrRemoved: Entity.EntityChanged;
-    /** @type {Function} */
     public _cachedUpdateGroupsComponentReplaced: Entity.ComponentReplaced;
-    /** @type {Function} */
     public _cachedOnEntityReleased: Entity.EntityReleased;
 
-    /**
-     * Get entities for Matcher
-     * @override
-     * @param {entitas.IMatcher} matcher
-     * @returns {Array<entitas.Entity>}
-     */
     public getEntities(matcher: IMatcher): Entity[];
-
-    /**
-     * Get all entities
-     * @override
-     * @returns {Array<entitas.Entity>}
-     */
     public getEntities(): Entity[];
-
-    /**
-     * Get all entities
-     * @override
-     * @param {entitas.ISystem} system
-     */
     public createSystem(system: ISystem);
-
-    /**
-     * Get all entities
-     * @override
-     * @param {Function} system
-     */
     public createSystem(system: Function);
-
+    
     /**
-     * Set Spool
+     * Set the system pool if supported
+     * 
+     * @static
      * @param {entitas.ISystem} system
      * @param {entitas.Pool} pool
      */
-    public static setPool(system: ISystem, pool: Pool);
+    public static setPool(system: ISystem, pool: Pool) {
+      var poolSystem = as(system, 'setPool');
+      if (poolSystem != null) {
+        poolSystem.setPool(pool);
+      }
+    }
 
     /**
      * @constructor
@@ -304,20 +252,61 @@ module entitas {
      *
      * @returns {Array<entitas.Entity>}
      */
-    public getEntities(): Entity[] {
+    public getEntities(matcher?:IMatcher): Entity[] {
+    if (matcher) {
+      /** PoolExtension::getEntities */
+      return this.getGroup(matcher).getEntities();
+    } else {
       if (this._entitiesCache == null) {
-
         var entities = this._entities;
         var keys = Object.keys(entities);
         var length = keys.length;
         var entitiesCache = this._entitiesCache = new Array(length);
 
-        for (var i = 0; i < length; i++) {
-          var k = keys[i];
-          entitiesCache[i] = entities[k];
+        for (var i=0; i<length; i++) {
+          entitiesCache[i] = entities[keys[i]]
         }
       }
-      return entitiesCache;
+      return this._entitiesCache;
+    }
+      // if (this._entitiesCache == null) {
+
+      //   var entities = this._entities;
+      //   var keys = Object.keys(entities);
+      //   var length = keys.length;
+      //   var entitiesCache = this._entitiesCache = new Array(length);
+
+      //   for (var i = 0; i < length; i++) {
+      //     var k = keys[i];
+      //     entitiesCache[i] = entities[k];
+      //   }
+      // }
+      // return entitiesCache;
+    }
+    
+    /**
+     * Create System
+     * @param {entitas.ISystem|Function}
+     * @returns {entitas.ISystem}
+     */
+    public createSystem(system:any) {
+      if ('function' === typeof system) {
+        var Klass:any = system;
+        system = new Klass();
+      }
+  
+      Pool.setPool(system, this);
+  
+      var reactiveSystem = as(system, 'trigger');
+      if (reactiveSystem != null) {
+        return new ReactiveSystem(this, reactiveSystem);
+      }
+      var multiReactiveSystem = as(system, 'triggers');
+      if (multiReactiveSystem != null) {
+        return new ReactiveSystem(this, multiReactiveSystem);
+      }
+  
+      return system;
     }
 
     /**
