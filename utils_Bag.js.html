@@ -701,99 +701,249 @@
     </ul>
 </div>
     <div class="main">
-        <h1 class="page-title" data-filename="index.html">Index</h1>
+        <h1 class="page-title" data-filename="utils_Bag.js.html">Source: utils/Bag.js</h1>
         
 
 
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-    
-
-
-
-
     <section>
-        <article class="readme"><h1>Entitas ECS</h1><p>Entitas ECS
-Typescript implementation ported from https://github.com/sschmid/Entitas-CSharp</p>
-<pre class="prettyprint source"><code>+------------------+
-|       Pool       |
-|------------------|
-|    e       e     |      +-----------+
-|        e     e---|----> |  Entity   |
-|  e        e      |      |-----------|
-|     e  e       e |      | Component |
-| e            e   |      |           |      +-----------+
-|    e     e       |      | Component-|----> | Component |
-|  e    e     e    |      |           |      |-----------|
-|    e      e    e |      | Component |      |   Data    |
-+------------------+      +-----------+      +-----------+
-  |
-  |
-  |     +-------------+  Groups:
-  |     |      e      |  Subsets of entities in the pool
-  |     |   e     e   |  for blazing fast querying
-  +---> |        +------------+
-        |     e  |    |       |
-        |  e     | e  |  e    |
-        +--------|----+    e  |
-                 |     e      |
-                 |  e     e   |
-                 +------------+</code></pre><h3>Live Demos</h3><ul>
-<li>https://darkoverlordofdata.com/entitas-ts-example/
-  port of https://github.com/sschmid/Entitas-CSharp-Example</li>
-<li>https://darkoverlordofdata.com/entitas-ts-match-one/
-  port of https://github.com/sschmid/Match-One</li>
-<li><a href="example.html">Spaceship Warriors</a> 
-  port of artemis https://github.com/Flet/spaceship-warrior-redux</li>
-</ul>
-<h3>Visual Debugging</h3><p>Include dat.gui, and entitas-ts will display live stats for entities, pools, and systems.</p>
-<ul>
-<li>http://code.google.com/p/dat-gui</li>
-</ul>
-<h3>Entitas cli</h3><p>use entitas cli to generate empty components, extensions &amp; typescript declarations:</p>
-<pre class="prettyprint source"><code>Usage:
-  entitas init namespace
-  entitas create -c name field:type...
-  entitas create -s name interface...
-  entitas create -e name
-  entitas generate
+        <article>
+            <pre class="prettyprint source "><code>goog.provide('entitas.utils.Bag');
 
-Options:
-  -c  [--component] # create a component
-  -s  [--system]    # create a system
-  -e  [--entity]    # create entity
-  -x  [--extension] # create an extension</code></pre><p>Components classes are generated from json configuration, enforcing data oriented design.</p>
-<h3>Install</h3><p>git clone git@github.com:darkoverlordofdata/entitas-ts.git
-cd entitas-ts
-npm install . -g</p>
-<h1>MIT License</h1><p>Copyright (c) 2015 Bruce Davidson &lt;darkoverlordofdata@gmail.com&gt;</p>
-<p>Copyright (c) 2014 Simon Schmid</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p></article>
+
+__extends(Bag, _super);
+/**
+ * Constructs an empty Bag with the specified initial capacity.
+ * Constructs an empty Bag with an initial capacity of 64.
+ *
+ * @constructor
+ * @param capacity the initial capacity of Bag
+ */
+entitas.utils.Bag = function(capacity) {
+  if (capacity === void 0) { capacity = 64; }
+  _super.call(this);
+  this.size_ = 0;
+  this.length = capacity;
+}
+/**
+ * Removes the element at the specified position in this Bag. does this by
+ * overwriting it was last element then removing last element
+ *
+ * @param index
+ *      the index of element to be removed
+ * @return {Object} element that was removed from the Bag
+ */
+entitas.utils.Bag.prototype.removeAt = function (index) {
+  var e = this[index]; // make copy of element to remove so it can be returned
+  this[index] = this[--this.size_]; // overwrite item to remove with last element
+  this[this.size_] = null; // null last element, so gc can do its work
+  return e;
+};
+/**
+ * Removes the first occurrence of the specified element from this Bag, if
+ * it is present. If the Bag does not contain the element, it is unchanged.
+ * does this by overwriting it was last element then removing last element
+ *
+ * @param e
+ *      element to be removed from this list, if present
+ * @return {boolean} true if this list contained the specified element
+ */
+entitas.utils.Bag.prototype.remove = function (e) {
+  var i;
+  var e2;
+  var size = this.size_;
+  for (i = 0; i &lt; size; i++) {
+    e2 = this[i];
+    if (e == e2) {
+      this[i] = this[--this.size_]; // overwrite item to remove with last element
+      this[this.size_] = null; // null last element, so gc can do its work
+      return true;
+    }
+  }
+  return false;
+};
+/**
+ * Remove and return the last object in the bag.
+ *
+ * @return {Object} the last object in the bag, null if empty.
+ */
+entitas.utils.Bag.prototype.removeLast = function () {
+  if (this.size_ > 0) {
+    var e = this[--this.size_];
+    this[this.size_] = null;
+    return e;
+  }
+  return null;
+};
+/**
+ * Check if bag contains this element.
+ *
+ * @param e
+ * @return {boolean}
+ */
+entitas.utils.Bag.prototype.contains = function (e) {
+  var i;
+  var size;
+  for (i = 0, size = this.size_; size > i; i++) {
+    if (e === this[i]) {
+      return true;
+    }
+  }
+  return false;
+};
+/**
+ * Removes from this Bag all of its elements that are contained in the
+ * specified Bag.
+ *
+ * @param bag
+ *      Bag containing elements to be removed from this Bag
+ * @return {boolean} true if this Bag changed as a result of the call
+ */
+entitas.utils.Bag.prototype.removeAll = function (bag) {
+  var modified = false;
+  var i;
+  var j;
+  var l;
+  var e1;
+  var e2;
+  for (i = 0, l = bag.size(); i &lt; l; i++) {
+    e1 = bag.get(i);
+    for (j = 0; j &lt; this.size_; j++) {
+      e2 = this[j];
+      if (e1 === e2) {
+        this.removeAt(j);
+        j--;
+        modified = true;
+        break;
+      }
+    }
+  }
+  return modified;
+};
+/**
+ * Returns the element at the specified position in Bag.
+ *
+ * @param index
+ *      index of the element to return
+ * @return {Object} the element at the specified position in bag
+ */
+entitas.utils.Bag.prototype.get = function (index) {
+  if (index >= this.length) {
+    throw new Error('ArrayIndexOutOfBoundsException');
+  }
+  return this[index];
+};
+/**
+ * Returns the element at the specified position in Bag. This method
+ * ensures that the bag grows if the requested index is outside the bounds
+ * of the current backing array.
+ *
+ * @param index
+ *   index of the element to return
+ *
+ * @return {Object} the element at the specified position in bag
+ *
+ */
+entitas.utils.Bag.prototype.safeGet = function (index) {
+  if (index >= this.length) {
+    this.grow((index * 7) / 4 + 1);
+  }
+  return this[index];
+};
+/**
+ * Returns the number of elements in this bag.
+ *
+ * @return {number} the number of elements in this bag
+ */
+entitas.utils.Bag.prototype.size = function () {
+  return this.size_;
+};
+/**
+ * Returns the number of elements the bag can hold without growing.
+ *
+ * @return {number} the number of elements the bag can hold without growing.
+ */
+entitas.utils.Bag.prototype.getCapacity = function () {
+  return this.length;
+};
+/**
+ * Checks if the internal storage supports this index.
+ *
+ * @param index
+ * @return {boolean}
+ */
+entitas.utils.Bag.prototype.isIndexWithinBounds = function (index) {
+  return index &lt; this.getCapacity();
+};
+/**
+ * Returns true if this list contains no elements.
+ *
+ * @return {boolean} true if this list contains no elements
+ */
+entitas.utils.Bag.prototype.isEmpty = function () {
+  return this.size_ == 0;
+};
+/**
+ * Adds the specified element to the end of this bag. if needed also
+ * increases the capacity of the bag.
+ *
+ * @param e
+ *      element to be added to this list
+ */
+entitas.utils.Bag.prototype.add = function (e) {
+  // is size greater than capacity increase capacity
+  if (this.size_ === this.length) {
+    this.grow();
+  }
+  this[this.size_++] = e;
+};
+/**
+ * Set element at specified index in the bag.
+ *
+ * @param index position of element
+ * @param e the element
+ */
+entitas.utils.Bag.prototype.set = function (index, e) {
+  if (index >= this.length) {
+    this.grow(index * 2);
+  }
+  this.size_ = index + 1;
+  this[index] = e;
+};
+entitas.utils.Bag.prototype.grow = function (newCapacity) {
+  if (newCapacity === void 0) { newCapacity = ~~((this.length * 3) / 2) + 1; }
+  this.length = ~~newCapacity;
+};
+entitas.utils.Bag.prototype.ensureCapacity = function (index) {
+  if (index >= this.length) {
+    this.grow(index * 2);
+  }
+};
+/**
+ * Removes all of the elements from this bag. The bag will be empty after
+ * this call returns.
+ */
+entitas.utils.Bag.prototype.clear = function () {
+  var i;
+  var size;
+  // null all elements so gc can clean up
+  for (i = 0, size = this.size_; i &lt; size; i++) {
+    this[i] = null;
+  }
+  this.size_ = 0;
+};
+/**
+ * Add all items into this bag.
+ * @param items
+ */
+entitas.utils.Bag.prototype.addAll = function (items) {
+  var i;
+  for (i = 0; items.size() > i; i++) {
+    this.add(items.get(i));
+  }
+};
+</code></pre>
+        </article>
     </section>
 
 
@@ -804,7 +954,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p></article>
         
 
         <footer>
-            Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Nov 09 2015 11:17:17 GMT-0800 (PST)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Nov 09 2015 11:17:17 GMT-0800 (PST)
         </footer>
     </div>
 </div>

@@ -701,99 +701,344 @@
     </ul>
 </div>
     <div class="main">
-        <h1 class="page-title" data-filename="index.html">Index</h1>
+        <h1 class="page-title" data-filename="Entity.js.html">Source: Entity.js</h1>
         
 
 
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-    
-
-
-
-
     <section>
-        <article class="readme"><h1>Entitas ECS</h1><p>Entitas ECS
-Typescript implementation ported from https://github.com/sschmid/Entitas-CSharp</p>
-<pre class="prettyprint source"><code>+------------------+
-|       Pool       |
-|------------------|
-|    e       e     |      +-----------+
-|        e     e---|----> |  Entity   |
-|  e        e      |      |-----------|
-|     e  e       e |      | Component |
-| e            e   |      |           |      +-----------+
-|    e     e       |      | Component-|----> | Component |
-|  e    e     e    |      |           |      |-----------|
-|    e      e    e |      | Component |      |   Data    |
-+------------------+      +-----------+      +-----------+
-  |
-  |
-  |     +-------------+  Groups:
-  |     |      e      |  Subsets of entities in the pool
-  |     |   e     e   |  for blazing fast querying
-  +---> |        +------------+
-        |     e  |    |       |
-        |  e     | e  |  e    |
-        +--------|----+    e  |
-                 |     e      |
-                 |  e     e   |
-                 +------------+</code></pre><h3>Live Demos</h3><ul>
-<li>https://darkoverlordofdata.com/entitas-ts-example/
-  port of https://github.com/sschmid/Entitas-CSharp-Example</li>
-<li>https://darkoverlordofdata.com/entitas-ts-match-one/
-  port of https://github.com/sschmid/Match-One</li>
-<li><a href="example.html">Spaceship Warriors</a> 
-  port of artemis https://github.com/Flet/spaceship-warrior-redux</li>
-</ul>
-<h3>Visual Debugging</h3><p>Include dat.gui, and entitas-ts will display live stats for entities, pools, and systems.</p>
-<ul>
-<li>http://code.google.com/p/dat-gui</li>
-</ul>
-<h3>Entitas cli</h3><p>use entitas cli to generate empty components, extensions &amp; typescript declarations:</p>
-<pre class="prettyprint source"><code>Usage:
-  entitas init namespace
-  entitas create -c name field:type...
-  entitas create -s name interface...
-  entitas create -e name
-  entitas generate
+        <article>
+            <pre class="prettyprint source "><code>goog.provide('entitas.Entity');
+goog.require('entitas.utils.Signal');
+goog.require('entitas.exceptions.EntityIsNotEnabledException');
+goog.require('entitas.exceptions.EntityIsAlreadyReleasedException');
+goog.require('entitas.exceptions.EntityAlreadyHasComponentException');
+goog.require('entitas.exceptions.EntityDoesNotHaveComponentException');
+goog.require('0');
+goog.require('null');
+goog.require('options.entities || 100');
 
-Options:
-  -c  [--component] # create a component
-  -s  [--system]    # create a system
-  -e  [--entity]    # create entity
-  -x  [--extension] # create an extension</code></pre><p>Components classes are generated from json configuration, enforcing data oriented design.</p>
-<h3>Install</h3><p>git clone git@github.com:darkoverlordofdata/entitas-ts.git
-cd entitas-ts
-npm install . -g</p>
-<h1>MIT License</h1><p>Copyright (c) 2015 Bruce Davidson &lt;darkoverlordofdata@gmail.com&gt;</p>
-<p>Copyright (c) 2014 Simon Schmid</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p></article>
+
+/**
+ * The basic game object. Everything is an entity with components that
+ * are added / removed as needed.
+ *
+ * @param {Object} componentsEnum
+ * @param {number} totalComponents
+ * @constructor
+ */
+entitas.Entity = function(componentsEnum, totalComponents) {
+  if (totalComponents === void 0) { totalComponents = 16; }
+  /**
+   * Subscribe to Entity Released Event
+   * @type {entitas.ISignal} */
+  this.onEntityReleased = null;
+  /**
+   * Subscribe to Component Added Event
+   * @type {entitas.ISignal} */
+  this.onComponentAdded = null;
+  /**
+   * Subscribe to Component Removed Event
+   * @type {entitas.ISignal} */
+  this.onComponentRemoved = null;
+  /**
+   * Subscribe to Component Replaced Event
+   * @type {entitas.ISignal} */
+  this.onComponentReplaced = null;
+  /**
+   * Entity name
+   * @type {string} */
+  this.name = '';
+  /**
+   * Entity Id
+   * @type {string} */
+  this.id = '';
+  /**
+   * Instance index
+   * @type {number} */
+  this.instanceIndex = 0;
+  this._creationIndex = 0;
+  this._isEnabled = true;
+  this._components = null;
+  this._componentsCache = null;
+  this._componentIndicesCache = null;
+  this._toStringCache = '';
+  this._refCount = 0;
+  this._pool = null;
+  this._componentsEnum = null;
+  this.onEntityReleased = new entitas.utils.Signal(this);
+  this.onComponentAdded = new entitas.utils.Signal(this);
+  this.onComponentRemoved = new entitas.utils.Signal(this);
+  this.onComponentReplaced = new entitas.utils.Signal(this);
+  this._componentsEnum = componentsEnum;
+  this._pool = entitas.Pool.instance;
+  this._components = this.initialize(totalComponents);
+}
+Object.defineProperty(entitas.Entity.prototype, "creationIndex", {
+  /**
+   * A unique sequential index number assigned to each entity at creation
+   * @type {number}
+   * @name entitas.Entity#creationIndex */
+  get: function () { return this._creationIndex; },
+  enumerable: true,
+  configurable: true
+});
+/**
+ * Initialize
+ * Extension point to allocate enetity pool.
+ *
+ * @param {number} totalComponents
+ * @returns {Array&lt;entitas.IComponent>}
+ */
+entitas.Entity.prototype.initialize = function (totalComponents) {
+  return null;
+};
+/**
+ * AddComponent
+ *
+ * @param {number} index
+ * @param {entitas.IComponent} component
+ * @returns {entitas.Entity}
+ */
+entitas.Entity.prototype.addComponent = function (index, component) {
+  if (!this._isEnabled) {
+    throw new entitas.exceptions.EntityIsNotEnabledException("Cannot add component!");
+  }
+  if (this.hasComponent(index)) {
+    var errorMsg = "Cannot add component at index " + index + " to " + this;
+    throw new entitas.exceptions.EntityAlreadyHasComponentException(errorMsg, index);
+  }
+  this._components[index] = component;
+  this._componentsCache = null;
+  this._componentIndicesCache = null;
+  this._toStringCache = null;
+  var onComponentAdded = this.onComponentAdded;
+  if (onComponentAdded.active)
+    onComponentAdded.dispatch(this, index, component);
+  return this;
+};
+/**
+ * RemoveComponent
+ *
+ * @param {number} index
+ * @returns {entitas.Entity}
+ */
+entitas.Entity.prototype.removeComponent = function (index) {
+  if (!this._isEnabled) {
+    throw new entitas.exceptions.EntityIsNotEnabledException("Cannot remove component!");
+  }
+  if (!this.hasComponent(index)) {
+    var errorMsg = "Cannot remove component at index " + index + " from " + this;
+    throw new entitas.exceptions.EntityDoesNotHaveComponentException(errorMsg, index);
+  }
+  this._replaceComponent(index, null);
+  return this;
+};
+/**
+ * ReplaceComponent
+ *
+ * @param {number} index
+ * @param {entitas.IComponent} component
+ * @returns {entitas.Entity}
+ */
+entitas.Entity.prototype.replaceComponent = function (index, component) {
+  if (!this._isEnabled) {
+    throw new entitas.exceptions.EntityIsNotEnabledException("Cannot replace component!");
+  }
+  if (this.hasComponent(index)) {
+    this._replaceComponent(index, component);
+  }
+  else if (component != null) {
+    this.addComponent(index, component);
+  }
+  return this;
+};
+entitas.Entity.prototype._replaceComponent = function (index, replacement) {
+  var components = this._components;
+  var previousComponent = components[index];
+  if (previousComponent === replacement) {
+    var onComponentReplaced = this.onComponentReplaced;
+    if (onComponentReplaced.active)
+      onComponentReplaced.dispatch(this, index, previousComponent, replacement);
+  }
+  else {
+    components[index] = replacement;
+    this._componentsCache = null;
+    if (replacement == null) {
+      delete components[index];
+      this._componentIndicesCache = null;
+      this._toStringCache = null;
+      var onComponentRemoved = this.onComponentRemoved;
+      if (onComponentRemoved.active)
+        onComponentRemoved.dispatch(this, index, previousComponent);
+    }
+    else {
+      var onComponentReplaced = this.onComponentReplaced;
+      if (onComponentReplaced.active)
+        onComponentReplaced.dispatch(this, index, previousComponent, replacement);
+    }
+  }
+};
+/**
+ * GetComponent
+ *
+ * @param {number} index
+ * @param {entitas.IComponent} component
+ */
+entitas.Entity.prototype.getComponent = function (index) {
+  if (!this.hasComponent(index)) {
+    var errorMsg = "Cannot get component at index " + index + " from " + this;
+    throw new entitas.exceptions.EntityDoesNotHaveComponentException(errorMsg, index);
+  }
+  return this._components[index];
+};
+/**
+ * GetComponents
+ *
+ * @returns {Array&lt;entitas.IComponent>}
+ */
+entitas.Entity.prototype.getComponents = function () {
+  if (this._componentsCache == null) {
+    var components = [];
+    var _components = this._components;
+    for (var i = 0, j = 0, componentsLength = _components.length; i &lt; componentsLength; i++) {
+      var component = _components[i];
+      if (component != null) {
+        components[j++] = component;
+      }
+    }
+    this._componentsCache = components;
+  }
+  return this._componentsCache;
+};
+/**
+ * GetComponentIndices
+ *
+ * @returns {Array&lt;number>}
+ */
+entitas.Entity.prototype.getComponentIndices = function () {
+  if (this._componentIndicesCache == null) {
+    var indices = [];
+    var _components = this._components;
+    for (var i = 0, j = 0, componentsLength = _components.length; i &lt; componentsLength; i++) {
+      if (_components[i] != null) {
+        indices[j++] = i;
+      }
+    }
+    this._componentIndicesCache = indices;
+  }
+  return this._componentIndicesCache;
+};
+/**
+ * HasComponent
+ *
+ * @param {number} index
+ * @returns {boolean}
+ */
+entitas.Entity.prototype.hasComponent = function (index) {
+  return this._components[index] != null;
+};
+/**
+ * HasComponents
+ *
+ * @param {Array&lt;number>} indices
+ * @returns {boolean}
+ */
+entitas.Entity.prototype.hasComponents = function (indices) {
+  var _components = this._components;
+  for (var i = 0, indicesLength = indices.length; i &lt; indicesLength; i++) {
+    if (_components[indices[i]] == null) {
+      return false;
+    }
+  }
+  return true;
+};
+/**
+ * HasAnyComponent
+ *
+ * @param {Array&lt;number>} indices
+ * @returns {boolean}
+ */
+entitas.Entity.prototype.hasAnyComponent = function (indices) {
+  var _components = this._components;
+  for (var i = 0, indicesLength = indices.length; i &lt; indicesLength; i++) {
+    if (_components[indices[i]] != null) {
+      return true;
+    }
+  }
+  return false;
+};
+/**
+ * RemoveAllComponents
+ *
+ */
+entitas.Entity.prototype.removeAllComponents = function () {
+  this._toStringCache = null;
+  var _components = this._components;
+  for (var i = 0, componentsLength = _components.length; i &lt; componentsLength; i++) {
+    if (_components[i] != null) {
+      this._replaceComponent(i, null);
+    }
+  }
+};
+/**
+ * Destroy
+ *
+ */
+entitas.Entity.prototype.destroy = function () {
+  this.removeAllComponents();
+  this.onComponentAdded.clear();
+  this.onComponentReplaced.clear();
+  this.onComponentRemoved.clear();
+  this._isEnabled = false;
+};
+/**
+ * ToString
+ *
+ * @returns {string}
+ */
+entitas.Entity.prototype.toString = function () {
+  if (this._toStringCache == null) {
+    var sb = [];
+    var seperator = ", ";
+    var components = this.getComponents();
+    var lastSeperator = components.length - 1;
+    for (var i = 0, j = 0, componentsLength = components.length; i &lt; componentsLength; i++) {
+      sb[j++] = components[i].constructor['name'].replace('Component', '') || i + '';
+      if (i &lt; lastSeperator) {
+        sb[j++] = seperator;
+      }
+    }
+    this._toStringCache = sb.join('');
+  }
+  return this._toStringCache;
+};
+/**
+ * AddRef
+ *
+ * @returns {entitas.Entity}
+ */
+entitas.Entity.prototype.addRef = function () {
+  this._refCount += 1;
+  return this;
+};
+/**
+ * Release
+ *
+ */
+entitas.Entity.prototype.release = function () {
+  this._refCount -= 1;
+  if (this._refCount === 0) {
+    var onEntityReleased = this.onEntityReleased;
+    if (onEntityReleased.active)
+      onEntityReleased.dispatch(this);
+  }
+  else if (this._refCount &lt; 0) {
+    throw new entitas.exceptions.EntityIsAlreadyReleasedException();
+  }
+};
+</code></pre>
+        </article>
     </section>
 
 
@@ -804,7 +1049,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p></article>
         
 
         <footer>
-            Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Nov 09 2015 11:17:17 GMT-0800 (PST)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Nov 09 2015 11:17:16 GMT-0800 (PST)
         </footer>
     </div>
 </div>

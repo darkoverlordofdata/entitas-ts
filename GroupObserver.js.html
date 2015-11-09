@@ -701,99 +701,110 @@
     </ul>
 </div>
     <div class="main">
-        <h1 class="page-title" data-filename="index.html">Index</h1>
+        <h1 class="page-title" data-filename="GroupObserver.js.html">Source: GroupObserver.js</h1>
         
 
 
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-    
-
-
-
-
     <section>
-        <article class="readme"><h1>Entitas ECS</h1><p>Entitas ECS
-Typescript implementation ported from https://github.com/sschmid/Entitas-CSharp</p>
-<pre class="prettyprint source"><code>+------------------+
-|       Pool       |
-|------------------|
-|    e       e     |      +-----------+
-|        e     e---|----> |  Entity   |
-|  e        e      |      |-----------|
-|     e  e       e |      | Component |
-| e            e   |      |           |      +-----------+
-|    e     e       |      | Component-|----> | Component |
-|  e    e     e    |      |           |      |-----------|
-|    e      e    e |      | Component |      |   Data    |
-+------------------+      +-----------+      +-----------+
-  |
-  |
-  |     +-------------+  Groups:
-  |     |      e      |  Subsets of entities in the pool
-  |     |   e     e   |  for blazing fast querying
-  +---> |        +------------+
-        |     e  |    |       |
-        |  e     | e  |  e    |
-        +--------|----+    e  |
-                 |     e      |
-                 |  e     e   |
-                 +------------+</code></pre><h3>Live Demos</h3><ul>
-<li>https://darkoverlordofdata.com/entitas-ts-example/
-  port of https://github.com/sschmid/Entitas-CSharp-Example</li>
-<li>https://darkoverlordofdata.com/entitas-ts-match-one/
-  port of https://github.com/sschmid/Match-One</li>
-<li><a href="example.html">Spaceship Warriors</a> 
-  port of artemis https://github.com/Flet/spaceship-warrior-redux</li>
-</ul>
-<h3>Visual Debugging</h3><p>Include dat.gui, and entitas-ts will display live stats for entities, pools, and systems.</p>
-<ul>
-<li>http://code.google.com/p/dat-gui</li>
-</ul>
-<h3>Entitas cli</h3><p>use entitas cli to generate empty components, extensions &amp; typescript declarations:</p>
-<pre class="prettyprint source"><code>Usage:
-  entitas init namespace
-  entitas create -c name field:type...
-  entitas create -s name interface...
-  entitas create -e name
-  entitas generate
+        <article>
+            <pre class="prettyprint source "><code>goog.provide('entitas.GroupObserver');
+goog.require('entitas.exceptions.GroupObserverException');
+goog.require('entitas.GroupEventType');
 
-Options:
-  -c  [--component] # create a component
-  -s  [--system]    # create a system
-  -e  [--entity]    # create entity
-  -x  [--extension] # create an extension</code></pre><p>Components classes are generated from json configuration, enforcing data oriented design.</p>
-<h3>Install</h3><p>git clone git@github.com:darkoverlordofdata/entitas-ts.git
-cd entitas-ts
-npm install . -g</p>
-<h1>MIT License</h1><p>Copyright (c) 2015 Bruce Davidson &lt;darkoverlordofdata@gmail.com&gt;</p>
-<p>Copyright (c) 2014 Simon Schmid</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p></article>
+
+/**
+ * @constructor
+ * @param {Array&lt;entitas.Group>} groups
+ * @param {number} eventTypes
+ */
+entitas.GroupObserver = function(groups, eventTypes) {
+  var _this = this;
+  this._collectedEntities = {};
+  this._groups = null;
+  this._eventTypes = null;
+  this._addEntityCache = null;
+  /**
+   * Adds an entity to this observer group
+   * @param group
+   * @param {entitas.Entity}entity
+   * @param index
+   * @param {entitas.IComponent}component
+   */
+  this.addEntity = function (group, entity, index, component) {
+    if (!(entity.id in _this._collectedEntities)) {
+      _this._collectedEntities[entity.id] = entity;
+      entity.addRef();
+    }
+  };
+  this._groups = Array.isArray(groups) ? groups : [groups];
+  this._eventTypes = Array.isArray(eventTypes) ? eventTypes : [eventTypes];
+  if (groups.length !== eventTypes.length) {
+    throw new entitas.exceptions.GroupObserverException("Unbalanced count with groups (" + groups.length +
+      ") and event types (" + eventTypes.length + ")");
+  }
+  this._collectedEntities = {};
+  this._addEntityCache = this.addEntity;
+  this.activate();
+}
+Object.defineProperty(entitas.GroupObserver.prototype, "collectedEntities", {
+  /**
+   * Entities being observed
+   * @type {Object&lt;string,entitas.Entity>}
+   * @name entitas.GroupObserver#collectedEntities */
+  get: function () { return this._collectedEntities; },
+  enumerable: true,
+  configurable: true
+});
+/**
+ * Activate events
+ */
+entitas.GroupObserver.prototype.activate = function () {
+  for (var i = 0, groupsLength = this._groups.length; i &lt; groupsLength; i++) {
+    var group = this._groups[i];
+    var eventType = this._eventTypes[i];
+    if (eventType === GroupEventType.OnEntityAdded) {
+      group.onEntityAdded.remove(this._addEntityCache);
+      group.onEntityAdded.add(this._addEntityCache);
+    }
+    else if (eventType === GroupEventType.OnEntityRemoved) {
+      group.onEntityRemoved.remove(this._addEntityCache);
+      group.onEntityRemoved.add(this._addEntityCache);
+    }
+    else if (eventType === GroupEventType.OnEntityAddedOrRemoved) {
+      group.onEntityAdded.remove(this._addEntityCache);
+      group.onEntityAdded.add(this._addEntityCache);
+      group.onEntityRemoved.remove(this._addEntityCache);
+      group.onEntityRemoved.add(this._addEntityCache);
+    }
+    else {
+      throw "Invalid eventType [" + typeof eventType + ":" + eventType + "] in GroupObserver::activate";
+    }
+  }
+};
+/**
+ * Deavtivate events
+ */
+entitas.GroupObserver.prototype.deactivate = function () {
+  var e;
+  for (var i = 0, groupsLength = this._groups.length; i &lt; groupsLength; i++) {
+    var group = this._groups[i];
+    group.onEntityAdded.remove(this._addEntityCache);
+    group.onEntityRemoved.remove(this._addEntityCache);
+    this.clearCollectedEntities();
+  }
+};
+/**
+ * Clear the list of entities
+ */
+entitas.GroupObserver.prototype.clearCollectedEntities = function () {
+  for (var e in this._collectedEntities) {
+    this._collectedEntities[e].release();
+  }
+  this._collectedEntities = {};
+};
+</code></pre>
+        </article>
     </section>
 
 
@@ -804,7 +815,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p></article>
         
 
         <footer>
-            Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Nov 09 2015 11:17:17 GMT-0800 (PST)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Mon Nov 09 2015 11:17:17 GMT-0800 (PST)
         </footer>
     </div>
 </div>
