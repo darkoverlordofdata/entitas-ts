@@ -106,7 +106,7 @@ convert = (match, file, src, className, ns) ->
     out.push line
 
   src = out.join('\n')
-  outFile = file.replace('web/src', 'lib/goog')
+  outFile = file.replace('web/src', 'goog/lib')
   mkdirp.sync(path.dirname(outFile))
   fs.writeFileSync(outFile, src)
 

@@ -62,11 +62,17 @@ Components classes are generated from json configuration, enforcing data oriente
 
 ### Install
 
-git clone git@github.com:darkoverlordofdata/entitas-ts.git
-cd entitas-ts
-npm install . -g
+    git clone git@github.com:darkoverlordofdata/entitas-ts.git
+    cd entitas-ts
+    npm install . -g
 
 
+### Generate Doc
+
+    tools/configure
+    tools/ts2goog
+    npm run jsodc
+    
 # MIT License
 
 Copyright (c) 2015 Bruce Davidson &lt;darkoverlordofdata@gmail.com&gt;
