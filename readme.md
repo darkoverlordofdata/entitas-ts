@@ -60,6 +60,10 @@ use entitas cli to generate empty components & extensions:
 
 Components classes are generated from json configuration, enforcing data oriented design.
 
+jsdoc web/src/entitas -r --template ../jaguarjs-jsdoc --configure ./conf.json --readme ./readme.md --destination ./lib/doc
+
+tools/ts2goog
+jsdoc lib/goog -r --template ../jaguarjs-jsdoc --configure ./conf.json --readme ./readme.md --destination ./lib/doc
 
 # MIT License
 

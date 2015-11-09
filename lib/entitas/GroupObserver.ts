@@ -4,9 +4,13 @@ module entitas {
   import Entity = entitas.Entity;
   import Matcher = entitas.Matcher;
   import IComponent = entitas.IComponent;
-  import GroupObserverException = entitas.GroupObserverException;
+  import GroupObserverException = entitas.exceptions.GroupObserverException;
 
-  /** @typedef {Object<string|number>} */
+  /**
+   * Event Types
+   * @readonly
+   * @enum {number}
+   */
   export enum GroupEventType {
     OnEntityAdded,
     OnEntityRemoved,
@@ -14,22 +18,34 @@ module entitas {
   }
 
   export class GroupObserver {
-    /** @type {Object<string,entitas.Entity>}*/
-    public get collectedEntities() {return this._collectedEntities;}
-
-    /** @type {Object<string,entitas.Entity>}*/
-    private _collectedEntities = {};
-    /** @type {Array<entitas.Group} */
-    public _groups:Array<Group>;
-    /** @type {Array<entitas.GroupEventType} */
-    public _eventTypes:Array<GroupEventType>;
-    /** @type {Array<entitas.Group.GroupChanged} */
-    public _addEntityCache:Group.GroupChanged;
 
     /**
-     *
-     * @param groups
-     * @param eventTypes
+     * Entities being observed
+     * @type {Object<string,entitas.Entity>}
+     * @name entitas.GroupObserver#collectedEntities */
+    public get collectedEntities() {return this._collectedEntities;}
+    private _collectedEntities = {};
+
+    /**
+     * groups being observed
+     * @type {Array<entitas.Group>} */
+    protected _groups:Array<Group> = null;
+
+    /**
+     * Signal array
+     * @type {Array<entitas.GroupEventType>} */
+    protected _eventTypes:Array<GroupEventType> = null;
+
+    /**
+     * GroupChanged Event
+     * @type {entitas.Group.GroupChanged} */
+    protected _addEntityCache:Group.GroupChanged = null;
+
+
+    /**
+     * @constructor
+     * @param {Array<entitas.Group>} groups
+     * @param {number} eventTypes
      */
     constructor(groups, eventTypes) {
       this._groups = Array.isArray(groups) ? groups : [groups];
@@ -44,6 +60,9 @@ module entitas {
       this.activate();
     }
 
+    /**
+     * Activate events
+     */
     activate() {
       for (var i = 0, groupsLength = this._groups.length; i < groupsLength; i++) {
         var group:Group = this._groups[i];
@@ -72,6 +91,9 @@ module entitas {
       }
     }
 
+    /**
+     * Deavtivate events
+     */
     deactivate() {
       var e;
       for (var i = 0, groupsLength = this._groups.length; i < groupsLength; i++) {
@@ -84,6 +106,10 @@ module entitas {
       }
 
     }
+
+    /**
+     * Clear the list of entities
+     */
     clearCollectedEntities() {
       for (var e in this._collectedEntities) {
         this._collectedEntities[e].release();
@@ -92,7 +118,7 @@ module entitas {
     }
 
     /**
-     *
+     * Adds an entity to this observer group
      * @param group
      * @param {entitas.Entity}entity
      * @param index

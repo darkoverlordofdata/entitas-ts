@@ -33,6 +33,12 @@ module entitas {
     public _clearAfterExecute:boolean;
     public _buffer:Array<Entity>;
 
+    /**
+     * @constructor
+     *
+     * @param pool
+     * @param subSystem
+     */
     constructor(pool:Pool, subSystem:IReactiveSystem|IMultiReactiveSystem) {
 
       var triggers:Array<TriggerOnEvent> = 'triggers' in subSystem ?  subSystem['triggers'] : [subSystem['trigger']];

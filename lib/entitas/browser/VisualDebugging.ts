@@ -9,15 +9,24 @@ module entitas.browser {
   import Pool = entitas.Pool;
   import Systems = entitas.Systems;
   import Stopwatch = entitas.utils.Stopwatch;
-  /** todo: SystemObserver track time spent in ms by system */
+  import EntityBehavior = entitas.browser.EntityBehavior;
+  import SystemObserver = entitas.browser.SystemObserver;
+  import PoolObserver = entitas.browser.PoolObserver;
 
   export var gui;
+  /**
+   * @class VisualDebugging
+   */
   export class VisualDebugging {
     public static _controllers;
     public static _entities;
     public static _pools;
     public static _systems;
 
+    /**
+     *
+     * @param pool
+     */
     public static init(pool:Pool) {
       if (location.search === "?debug=true" && window['dat']) {
         gui = new dat.GUI({height: 5*32-1, width: 300});
@@ -66,77 +75,6 @@ module entitas.browser {
         Object.defineProperty(Systems.prototype, 'name', {get: () => 'Systems'});
         Object.defineProperty(Systems.prototype, 'Systems', {get: get_Systems});
       }
-    }
-  }
-
-  /**
-   * Profiler class for Entities
-   */
-  export class EntityBehavior {
-    public get name():string {
-      return this._name;
-    }
-    private _name:string;
-
-    constructor(protected obj) {
-      if (this.obj.name) {
-        this._name = this.obj.name;
-      } else {
-        this._name = `Entity_${this.obj._creationIndex}`;
-      }
-      Object.defineProperty(this, this._name, {get: () => this.obj.toString()});
-    }
-  }
-
-  /**
-   * Profiler class for Systems
-   */
-  export class SystemObserver {
-    public get name():string {
-      return "Systems";
-    }
-
-    public get Systems():string {
-      return "Systems " + " (" +
-        this._systems._initializeSystems.length + " init, " +
-        this._systems._executeSystems.length + " exe ";
-
-    }
-    public get initialize():string {
-      return this._systems._initializeSystems.length;
-    }
-
-    public get execute():string {
-      return this._systems._executeSystems.length;
-    }
-    constructor(protected _systems) {}
-  }
-
-  /**
-   * Profiler class for Pools
-   */
-  export class PoolObserver {
-    public get name():string {
-      return "Pool";
-    }
-
-    public get Pool():string {
-      return "Pool " + " (" +
-        this._pool.count + " entities, " +
-        this._pool.reusableEntitiesCount + " reusable, " +
-        Object.keys(this._groups).length + " groups)";
-
-    }
-    public get entities():string {
-      return this._pool.count;
-    }
-    public get reusable():string {
-      return this._pool.reusableEntitiesCount;
-    }
-    protected _groups;
-
-    constructor(protected _pool){
-      this._groups = this._pool._groups;
     }
   }
 }

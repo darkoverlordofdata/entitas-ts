@@ -1,0 +1,130 @@
+#!/usr/bin/env coffee
+###
+ * Using the outputs from tsc
+ * create a closure-compiler ready source
+ *
+###
+fs = require('fs')
+path = require('path')
+exec = require('child_process').exec
+Walker = require('walker')
+mkdirp = require('mkdirp')
+
+header1 = (ns) ->
+  return [
+    "var #{ns[0]};"
+    "(function (#{ns[0]}) {"
+  ].join('\n')
+
+
+header2 = (ns) ->
+  return [
+    "var #{ns[0]};"
+    "(function (#{ns[0]}) {"
+    "    var #{ns[1]};"
+    "    (function (#{ns[1]}) {"
+  ].join('\n')
+
+footer1 = (ns, className, superClass='') ->
+  return [
+    "        return #{className};"
+    "    })(#{superClass});"
+    "    #{ns[0]}.#{className} = #{className};"
+    "})(#{ns[0]} || (#{ns[0]} = {}));"
+  ].join('\n')
+
+
+footer2 = (ns, className, superClass='') ->
+  return [
+    "            return #{className};"
+    "        })(#{superClass});"
+    "        #{ns[1]}.#{className} = #{className};"
+    "    })(#{ns[1]} = #{ns[0]}.#{ns[1]} || (#{ns[0]}.#{ns[1]} = {}));"
+    "})(#{ns[0]} || (#{ns[0]} = {}));"
+  ].join('\n')
+
+isclass = (className, superclass) ->
+  if superclass then "var #{className} = (function (_super) {" else "var #{className} = (function () {"
+
+###
+ * recursively list all the files 
+###
+ls = (path, next) ->
+	files = []
+	(new Walker(path))
+	.filterDir((d, stat) -> true)
+	.on('file', (file, stat) ->
+		files.push(file))
+	.on('end', -> next(files))
+
+
+convert = (match, file, src, className, ns) ->
+  i = src.indexOf(match)
+  src = src.substr(i+match.length)
+  switch ns.length
+    when 1
+      if (eof = src.indexOf(footer1(ns, className))) isnt -1
+        superclass = false
+      else if (eof = src.indexOf(footer1(ns, className, 'Array'))) isnt -1
+        superclass = true
+      else if (eof = src.indexOf(footer1(ns, className, 'Exception'))) isnt -1
+        superclass = true
+      else return
+    when 2
+      if (eof = src.indexOf(footer2(ns, className))) isnt -1
+        superclass = false
+      else if (eof = src.indexOf(footer2(ns, className, 'Array'))) isnt -1
+        superclass = true
+      else if (eof = src.indexOf(footer2(ns, className, 'Exception'))) isnt -1
+        superclass = true
+      else return
+
+  src = src.substr(0, eof)
+  i = src.indexOf(isclass(className, superclass))
+  src2 = src.split(isclass(className, superclass))
+
+  imports = Array: 'Array', Error: 'Error'
+  imports[className] = className
+  requires = {}
+  out = []
+  namespace = ns.join('.')
+
+  for line in src2[0].split('\n')
+    line.replace /\s+var\s+(\w+)\s+=\s+(.+);/, ($0, $1, $2) -> requires[$1] = imports[$1] = $2
+
+  out.push "goog.provide('#{namespace}.#{className}');"
+  for name, fullname of requires
+    out.push "goog.require('#{fullname}');"
+  out.push ""
+
+  for line in src2[1].split('\n')
+    line = line.substr(ns.length*4+4)
+    line = line.replace(/(\w+)\.prototype/, ($0, $1) -> "#{namespace}.#{if imports[$1] then imports[$1] else $1}.prototype")
+    line = line.replace("function #{className}(", "#{namespace}.#{className} = function(")
+    line = line.replace(/new\s+(\w+)\(/, ($0, $1) -> "new #{if imports[$1] then imports[$1] else $1}(")
+    line = line.replace(/\s\s/g, ' ')
+    out.push line
+
+  src = out.join('\n')
+  outFile = file.replace('web/src', 'lib/goog')
+  mkdirp.sync(path.dirname(outFile))
+  fs.writeFileSync(outFile, src)
+
+
+
+ls './web/src/entitas/', (files) ->
+	for file in files
+		if file.indexOf('.js.map') is -1
+
+      ns = file.replace('.js', '').split('/')
+      ns.shift()
+      ns.shift()
+      className = ns.pop()
+      src = fs.readFileSync(file, 'utf8')
+      if src.indexOf(header2(ns)) isnt -1
+        ns.length = 2
+        convert header2(ns), file, src, className, ns
+      else if src.indexOf(header1(ns)) isnt -1
+        ns.length = 1
+        convert header1(ns), file, src, className, ns
+

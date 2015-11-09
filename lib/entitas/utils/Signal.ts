@@ -17,6 +17,7 @@ module entitas.utils {
 
     /**
      *
+     * @constructor
      * @param context
      * @param alloc
      */

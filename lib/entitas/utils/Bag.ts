@@ -12,6 +12,7 @@ module entitas.utils {
      * Constructs an empty Bag with the specified initial capacity.
      * Constructs an empty Bag with an initial capacity of 64.
      *
+     * @constructor
      * @param capacity the initial capacity of Bag
      */
     constructor(capacity:number = 64) {

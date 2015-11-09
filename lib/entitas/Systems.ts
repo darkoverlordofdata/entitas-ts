@@ -22,6 +22,10 @@ module entitas {
     protected _initializeSystems:Array<IInitializeSystem>;
     protected _executeSystems:Array<IExecuteSystem>;
 
+    /**
+     * @constructor
+     *
+     */
     constructor() {
       this._initializeSystems = [];
       this._executeSystems = [];

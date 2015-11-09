@@ -14,10 +14,10 @@ module entitas {
   import IEntityReleased = Entity.IEntityReleased;
   import ComponentReplaced = Entity.ComponentReplaced;
   import IComponentReplaced = Entity.IComponentReplaced;
-  import EntityIsNotEnabledException = entitas.EntityIsNotEnabledException;
-  import EntityIsAlreadyReleasedException = entitas.EntityIsAlreadyReleasedException;
-  import EntityAlreadyHasComponentException = entitas.EntityAlreadyHasComponentException;
-  import EntityDoesNotHaveComponentException = entitas.EntityDoesNotHaveComponentException;
+  import EntityIsNotEnabledException = entitas.exceptions.EntityIsNotEnabledException;
+  import EntityIsAlreadyReleasedException = entitas.exceptions.EntityIsAlreadyReleasedException;
+  import EntityAlreadyHasComponentException = entitas.exceptions.EntityAlreadyHasComponentException;
+  import EntityDoesNotHaveComponentException = entitas.exceptions.EntityDoesNotHaveComponentException;
 
   export module Entity {
 
@@ -52,12 +52,12 @@ module entitas {
     }
   }
 
-  /**
-   * The basic game object. Everything is an entity with components that
-   * are added / removed as needed.
-   */
   export class Entity {
 
+    /**
+     * A unique sequential index number assigned to each entity at creation
+     * @type {number}
+     * @name entitas.Entity#creationIndex */
     public get creationIndex():number {return this._creationIndex;}
 
     public onEntityReleased:IEntityReleased<EntityReleased>;
@@ -79,6 +79,14 @@ module entitas {
     public instanceIndex:number;
     public _refCount:number=0;
 
+    /**
+     * The basic game object. Everything is an entity with components that
+     * are added / removed as needed.
+     *
+     * @param {Object} componentsEnum
+     * @param {number} totalComponents
+     * @constructor
+     */
     constructor(componentsEnum, totalComponents:number=16) {
 
       this.onEntityReleased = new Signal<EntityReleased>(this);
@@ -92,11 +100,10 @@ module entitas {
 
     /**
      * Initialize
-     *
      * Extension point to allocate enetity pool.
      *
-     * @param totalComponents
-     * @returns Array<entitas.IComponent>
+     * @param {number} totalComponents
+     * @returns {Array<entitas.IComponent>}
      */
     public initialize(totalComponents:number):Array<IComponent> {
       return null;
@@ -104,9 +111,9 @@ module entitas {
     /**
      * AddComponent
      *
-     * @param index
-     * @param component
-     * @returns entitas.Entity
+     * @param {number} index
+     * @param {entitas.IComponent} component
+     * @returns {entitas.Entity}
      */
     public addComponent(index:number, component:IComponent):Entity {
       if (!this._isEnabled) {
@@ -129,8 +136,8 @@ module entitas {
     /**
      * RemoveComponent
      *
-     * @param index
-     * @returns entitas.Entity
+     * @param {number} index
+     * @returns {entitas.Entity}
      */
     public removeComponent(index:number):Entity {
       if (!this._isEnabled) {
@@ -148,9 +155,9 @@ module entitas {
     /**
      * ReplaceComponent
      *
-     * @param index
-     * @param component
-     * @returns entitas.Entity
+     * @param {number} index
+     * @param {entitas.IComponent} component
+     * @returns {entitas.Entity}
      */
     public replaceComponent(index:number, component:IComponent):Entity {
       if (!this._isEnabled) {
@@ -193,8 +200,8 @@ module entitas {
     /**
      * GetComponent
      *
-     * @param index
-     * @param component
+     * @param {number} index
+     * @param {entitas.IComponent} component
      */
     public getComponent(index:number):IComponent {
       if (!this.hasComponent(index)) {
@@ -207,7 +214,7 @@ module entitas {
     /**
      * GetComponents
      *
-     * @returns Array<entitas.IComponent>
+     * @returns {Array<entitas.IComponent>}
      */
     public getComponents():IComponent[] {
       if (this._componentsCache == null) {
@@ -230,7 +237,7 @@ module entitas {
     /**
      * GetComponentIndices
      *
-     * @returns Array<number>
+     * @returns {Array<number>}
      */
     public getComponentIndices():number[] {
       if (this._componentIndicesCache == null) {
@@ -252,8 +259,8 @@ module entitas {
     /**
      * HasComponent
      *
-     * @param index
-     * @returns boolean
+     * @param {number} index
+     * @returns {boolean}
      */
     public hasComponent(index:number):boolean {
       return this._components[index] != null;
@@ -262,8 +269,8 @@ module entitas {
     /**
      * HasComponents
      *
-     * @param indices
-     * @returns boolean
+     * @param {Array<number>} indices
+     * @returns {boolean}
      */
     public hasComponents(indices:number[]):boolean {
       var _components = this._components;
@@ -279,8 +286,8 @@ module entitas {
     /**
      * HasAnyComponent
      *
-     * @param indices
-     * @returns boolean
+     * @param {Array<number>} indices
+     * @returns {boolean}
      */
     public hasAnyComponent(indices:number[]):boolean {
       var _components = this._components;
@@ -323,7 +330,7 @@ module entitas {
     /**
      * ToString
      *
-     * @returns string
+     * @returns {string}
      */
     public toString() {
       if (this._toStringCache == null) {
@@ -347,7 +354,7 @@ module entitas {
     /**
      * AddRef
      *
-     * @returns entitas.Entity
+     * @returns {entitas.Entity}
      */
     public addRef():Entity {
       this._refCount += 1;

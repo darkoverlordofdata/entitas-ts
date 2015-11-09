@@ -5,7 +5,7 @@ module entitas {
   import IAllOfMatcher = entitas.IAllOfMatcher;
   import IAnyOfMatcher = entitas.IAnyOfMatcher;
   import INoneOfMatcher = entitas.INoneOfMatcher;
-  import MatcherException = entitas.MatcherException;
+  import MatcherException = entitas.exceptions.MatcherException;
 
   export module Matcher {
 
@@ -39,6 +39,10 @@ module entitas {
     public onEntityRemoved():TriggerOnEvent;
     public onEntityAddedOrRemoved():TriggerOnEvent;
 
+    /**
+     * @constructor
+     *
+     */
     constructor() {
       this._id = Matcher.uniqueId++;
     }

@@ -8,7 +8,7 @@ module entitas {
   import GroupChanged = Group.GroupChanged;
   import GroupUpdated = Group.GroupUpdated;
   import GroupEventType = entitas.GroupEventType;
-  import SingleEntityException = entitas.SingleEntityException;
+  import SingleEntityException = entitas.exceptions.SingleEntityException;
 
   /**
    * event delegate boilerplate:
@@ -28,30 +28,53 @@ module entitas {
 
   export class Group {
 
-    /** @type {entitas.utils.ISignal} */
-    public onEntityAdded:Group.IGroupChanged<GroupChanged>;
-    /** @type {entitas.utils.ISignal} */
-    public onEntityRemoved:Group.IGroupChanged<GroupChanged>;
-    /** @type {entitas.utils.ISignal} */
-    public onEntityUpdated:Group.IGroupUpdated<GroupUpdated>;
+    /**
+     * Subscribe to Entity Addded events
+     * @type {entitas.utils.ISignal} */
+    public onEntityAdded:Group.IGroupChanged<GroupChanged> = null;
+    /**
+     * Subscribe to Entity Removed events
+     * @type {entitas.utils.ISignal} */
+    public onEntityRemoved:Group.IGroupChanged<GroupChanged> = null;
+    /**
+     * Subscribe to Entity Updated events
+     * @type {entitas.utils.ISignal} */
+    public onEntityUpdated:Group.IGroupUpdated<GroupUpdated> = null;
 
-    /** @type {number} */
+    /**
+     * Count the number of entities in this group
+     * @type {number}
+     * @name entitas.Group#count */
     public get count():number {return Object.keys(this._entities).length;}
-    /** @type {entitas.IMatcher} */
+    private _entities = {};
+
+    /**
+     * Get the Matcher for this group
+     * @type {entitas.IMatcher}
+     * @name entitas.Group#matcher */
     public get matcher():IMatcher {return this._matcher;}
+    private _matcher:IMatcher = null;
 
-    /** @type {entitas.IMatcher} */
-    public _matcher:IMatcher;
-    /** @type {Object<string,entitas.Entity>} */
-    public _entities = {};
-    /** @type {entitas.Entity<Array>} */
-    public _entitiesCache:Array<Entity>;
-    /** @type {entitas.Entity} */
-    public _singleEntityCache:Entity;
-    /** @type {string} */
-    public _toStringCache:string;
+    /**
+     * Cache of entities for this group
+     * @type {entitas.Entity<Array>} */
+    public _entitiesCache:Array<Entity> = null;
 
-    /** @type {entitas.GroupObserver} Extension Points */
+    /**
+     * Cache the single entity for singletons
+     * @type {entitas.Entity} */
+    public _singleEntityCache:Entity = null;
+
+
+    /**
+     * Cache the toString() results for the current entity set
+     * @type {string} */
+    public _toStringCache:string = '';
+
+    /**
+     * Create an Observer for the event type on this group
+     * @param eventType
+     */
     public createObserver(eventType:GroupEventType):GroupObserver;
 
     /**
@@ -59,6 +82,7 @@ module entitas {
      * @param matcher
      */
     constructor(matcher:IMatcher) {
+      this._entities = {};
       this.onEntityAdded = new Signal<GroupChanged>(this);
       this.onEntityRemoved = new Signal<GroupChanged>(this);
       this.onEntityUpdated = new Signal<GroupUpdated>(this);
@@ -66,7 +90,7 @@ module entitas {
     }
 
     /**
-     * Handle entity without raising events
+     * Handle adding and removing component from the entity without raising events
      * @param entity
      */
     public handleEntitySilently(entity:Entity) {
@@ -78,7 +102,7 @@ module entitas {
     }
 
     /**
-     * Handle entity and raise events
+     * Handle adding and removing component from the entity and raisieevents
      * @param entity
      * @param index
      * @param component
@@ -183,7 +207,7 @@ module entitas {
     }
 
     /**
-     * Get the entities in this group
+     * Get a list of the entities in this group
      *
      * @returns Array<entitas.Entity>
      */
@@ -201,7 +225,7 @@ module entitas {
     }
 
     /**
-     * Gets a single entity.
+     * Gets an entity singleton.
      * If a group has more than 1 entity, this is an error condition.
      *
      * @returns entitas.Entity
@@ -223,6 +247,9 @@ module entitas {
     }
 
     /**
+     * Create a string representation for this group:
+     *
+     *  ex: 'Group(Position)'
      *
      * @returns string
      */
