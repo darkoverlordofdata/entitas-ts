@@ -1,0 +1,31 @@
+{
+  "files": [
+    "goog/entitas/entitas/utils/UUID.js",
+    "goog/entitas/entitas/utils/Bag.js",
+    "goog/entitas/entitas/utils/Signal.js",
+    "goog/entitas/entitas/utils/Stopwatch.js",
+    "goog/entitas/entitas/exceptions/Exception.js",
+    "goog/entitas/entitas/exceptions/EntityAlreadyHasComponentException.js",
+    "goog/entitas/entitas/exceptions/EntityDoesNotHaveComponentException.js",
+    "goog/entitas/entitas/exceptions/EntityIsNotEnabledException.js",
+    "goog/entitas/entitas/exceptions/EntityIsAlreadyReleasedException.js",
+    "goog/entitas/entitas/exceptions/SingleEntityException.js",
+    "goog/entitas/entitas/exceptions/GroupObserverException.js",
+    "goog/entitas/entitas/exceptions/PoolDoesNotContainEntityException.js",
+    "goog/entitas/entitas/exceptions/EntityIsNotDestroyedException.js",
+    "goog/entitas/entitas/exceptions/MatcherException.js",
+    "goog/entitas/entitas/GroupEventType.js",
+    "goog/entitas/entitas/TriggerOnEvent.js",
+    "goog/entitas/entitas/Matcher.js",
+    "goog/entitas/entitas/Entity.js",
+    "goog/entitas/entitas/Group.js",
+    "goog/entitas/entitas/GroupObserver.js",
+    "goog/entitas/entitas/Pool.js",
+    "goog/entitas/entitas/ReactiveSystem.js",
+    "goog/entitas/entitas/Systems.js",
+    "goog/entitas/entitas/viewer/PoolObserver.js",
+    "goog/entitas/entitas/viewer/SystemObserver.js",
+    "goog/entitas/entitas/viewer/EntityBehavior.js",
+    "goog/entitas/entitas/viewer/VisualDebugging.js"
+  ]
+}

@@ -112,6 +112,7 @@ convert = (match, file, src, className, ns) ->
 
 
 
+#ls './web/src/entitas/', (files) ->
 ls './web/src/entitas/', (files) ->
 	for file in files
 		if file.indexOf('.js.map') is -1

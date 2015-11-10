@@ -86,7 +86,7 @@ module.exports = (project, options = {}) ->
   ### build the project ###
   build: do ->
     options.compile ?= 'ADVANCED_OPTIMIZATIONS'
-    
+
     step = [].concat(project.config.build)
       
     if isCocos2d
@@ -136,14 +136,8 @@ module.exports = (project, options = {}) ->
       files = require(JSCONFIG).files.join(" LF ")
       step.push """
         cat #{files} > build/web/example.js
+        uglifyjs build/web/example.js --compress --mangle --output build/web/example.min.js
       """
-#      step.push """
-#        cat #{files} > build/web/example.js
-#        cat #{files} | \
-#          java -jar #{COMPILER_JAR} \
-#            --compilation_level #{options.compile} \
-#            --js_output_file build/web/example.min.js
-#      """
 
     else
       ###

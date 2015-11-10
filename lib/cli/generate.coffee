@@ -80,7 +80,7 @@ module.exports =
     ts.push "    TotalComponents"
     ts.push "  }"
     ts.push ""
-    ts.push "  entitas.initialize(CoreComponentIds.TotalComponents, #{JSON.stringify(config.alloc)});"
+    ts.push "  entitas.Entity.initialize(CoreComponentIds.TotalComponents, #{JSON.stringify(config.alloc)});"
     ts.push ""
 
     ###
@@ -350,7 +350,7 @@ module.exports =
     ts.push "    static get pool():Pool {"
     ts.push "      if (Pools._pool == null) {"
     ts.push "        Pools._pool = new Pool(CoreComponentIds, CoreComponentIds.TotalComponents);"
-    ts.push "        entitas.browser.VisualDebugging.init(Pools._pool);"
+    ts.push "        entitas.viewer.VisualDebugging.init(Pools._pool);"
     ts.push "      }"
     ts.push "    "
     ts.push "      return Pools._pool;"

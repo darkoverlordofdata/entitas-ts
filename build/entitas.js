@@ -20,6 +20,9 @@ var entitas;
             "e0", "e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9", "ea", "eb", "ec", "ed", "ee", "ef",
             "f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "fa", "fb", "fc", "fd", "fe", "ff"
         ];
+        /**
+         * @class UUID
+         */
         var UUID = (function () {
             function UUID() {
             }
@@ -47,120 +50,6 @@ var entitas;
         utils.UUID = UUID;
     })(utils = entitas.utils || (entitas.utils = {}));
 })(entitas || (entitas = {}));
-var entitas;
-(function (entitas) {
-    var utils;
-    (function (utils) {
-        /**
-         * Gets Class Metadata - Name
-         *
-         * @param klass
-         * @return {string}
-         */
-        function getClassName(klass) {
-            return klass.className || klass.name;
-        }
-        utils.getClassName = getClassName;
-        /**
-         * Decode HashMap key
-         *
-         * When the key is an object, we generate a unique uuid and use that as the actual key.
-         */
-        function decode(key) {
-            switch (typeof key) {
-                case 'boolean':
-                    return '' + key;
-                case 'number':
-                    return '' + key;
-                case 'string':
-                    return '' + key;
-                case 'function':
-                    return getClassName(key);
-                default:
-                    key.uuid = key.uuid ? key.uuid : utils.UUID.randomUUID();
-                    return key.uuid;
-            }
-        }
-        /**
-         * HashMap
-         *
-         * Allow object as key.
-         */
-        var HashMap = (function () {
-            function HashMap() {
-                this.clear();
-            }
-            HashMap.prototype.clear = function () {
-                this.map_ = {};
-                this.keys_ = {};
-            };
-            HashMap.prototype.values = function () {
-                var result = [];
-                var map = this.map_;
-                for (var key in map) {
-                    result.push(map[key]);
-                }
-                return result;
-            };
-            HashMap.prototype.contains = function (value) {
-                var map = this.map_;
-                for (var key in map) {
-                    if (value === map[key]) {
-                        return true;
-                    }
-                }
-                return false;
-            };
-            HashMap.prototype.containsKey = function (key) {
-                return decode(key) in this.map_;
-            };
-            HashMap.prototype.containsValue = function (value) {
-                var map = this.map_;
-                for (var key in map) {
-                    if (value === map[key]) {
-                        return true;
-                    }
-                }
-                return false;
-            };
-            HashMap.prototype.get = function (key) {
-                return this.map_[decode(key)];
-            };
-            HashMap.prototype.isEmpty = function () {
-                return Object.keys(this.map_).length === 0;
-            };
-            HashMap.prototype.keys = function () {
-                var keys = this.map_;
-                var result = [];
-                for (var key in keys) {
-                    result.push(keys[key]);
-                }
-                return result;
-            };
-            /**
-             * if key is a string, use as is, else use key.id_ or key.name
-             */
-            HashMap.prototype.put = function (key, value) {
-                var k = decode(key);
-                this.map_[k] = value;
-                this.keys_[k] = key;
-            };
-            HashMap.prototype.remove = function (key) {
-                var map = this.map_;
-                var k = decode(key);
-                var value = map[k];
-                delete map[k];
-                delete this.keys_[k];
-                return value;
-            };
-            HashMap.prototype.size = function () {
-                return Object.keys(this.map_).length;
-            };
-            return HashMap;
-        })();
-        utils.HashMap = HashMap;
-    })(utils = entitas.utils || (entitas.utils = {}));
-})(entitas || (entitas = {}));
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -180,6 +69,7 @@ var entitas;
              * Constructs an empty Bag with the specified initial capacity.
              * Constructs an empty Bag with an initial capacity of 64.
              *
+             * @constructor
              * @param capacity the initial capacity of Bag
              */
             function Bag(capacity) {
@@ -414,176 +304,11 @@ var entitas;
 (function (entitas) {
     var utils;
     (function (utils) {
-        /*
-         * BitSets are packed into arrays of "words."  Currently a word
-         * consists of 32 bits, requiring 5 address bits.
-         */
-        var ADDRESS_BITS_PER_WORD = 5;
-        var BITS_PER_WORD = 1 << ADDRESS_BITS_PER_WORD; // 32
-        var WORD_MASK = 0xffffffff;
-        /**
-         * @see http://stackoverflow.com/questions/6506356/java-implementation-of-long-numberoftrailingzeros
-         */
-        function numberOfTrailingZeros(i) {
-            if (i == 0)
-                return 64;
-            var x = i;
-            var y;
-            var n = 63;
-            y = x << 32;
-            if (y != 0) {
-                n -= 32;
-                x = y;
-            }
-            y = x << 16;
-            if (y != 0) {
-                n -= 16;
-                x = y;
-            }
-            y = x << 8;
-            if (y != 0) {
-                n -= 8;
-                x = y;
-            }
-            y = x << 4;
-            if (y != 0) {
-                n -= 4;
-                x = y;
-            }
-            y = x << 2;
-            if (y != 0) {
-                n -= 2;
-                x = y;
-            }
-            return (n - ((x << 1) >>> 63));
-        }
-        var BitSet = (function () {
-            function BitSet(nbits) {
-                if (nbits === void 0) { nbits = 0; }
-                if (nbits < 0) {
-                    throw RangeError("Negative Array Size: [" + nbits + ']');
-                }
-                else if (nbits === 0) {
-                    this.words_ = [];
-                }
-                else {
-                    var words = this.words_ = new Array(((nbits - 1) >> ADDRESS_BITS_PER_WORD) + 1);
-                    for (var i = 0, l = words.length; i < l; i++) {
-                        words[i] = 0;
-                    }
-                }
-            }
-            BitSet.prototype.nextSetBit = function (fromIndex) {
-                var u = fromIndex >> ADDRESS_BITS_PER_WORD;
-                var words = this.words_;
-                var wordsInUse = words.length;
-                var word = words[u] & (WORD_MASK << fromIndex);
-                while (true) {
-                    if (word !== 0)
-                        return (u * BITS_PER_WORD) + numberOfTrailingZeros(word);
-                    if (++u === wordsInUse)
-                        return -1;
-                    word = words[u];
-                }
-            };
-            BitSet.prototype.intersects = function (set) {
-                var words = this.words_;
-                var wordsInUse = words.length;
-                for (var i = Math.min(wordsInUse, set.words_.length) - 1; i >= 0; i--)
-                    if ((words[i] & set.words_[i]) != 0)
-                        return true;
-                return false;
-            };
-            BitSet.prototype.hasAll = function (set) {
-                var words = this.words_;
-                var wordsInUse = words.length;
-                for (var i = Math.min(wordsInUse, set.words_.length) - 1; i >= 0; i--)
-                    if ((words[i] & set.words_[i]) != set.words_[i])
-                        return false;
-                return true;
-            };
-            // length():number {
-            // 	return this.length_;
-            // }
-            // and(set:BitSet):BitSet {
-            // }
-            // or(set:BitSet):BitSet {
-            // }
-            // nand(set:BitSet):BitSet {
-            // }
-            // nor(set:BitSet):BitSet {
-            // }
-            // not(set:BitSet):BitSet {
-            // }
-            // xor(set:BitSet):BitSet {
-            // }
-            // equals(set:BitSet):boolean {
-            // }
-            // clone():BitSet {
-            // }
-            BitSet.prototype.isEmpty = function () {
-                return this.words_.length === 0;
-            };
-            // toString():string {
-            // }
-            // cardinality():number {
-            // }
-            // msb():number {
-            // }
-            BitSet.prototype.set = function (bitIndex, value) {
-                if (value === void 0) { value = true; }
-                var wordIndex = bitIndex >> ADDRESS_BITS_PER_WORD;
-                var words = this.words_;
-                var wordsInUse = words.length;
-                var wordsRequired = wordIndex + 1;
-                if (wordsInUse < wordsRequired) {
-                    words.length = Math.max(2 * wordsInUse, wordsRequired);
-                    for (var i = wordsInUse, l = words.length; i < l; i++) {
-                        words[i] = 0;
-                    }
-                }
-                if (value) {
-                    return words[wordIndex] |= (1 << bitIndex);
-                }
-                else {
-                    return words[wordIndex] &= ~(1 << bitIndex);
-                }
-            };
-            // setRange(from:number, to:number, value:number):number {
-            // }
-            BitSet.prototype.get = function (bitIndex) {
-                var wordIndex = bitIndex >> ADDRESS_BITS_PER_WORD;
-                var words = this.words_;
-                var wordsInUse = words.length;
-                return (wordIndex < wordsInUse) && ((words[wordIndex] & (1 << bitIndex)) != 0);
-            };
-            // getRange(from:number, to:number):number {
-            // }
-            BitSet.prototype.clear = function (bitIndex) {
-                if (bitIndex === null) {
-                    var words = this.words_;
-                    var wordsInUse = words.length;
-                    while (wordsInUse > 0) {
-                        words[--wordsInUse] = 0;
-                    }
-                    return;
-                }
-                var wordIndex = bitIndex >> ADDRESS_BITS_PER_WORD;
-                this.words_[wordIndex] &= ~(1 << bitIndex);
-            };
-            return BitSet;
-        })();
-        utils.BitSet = BitSet;
-    })(utils = entitas.utils || (entitas.utils = {}));
-})(entitas || (entitas = {}));
-var entitas;
-(function (entitas) {
-    var utils;
-    (function (utils) {
         var Bag = entitas.utils.Bag;
         var Signal = (function () {
             /**
              *
+             * @constructor
              * @param context
              * @param alloc
              */
@@ -701,6 +426,11 @@ var entitas;
 var entitas;
 (function (entitas) {
     var Exception = (function () {
+        /**
+         * Base exception class
+         * @constructot
+         * @param message
+         */
         function Exception(message) {
             this.message = message;
         }
@@ -711,139 +441,216 @@ var entitas;
         return Exception;
     })();
     entitas.Exception = Exception;
-    var EntityAlreadyHasComponentException = (function (_super) {
-        __extends(EntityAlreadyHasComponentException, _super);
-        /**
-         * Entity Already Has Component Exception
-         * @constructor
-         * @param message
-         * @param index
-         */
-        function EntityAlreadyHasComponentException(message, index) {
-            _super.call(this, message + "\nEntity already has a component at index " + index);
-        }
-        return EntityAlreadyHasComponentException;
-    })(Exception);
-    entitas.EntityAlreadyHasComponentException = EntityAlreadyHasComponentException;
-    var EntityDoesNotHaveComponentException = (function (_super) {
-        __extends(EntityDoesNotHaveComponentException, _super);
-        /**
-         * Entity Does Not Have Component Exception
-         * @constructor
-         * @param message
-         * @param index
-         */
-        function EntityDoesNotHaveComponentException(message, index) {
-            _super.call(this, message + "\nEntity does not have a component at index " + index);
-        }
-        return EntityDoesNotHaveComponentException;
-    })(Exception);
-    entitas.EntityDoesNotHaveComponentException = EntityDoesNotHaveComponentException;
-    var EntityIsNotEnabledException = (function (_super) {
-        __extends(EntityIsNotEnabledException, _super);
-        /**
-         * Entity Is Not Enabled Exception
-         * @constructor
-         * @param message
-         */
-        function EntityIsNotEnabledException(message) {
-            _super.call(this, message + "\nEntity is not enabled");
-        }
-        return EntityIsNotEnabledException;
-    })(Exception);
-    entitas.EntityIsNotEnabledException = EntityIsNotEnabledException;
-    var EntityIsAlreadyReleasedException = (function (_super) {
-        __extends(EntityIsAlreadyReleasedException, _super);
-        /**
-         * Entity Is Already Released Exception
-         * @constructor
-         */
-        function EntityIsAlreadyReleasedException() {
-            _super.call(this, "Entity is already released!");
-        }
-        return EntityIsAlreadyReleasedException;
-    })(Exception);
-    entitas.EntityIsAlreadyReleasedException = EntityIsAlreadyReleasedException;
-    var SingleEntityException = (function (_super) {
-        __extends(SingleEntityException, _super);
-        /**
-         * Single Entity Exception
-         * @constructor
-         * @param matcher
-         */
-        function SingleEntityException(matcher) {
-            _super.call(this, "Multiple entities exist matching " + matcher);
-        }
-        return SingleEntityException;
-    })(Exception);
-    entitas.SingleEntityException = SingleEntityException;
-    var GroupObserverException = (function (_super) {
-        __extends(GroupObserverException, _super);
-        /**
-         * Group Observer Exception
-         * @constructor
-         * @param message
-         */
-        function GroupObserverException(message) {
-            _super.call(this, message);
-        }
-        return GroupObserverException;
-    })(Exception);
-    entitas.GroupObserverException = GroupObserverException;
-    var PoolDoesNotContainEntityException = (function (_super) {
-        __extends(PoolDoesNotContainEntityException, _super);
-        /**
-         * Pool Does Not Contain Entity Exception
-         * @constructor
-         * @param entity
-         * @param message
-         */
-        function PoolDoesNotContainEntityException(entity, message) {
-            _super.call(this, message + "\nPool does not contain entity " + entity);
-        }
-        return PoolDoesNotContainEntityException;
-    })(Exception);
-    entitas.PoolDoesNotContainEntityException = PoolDoesNotContainEntityException;
-    var EntityIsNotDestroyedException = (function (_super) {
-        __extends(EntityIsNotDestroyedException, _super);
-        /**
-         * Entity Is Not Destroyed Exception
-         * @constructor
-         * @param message
-         */
-        function EntityIsNotDestroyedException(message) {
-            _super.call(this, message + "\nEntity is not destroyed yet!");
-        }
-        return EntityIsNotDestroyedException;
-    })(Exception);
-    entitas.EntityIsNotDestroyedException = EntityIsNotDestroyedException;
-    var MatcherException = (function (_super) {
-        __extends(MatcherException, _super);
-        /**
-         * Matcher Exception
-         * @constructor
-         * @param matcher
-         */
-        function MatcherException(matcher) {
-            _super.call(this, "matcher.indices.length must be 1 but was " + matcher.indices.length);
-        }
-        return MatcherException;
-    })(Exception);
-    entitas.MatcherException = MatcherException;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
-    var MatcherException = entitas.MatcherException;
+    var exceptions;
+    (function (exceptions) {
+        var Exception = entitas.Exception;
+        var EntityAlreadyHasComponentException = (function (_super) {
+            __extends(EntityAlreadyHasComponentException, _super);
+            /**
+             * Entity Already Has Component Exception
+             * @constructor
+             * @param message
+             * @param index
+             */
+            function EntityAlreadyHasComponentException(message, index) {
+                _super.call(this, message + "\nEntity already has a component at index " + index);
+            }
+            return EntityAlreadyHasComponentException;
+        })(Exception);
+        exceptions.EntityAlreadyHasComponentException = EntityAlreadyHasComponentException;
+    })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var exceptions;
+    (function (exceptions) {
+        var Exception = entitas.Exception;
+        var EntityDoesNotHaveComponentException = (function (_super) {
+            __extends(EntityDoesNotHaveComponentException, _super);
+            /**
+             * Entity Does Not Have Component Exception
+             * @constructor
+             * @param message
+             * @param index
+             */
+            function EntityDoesNotHaveComponentException(message, index) {
+                _super.call(this, message + "\nEntity does not have a component at index " + index);
+            }
+            return EntityDoesNotHaveComponentException;
+        })(Exception);
+        exceptions.EntityDoesNotHaveComponentException = EntityDoesNotHaveComponentException;
+    })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var exceptions;
+    (function (exceptions) {
+        var Exception = entitas.Exception;
+        var EntityIsNotEnabledException = (function (_super) {
+            __extends(EntityIsNotEnabledException, _super);
+            /**
+             * Entity Is Not Enabled Exception
+             * @constructor
+             * @param message
+             */
+            function EntityIsNotEnabledException(message) {
+                _super.call(this, message + "\nEntity is not enabled");
+            }
+            return EntityIsNotEnabledException;
+        })(Exception);
+        exceptions.EntityIsNotEnabledException = EntityIsNotEnabledException;
+    })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var exceptions;
+    (function (exceptions) {
+        var Exception = entitas.Exception;
+        var EntityIsAlreadyReleasedException = (function (_super) {
+            __extends(EntityIsAlreadyReleasedException, _super);
+            /**
+             * Entity Is Already Released Exception
+             * @constructor
+             */
+            function EntityIsAlreadyReleasedException() {
+                _super.call(this, "Entity is already released!");
+            }
+            return EntityIsAlreadyReleasedException;
+        })(Exception);
+        exceptions.EntityIsAlreadyReleasedException = EntityIsAlreadyReleasedException;
+    })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var exceptions;
+    (function (exceptions) {
+        var Exception = entitas.Exception;
+        var SingleEntityException = (function (_super) {
+            __extends(SingleEntityException, _super);
+            /**
+             * Single Entity Exception
+             * @constructor
+             * @param matcher
+             */
+            function SingleEntityException(matcher) {
+                _super.call(this, "Multiple entities exist matching " + matcher);
+            }
+            return SingleEntityException;
+        })(Exception);
+        exceptions.SingleEntityException = SingleEntityException;
+    })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var exceptions;
+    (function (exceptions) {
+        var Exception = entitas.Exception;
+        var GroupObserverException = (function (_super) {
+            __extends(GroupObserverException, _super);
+            /**
+             * Group Observer Exception
+             * @constructor
+             * @param message
+             */
+            function GroupObserverException(message) {
+                _super.call(this, message);
+            }
+            return GroupObserverException;
+        })(Exception);
+        exceptions.GroupObserverException = GroupObserverException;
+    })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var exceptions;
+    (function (exceptions) {
+        var Exception = entitas.Exception;
+        var PoolDoesNotContainEntityException = (function (_super) {
+            __extends(PoolDoesNotContainEntityException, _super);
+            /**
+             * Pool Does Not Contain Entity Exception
+             * @constructor
+             * @param entity
+             * @param message
+             */
+            function PoolDoesNotContainEntityException(entity, message) {
+                _super.call(this, message + "\nPool does not contain entity " + entity);
+            }
+            return PoolDoesNotContainEntityException;
+        })(Exception);
+        exceptions.PoolDoesNotContainEntityException = PoolDoesNotContainEntityException;
+    })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var exceptions;
+    (function (exceptions) {
+        var Exception = entitas.Exception;
+        var EntityIsNotDestroyedException = (function (_super) {
+            __extends(EntityIsNotDestroyedException, _super);
+            /**
+             * Entity Is Not Destroyed Exception
+             * @constructor
+             * @param message
+             */
+            function EntityIsNotDestroyedException(message) {
+                _super.call(this, message + "\nEntity is not destroyed yet!");
+            }
+            return EntityIsNotDestroyedException;
+        })(Exception);
+        exceptions.EntityIsNotDestroyedException = EntityIsNotDestroyedException;
+    })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var exceptions;
+    (function (exceptions) {
+        var Exception = entitas.Exception;
+        var MatcherException = (function (_super) {
+            __extends(MatcherException, _super);
+            /**
+             * Matcher Exception
+             * @constructor
+             * @param matcher
+             */
+            function MatcherException(matcher) {
+                _super.call(this, "matcher.indices.length must be 1 but was " + matcher.indices.length);
+            }
+            return MatcherException;
+        })(Exception);
+        exceptions.MatcherException = MatcherException;
+    })(exceptions = entitas.exceptions || (entitas.exceptions = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var MatcherException = entitas.exceptions.MatcherException;
+    var GroupEventType = entitas.GroupEventType;
+    var TriggerOnEvent = entitas.TriggerOnEvent;
     var Matcher = (function () {
+        /**
+         * @constructor
+         *
+         */
         function Matcher() {
             this._id = Matcher.uniqueId++;
         }
         Object.defineProperty(Matcher.prototype, "id", {
+            /**
+             * Get the matcher id
+             * @type {number}
+             * @name entitas.Matcher#id */
             get: function () { return this._id; },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(Matcher.prototype, "indices", {
+            /**
+             * A list of the component ordinals that this matches
+             * @type {Array<number>}
+             * @name entitas.Matcher#indices */
             get: function () {
                 if (!this._indices) {
                     this._indices = this.mergeIndices();
@@ -854,20 +661,37 @@ var entitas;
             configurable: true
         });
         Object.defineProperty(Matcher.prototype, "allOfIndices", {
+            /**
+             * A unique sequential index number assigned to each entity at creation
+             * @type {number}
+             * @name entitas.Matcher#allOfIndices */
             get: function () { return this._allOfIndices; },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(Matcher.prototype, "anyOfIndices", {
+            /**
+             * A unique sequential index number assigned to each entity at creation
+             * @type {number}
+             * @name entitas.Matcher#anyOfIndices */
             get: function () { return this._anyOfIndices; },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(Matcher.prototype, "noneOfIndices", {
+            /**
+             * A unique sequential index number assigned to each entity at creation
+             * @type {number}
+             * @name entitas.Matcher#noneOfIndices */
             get: function () { return this._noneOfIndices; },
             enumerable: true,
             configurable: true
         });
+        /**
+         * Matches anyOf the components/indices specified
+         * @params {Array<entitas.IMatcher>|Array<number>} args
+         * @returns {entitas.Matcher}
+         */
         Matcher.prototype.anyOf = function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
@@ -882,6 +706,11 @@ var entitas;
                 return this.anyOf.apply(this, Matcher.mergeIndices(args));
             }
         };
+        /**
+         * Matches noneOf the components/indices specified
+         * @params {Array<entitas.IMatcher>|Array<number>} args
+         * @returns {entitas.Matcher}
+         */
         Matcher.prototype.noneOf = function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
@@ -896,12 +725,21 @@ var entitas;
                 return this.noneOf.apply(this, Matcher.mergeIndices(args));
             }
         };
+        /**
+         * Check if the entity matches this matcher
+         * @param {entitas.Entity} entity
+         * @returns {boolean}
+         */
         Matcher.prototype.matches = function (entity) {
             var matchesAllOf = this._allOfIndices == null ? true : entity.hasComponents(this._allOfIndices);
             var matchesAnyOf = this._anyOfIndices == null ? true : entity.hasAnyComponent(this._anyOfIndices);
             var matchesNoneOf = this._noneOfIndices == null ? true : !entity.hasAnyComponent(this._noneOfIndices);
             return matchesAllOf && matchesAnyOf && matchesNoneOf;
         };
+        /**
+         * Merge list of component indices
+         * @returns {Array<number>}
+         */
         Matcher.prototype.mergeIndices = function () {
             //var totalIndices = (this._allOfIndices != null ? this._allOfIndices.length : 0)
             //  + (this._anyOfIndices != null ? this._anyOfIndices.length : 0)
@@ -918,6 +756,10 @@ var entitas;
             }
             return Matcher.distinctIndices(indicesList);
         };
+        /**
+         * toString representation of this matcher
+         * @returns {string}
+         */
         Matcher.prototype.toString = function () {
             if (this._toStringCache == null) {
                 var sb = [];
@@ -937,6 +779,11 @@ var entitas;
             }
             return this._toStringCache;
         };
+        /**
+         * Check if the matchers are equal
+         * @param {Object} obj
+         * @returns {boolean}
+         */
         Matcher.prototype.equals = function (obj) {
             if (obj == null || obj == null)
                 return false;
@@ -952,6 +799,12 @@ var entitas;
             }
             return true;
         };
+        /**
+         * Check if the lists of component indices are equal
+         * @param {Array<number>} list1
+         * @param {Array<number>} list2
+         * @returns {boolean}
+         */
         Matcher.equalIndices = function (i1, i2) {
             if ((i1 == null) != (i2 == null)) {
                 return false;
@@ -970,6 +823,11 @@ var entitas;
             }
             return true;
         };
+        /**
+         * Get the set if distinct (non-duplicate) indices from a list
+         * @param {Array<number>} indices
+         * @returns {Array<number>}
+         */
         Matcher.distinctIndices = function (indices) {
             var indicesSet = {};
             for (var i = 0, l = indices.length; i < l; i++) {
@@ -978,6 +836,11 @@ var entitas;
             }
             return [].concat(Object.keys(indicesSet));
         };
+        /**
+         * Merge all the indices of a set of Matchers
+         * @param {Array<IMatcher>} matchers
+         * @returns {Array<number>}
+         */
         Matcher.mergeIndices = function (matchers) {
             var indices = [];
             for (var i = 0, matchersLength = matchers.length; i < matchersLength; i++) {
@@ -989,6 +852,11 @@ var entitas;
             }
             return indices;
         };
+        /**
+         * Matches allOf the components/indices specified
+         * @params {Array<entitas.IMatcher>|Array<number>} args
+         * @returns {entitas.Matcher}
+         */
         Matcher.allOf = function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
@@ -1003,6 +871,11 @@ var entitas;
                 return Matcher.allOf.apply(this, Matcher.mergeIndices(args));
             }
         };
+        /**
+         * Matches anyOf the components/indices specified
+         * @params {Array<entitas.IMatcher>|Array<number>} args
+         * @returns {entitas.Matcher}
+         */
         Matcher.anyOf = function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
@@ -1031,6 +904,30 @@ var entitas;
             }
             sb[j++] = ')';
         };
+        /**
+         * Subscribe to Entity Added event
+         * @returns {entitas.TriggerOnEvent}
+         */
+        Matcher.prototype.onEntityAdded = function () {
+            return new TriggerOnEvent(this, GroupEventType.OnEntityAdded);
+        };
+        /**
+         * Subscribe to Entity Removed event
+         * @returns {entitas.TriggerOnEvent}
+         */
+        Matcher.prototype.onEntityRemoved = function () {
+            return new TriggerOnEvent(this, GroupEventType.OnEntityRemoved);
+        };
+        /**
+         * Subscribe to Entity Added or Removed event
+         * @returns {entitas.TriggerOnEvent}
+         */
+        Matcher.prototype.onEntityAddedOrRemoved = function () {
+            return new TriggerOnEvent(this, GroupEventType.OnEntityAddedOrRemoved);
+        };
+        /**
+         * A unique sequential index number assigned to each ,atch
+         * @type {number} */
         Matcher.uniqueId = 0;
         return Matcher;
     })();
@@ -1039,6 +936,12 @@ var entitas;
 var entitas;
 (function (entitas) {
     var TriggerOnEvent = (function () {
+        /**
+         * @constructor
+         *
+         * @param trigger
+         * @param eventType
+         */
         function TriggerOnEvent(trigger, eventType) {
             this.trigger = trigger;
             this.eventType = eventType;
@@ -1054,20 +957,58 @@ var entitas;
 var entitas;
 (function (entitas) {
     var Signal = entitas.utils.Signal;
-    var EntityIsNotEnabledException = entitas.EntityIsNotEnabledException;
-    var EntityIsAlreadyReleasedException = entitas.EntityIsAlreadyReleasedException;
-    var EntityAlreadyHasComponentException = entitas.EntityAlreadyHasComponentException;
-    var EntityDoesNotHaveComponentException = entitas.EntityDoesNotHaveComponentException;
-    /**
-     * The basic game object. Everything is an entity with components that
-     * are added / removed as needed.
-     */
+    var EntityIsNotEnabledException = entitas.exceptions.EntityIsNotEnabledException;
+    var EntityIsAlreadyReleasedException = entitas.exceptions.EntityIsAlreadyReleasedException;
+    var EntityAlreadyHasComponentException = entitas.exceptions.EntityAlreadyHasComponentException;
+    var EntityDoesNotHaveComponentException = entitas.exceptions.EntityDoesNotHaveComponentException;
     var Entity = (function () {
+        /**
+         * The basic game object. Everything is an entity with components that
+         * are added / removed as needed.
+         *
+         * @param {Object} componentsEnum
+         * @param {number} totalComponents
+         * @constructor
+         */
         function Entity(componentsEnum, totalComponents) {
             if (totalComponents === void 0) { totalComponents = 16; }
+            /**
+             * Subscribe to Entity Released Event
+             * @type {entitas.ISignal} */
+            this.onEntityReleased = null;
+            /**
+             * Subscribe to Component Added Event
+             * @type {entitas.ISignal} */
+            this.onComponentAdded = null;
+            /**
+             * Subscribe to Component Removed Event
+             * @type {entitas.ISignal} */
+            this.onComponentRemoved = null;
+            /**
+             * Subscribe to Component Replaced Event
+             * @type {entitas.ISignal} */
+            this.onComponentReplaced = null;
+            /**
+             * Entity name
+             * @type {string} */
+            this.name = '';
+            /**
+             *  Entity Id
+             * @type {string} */
+            this.id = '';
+            /**
+             *  Instance index
+             * @type {number} */
+            this.instanceIndex = 0;
             this._creationIndex = 0;
             this._isEnabled = true;
+            this._components = null;
+            this._componentsCache = null;
+            this._componentIndicesCache = null;
+            this._toStringCache = '';
             this._refCount = 0;
+            this._pool = null;
+            this._componentsEnum = null;
             this.onEntityReleased = new Signal(this);
             this.onComponentAdded = new Signal(this);
             this.onComponentRemoved = new Signal(this);
@@ -1077,27 +1018,65 @@ var entitas;
             this._components = this.initialize(totalComponents);
         }
         Object.defineProperty(Entity.prototype, "creationIndex", {
+            /**
+             * A unique sequential index number assigned to each entity at creation
+             * @type {number}
+             * @name entitas.Entity#creationIndex */
             get: function () { return this._creationIndex; },
             enumerable: true,
             configurable: true
         });
+        Entity.initialize = function (totalComponents, options) {
+            Entity.size = options.entities || 100;
+        };
+        /**
+         * allocate entity pool
+         *
+         * @param count number of components
+         * @param size max number of entities
+         */
+        Entity.dim = function (count, size) {
+            Entity.alloc = new Array(size);
+            for (var e = 0; e < size; e++) {
+                Entity.alloc[e] = new Array(count);
+                for (var k = 0; k < count; k++) {
+                    Entity.alloc[e][k] = null;
+                }
+            }
+        };
         /**
          * Initialize
-         *
          * Extension point to allocate enetity pool.
          *
-         * @param totalComponents
-         * @returns Array<entitas.IComponent>
+         * @param {number} totalComponents
+         * @returns {Array<entitas.IComponent>}
          */
         Entity.prototype.initialize = function (totalComponents) {
-            return null;
+            var mem;
+            var size = Entity.size;
+            if (Entity.alloc == null)
+                Entity.dim(totalComponents, size);
+            var alloc = Entity.alloc;
+            this.instanceIndex = Entity.instanceIndex++;
+            if (mem = alloc[this.instanceIndex])
+                return mem;
+            console.log('Insufficient memory allocation at ', this.instanceIndex, '. Allocating ', size, ' entities.');
+            for (var i = this.instanceIndex, l = i + size; i < l; i++) {
+                alloc[i] = new Array(totalComponents);
+                for (var k = 0; k < totalComponents; k++) {
+                    alloc[i][k] = null;
+                }
+            }
+            mem = alloc[this.instanceIndex];
+            return mem;
         };
+        ;
         /**
          * AddComponent
          *
-         * @param index
-         * @param component
-         * @returns entitas.Entity
+         * @param {number} index
+         * @param {entitas.IComponent} component
+         * @returns {entitas.Entity}
          */
         Entity.prototype.addComponent = function (index, component) {
             if (!this._isEnabled) {
@@ -1119,8 +1098,8 @@ var entitas;
         /**
          * RemoveComponent
          *
-         * @param index
-         * @returns entitas.Entity
+         * @param {number} index
+         * @returns {entitas.Entity}
          */
         Entity.prototype.removeComponent = function (index) {
             if (!this._isEnabled) {
@@ -1136,9 +1115,9 @@ var entitas;
         /**
          * ReplaceComponent
          *
-         * @param index
-         * @param component
-         * @returns entitas.Entity
+         * @param {number} index
+         * @param {entitas.IComponent} component
+         * @returns {entitas.Entity}
          */
         Entity.prototype.replaceComponent = function (index, component) {
             if (!this._isEnabled) {
@@ -1181,8 +1160,8 @@ var entitas;
         /**
          * GetComponent
          *
-         * @param index
-         * @param component
+         * @param {number} index
+         * @param {entitas.IComponent} component
          */
         Entity.prototype.getComponent = function (index) {
             if (!this.hasComponent(index)) {
@@ -1194,7 +1173,7 @@ var entitas;
         /**
          * GetComponents
          *
-         * @returns Array<entitas.IComponent>
+         * @returns {Array<entitas.IComponent>}
          */
         Entity.prototype.getComponents = function () {
             if (this._componentsCache == null) {
@@ -1213,7 +1192,7 @@ var entitas;
         /**
          * GetComponentIndices
          *
-         * @returns Array<number>
+         * @returns {Array<number>}
          */
         Entity.prototype.getComponentIndices = function () {
             if (this._componentIndicesCache == null) {
@@ -1231,8 +1210,8 @@ var entitas;
         /**
          * HasComponent
          *
-         * @param index
-         * @returns boolean
+         * @param {number} index
+         * @returns {boolean}
          */
         Entity.prototype.hasComponent = function (index) {
             return this._components[index] != null;
@@ -1240,8 +1219,8 @@ var entitas;
         /**
          * HasComponents
          *
-         * @param indices
-         * @returns boolean
+         * @param {Array<number>} indices
+         * @returns {boolean}
          */
         Entity.prototype.hasComponents = function (indices) {
             var _components = this._components;
@@ -1255,8 +1234,8 @@ var entitas;
         /**
          * HasAnyComponent
          *
-         * @param indices
-         * @returns boolean
+         * @param {Array<number>} indices
+         * @returns {boolean}
          */
         Entity.prototype.hasAnyComponent = function (indices) {
             var _components = this._components;
@@ -1294,7 +1273,7 @@ var entitas;
         /**
          * ToString
          *
-         * @returns string
+         * @returns {string}
          */
         Entity.prototype.toString = function () {
             if (this._toStringCache == null) {
@@ -1315,7 +1294,7 @@ var entitas;
         /**
          * AddRef
          *
-         * @returns entitas.Entity
+         * @returns {entitas.Entity}
          */
         Entity.prototype.addRef = function () {
             this._refCount += 1;
@@ -1336,6 +1315,18 @@ var entitas;
                 throw new EntityIsAlreadyReleasedException();
             }
         };
+        /**
+         * @static
+         * @type {number} */
+        Entity.instanceIndex = 0;
+        /**
+         * @static
+         * @type {Array<Array<IComponent>>} */
+        Entity.alloc = null;
+        /**
+         * @static
+         * @type {number} */
+        Entity.size = 0;
         return Entity;
     })();
     entitas.Entity = Entity;
@@ -1343,14 +1334,31 @@ var entitas;
 var entitas;
 (function (entitas) {
     var Signal = entitas.utils.Signal;
-    var SingleEntityException = entitas.SingleEntityException;
+    var GroupEventType = entitas.GroupEventType;
+    var SingleEntityException = entitas.exceptions.SingleEntityException;
     var Group = (function () {
         /**
          * @constructor
          * @param matcher
          */
         function Group(matcher) {
-            /** @type {Object<string,entitas.Entity>} */
+            /**
+             * Subscribe to Entity Addded events
+             * @type {entitas.utils.ISignal} */
+            this.onEntityAdded = null;
+            /**
+             * Subscribe to Entity Removed events
+             * @type {entitas.utils.ISignal} */
+            this.onEntityRemoved = null;
+            /**
+             * Subscribe to Entity Updated events
+             * @type {entitas.utils.ISignal} */
+            this.onEntityUpdated = null;
+            this._entities = {};
+            this._matcher = null;
+            this._entitiesCache = null;
+            this._singleEntityCache = null;
+            this._toStringCache = '';
             this._entities = {};
             this.onEntityAdded = new Signal(this);
             this.onEntityRemoved = new Signal(this);
@@ -1358,19 +1366,34 @@ var entitas;
             this._matcher = matcher;
         }
         Object.defineProperty(Group.prototype, "count", {
-            /** @type {number} */
+            /**
+             * Count the number of entities in this group
+             * @type {number}
+             * @name entitas.Group#count */
             get: function () { return Object.keys(this._entities).length; },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(Group.prototype, "matcher", {
-            /** @type {entitas.IMatcher} */
+            /**
+             * Get the Matcher for this group
+             * @type {entitas.IMatcher}
+             * @name entitas.Group#matcher */
             get: function () { return this._matcher; },
             enumerable: true,
             configurable: true
         });
         /**
-         * Handle entity without raising events
+         * Create an Observer for the event type on this group
+         * @param eventType
+         */
+        Group.prototype.createObserver = function (eventType) {
+            if (eventType === undefined)
+                eventType = GroupEventType.OnEntityAdded;
+            return new entitas.GroupObserver(this, eventType);
+        };
+        /**
+         * Handle adding and removing component from the entity without raising events
          * @param entity
          */
         Group.prototype.handleEntitySilently = function (entity) {
@@ -1382,7 +1405,7 @@ var entitas;
             }
         };
         /**
-         * Handle entity and raise events
+         * Handle adding and removing component from the entity and raisieevents
          * @param entity
          * @param index
          * @param component
@@ -1483,7 +1506,7 @@ var entitas;
             return entity.id in this._entities;
         };
         /**
-         * Get the entities in this group
+         * Get a list of the entities in this group
          *
          * @returns Array<entitas.Entity>
          */
@@ -1500,7 +1523,7 @@ var entitas;
             return this._entitiesCache;
         };
         /**
-         * Gets a single entity.
+         * Gets an entity singleton.
          * If a group has more than 1 entity, this is an error condition.
          *
          * @returns entitas.Entity
@@ -1522,6 +1545,9 @@ var entitas;
             return this._singleEntityCache;
         };
         /**
+         * Create a string representation for this group:
+         *
+         *  ex: 'Group(Position)'
          *
          * @returns string
          */
@@ -1537,8 +1563,12 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
-    var GroupObserverException = entitas.GroupObserverException;
-    /** @typedef {Object<string|number>} */
+    var GroupObserverException = entitas.exceptions.GroupObserverException;
+    /**
+     * Event Types
+     * @readonly
+     * @enum {number}
+     */
     (function (GroupEventType) {
         GroupEventType[GroupEventType["OnEntityAdded"] = 0] = "OnEntityAdded";
         GroupEventType[GroupEventType["OnEntityRemoved"] = 1] = "OnEntityRemoved";
@@ -1547,16 +1577,18 @@ var entitas;
     var GroupEventType = entitas.GroupEventType;
     var GroupObserver = (function () {
         /**
-         *
-         * @param groups
-         * @param eventTypes
+         * @constructor
+         * @param {Array<entitas.Group>} groups
+         * @param {number} eventTypes
          */
         function GroupObserver(groups, eventTypes) {
             var _this = this;
-            /** @type {Object<string,entitas.Entity>}*/
             this._collectedEntities = {};
+            this._groups = null;
+            this._eventTypes = null;
+            this._addEntityCache = null;
             /**
-             *
+             * Adds an entity to this observer group
              * @param group
              * @param {entitas.Entity}entity
              * @param index
@@ -1579,11 +1611,17 @@ var entitas;
             this.activate();
         }
         Object.defineProperty(GroupObserver.prototype, "collectedEntities", {
-            /** @type {Object<string,entitas.Entity>}*/
+            /**
+             * Entities being observed
+             * @type {Object<string,entitas.Entity>}
+             * @name entitas.GroupObserver#collectedEntities */
             get: function () { return this._collectedEntities; },
             enumerable: true,
             configurable: true
         });
+        /**
+         * Activate events
+         */
         GroupObserver.prototype.activate = function () {
             for (var i = 0, groupsLength = this._groups.length; i < groupsLength; i++) {
                 var group = this._groups[i];
@@ -1607,6 +1645,9 @@ var entitas;
                 }
             }
         };
+        /**
+         * Deavtivate events
+         */
         GroupObserver.prototype.deactivate = function () {
             var e;
             for (var i = 0, groupsLength = this._groups.length; i < groupsLength; i++) {
@@ -1616,6 +1657,9 @@ var entitas;
                 this.clearCollectedEntities();
             }
         };
+        /**
+         * Clear the list of entities
+         */
         GroupObserver.prototype.clearCollectedEntities = function () {
             for (var e in this._collectedEntities) {
                 this._collectedEntities[e].release();
@@ -1633,38 +1677,58 @@ var entitas;
     var Group = entitas.Group;
     var Entity = entitas.Entity;
     var Signal = entitas.utils.Signal;
-    var EntityIsNotDestroyedException = entitas.EntityIsNotDestroyedException;
-    var PoolDoesNotContainEntityException = entitas.PoolDoesNotContainEntityException;
+    var EntityIsNotDestroyedException = entitas.exceptions.EntityIsNotDestroyedException;
+    var PoolDoesNotContainEntityException = entitas.exceptions.PoolDoesNotContainEntityException;
+    function as(obj, method1) {
+        return method1 in obj ? obj : null;
+    }
     /**
      * A cached pool of entities and components.
      * The games world.
      */
     var Pool = (function () {
         /**
-         *
-         * @param components
-         * @param totalComponents
-         * @param startCreationIndex
+         * @constructor
+         * @param {Object} components
+         * @param {number} totalComponents
+         * @param {number} startCreationIndex
          */
         function Pool(components, totalComponents, startCreationIndex) {
             var _this = this;
             if (startCreationIndex === void 0) { startCreationIndex = 0; }
-            /** @type {Object<string,entitas.Entity>} */
-            this._entities = {};
-            /** @type {Object<string,entitas.Group>} */
-            this._groups = {};
-            /** @type {entitas.util.Bag<Entity>} */
-            this._reusableEntities = new Bag();
-            /** @type {Object<string,entitas.Entity>} */
-            this._retainedEntities = {};
-            /** @type {number} */
-            this._totalComponents = 0;
-            /** @type {number} */
-            this._creationIndex = 0;
             /**
-             * @param entity
-             * @param index
-             * @param component
+             * Subscribe to Entity Created Event
+             * @type {entitas.utils.ISignal} */
+            this.onEntityCreated = null;
+            /**
+             * Subscribe to Entity Will Be Destroyed Event
+             * @type {entitas.utils.ISignal} */
+            this.onEntityWillBeDestroyed = null;
+            /**
+             * Subscribe to Entity Destroyed Event
+             * @type {entitas.utils.ISignal} */
+            this.onEntityDestroyed = null;
+            /**
+             * Subscribe to Group Created Event
+             * @type {entitas.utils.ISignal} */
+            this.onGroupCreated = null;
+            /**
+             * Entity name for debugging
+             * @type {string} */
+            this.name = '';
+            this._entities = {};
+            this._groups = {};
+            this._groupsForIndex = null;
+            this._reusableEntities = new Bag();
+            this._retainedEntities = {};
+            this._componentsEnum = null;
+            this._totalComponents = 0;
+            this._creationIndex = 0;
+            this._entitiesCache = null;
+            /**
+             * @param {entitas.Entity} entity
+             * @param {number} index
+             * @param {entitas.IComponent} component
              */
             this.updateGroupsComponentAddedOrRemoved = function (entity, index, component) {
                 var groups = _this._groupsForIndex[index];
@@ -1675,10 +1739,10 @@ var entitas;
                 }
             };
             /**
-             * @param entity
-             * @param index
-             * @param previousComponent
-             * @param newComponent
+             * @param {entitas.Entity} entity
+             * @param {number} index
+             * @param {entitas.IComponent} previousComponent
+             * @param {entitas.IComponent} newComponent
              */
             this.updateGroupsComponentReplaced = function (entity, index, previousComponent, newComponent) {
                 var groups = _this._groupsForIndex[index];
@@ -1689,7 +1753,7 @@ var entitas;
                 }
             };
             /**
-             * @param entity
+             * @param {entitas.Entity} entity
              */
             this.onEntityReleased = function (entity) {
                 if (entity._isEnabled) {
@@ -1715,33 +1779,58 @@ var entitas;
             Pool.totalComponents = totalComponents;
         }
         Object.defineProperty(Pool.prototype, "totalComponents", {
-            /** @type {number} */
+            /**
+             * The total number of components in this pool
+             * @type {number}
+             * @name entitas.Pool#totalComponents */
             get: function () { return this._totalComponents; },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(Pool.prototype, "count", {
-            /** @type {number} */
+            /**
+             * Count of active entities
+             * @type {number}
+             * @name entitas.Pool#count */
             get: function () { return Object.keys(this._entities).length; },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(Pool.prototype, "reusableEntitiesCount", {
-            /** @type {number} */
+            /**
+             * Count of entities waiting to be recycled
+             * @type {number}
+             * @name entitas.Pool#reusableEntitiesCount */
             get: function () { return this._reusableEntities.size(); },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(Pool.prototype, "retainedEntitiesCount", {
-            /** @type {number} */
+            /**
+             * Count of entities that sill have references
+             * @type {number}
+             * @name entitas.Pool#retainedEntitiesCount */
             get: function () { return Object.keys(this._retainedEntities).length; },
             enumerable: true,
             configurable: true
         });
         /**
+         * Set the system pool if supported
+         *
+         * @static
+         * @param {entitas.ISystem} system
+         * @param {entitas.Pool} pool
+         */
+        Pool.setPool = function (system, pool) {
+            var poolSystem = as(system, 'setPool');
+            if (poolSystem != null) {
+                poolSystem.setPool(pool);
+            }
+        };
+        /**
          * Create a new entity
-         * @param name
-         * @returns entitas.Entity
+         * @param {string} name
+         * @returns {entitas.Entity}
          */
         Pool.prototype.createEntity = function (name) {
             var entity = this._reusableEntities.size() > 0 ? this._reusableEntities.removeLast() : new Entity(this._componentsEnum, this._totalComponents);
@@ -1763,7 +1852,7 @@ var entitas;
         };
         /**
          * Destroy an entity
-         * @param entity
+         * @param {entitas.Entity} entity
          */
         Pool.prototype.destroyEntity = function (entity) {
             if (!(entity.id in this._entities)) {
@@ -1799,8 +1888,8 @@ var entitas;
         /**
          * Check if pool has this entity
          *
-         * @param entity
-         * @returns boolean
+         * @param {entitas.Entity} entity
+         * @returns {boolean}
          */
         Pool.prototype.hasEntity = function (entity) {
             return entity.id in this._entities;
@@ -1808,26 +1897,63 @@ var entitas;
         /**
          * Gets all of the entities
          *
-         * @returns Array<entitas.Entity>
+         * @returns {Array<entitas.Entity>}
          */
-        Pool.prototype.getEntities = function () {
-            if (this._entitiesCache == null) {
-                var entities = this._entities;
-                var keys = Object.keys(entities);
-                var length = keys.length;
-                var entitiesCache = this._entitiesCache = new Array(length);
-                for (var i = 0; i < length; i++) {
-                    var k = keys[i];
-                    entitiesCache[i] = entities[k];
-                }
+        Pool.prototype.getEntities = function (matcher) {
+            if (matcher) {
+                /** PoolExtension::getEntities */
+                return this.getGroup(matcher).getEntities();
             }
-            return entitiesCache;
+            else {
+                if (this._entitiesCache == null) {
+                    var entities = this._entities;
+                    var keys = Object.keys(entities);
+                    var length = keys.length;
+                    var entitiesCache = this._entitiesCache = new Array(length);
+                    for (var i = 0; i < length; i++) {
+                        entitiesCache[i] = entities[keys[i]];
+                    }
+                }
+                return this._entitiesCache;
+            }
+            // if (this._entitiesCache == null) {
+            //   var entities = this._entities;
+            //   var keys = Object.keys(entities);
+            //   var length = keys.length;
+            //   var entitiesCache = this._entitiesCache = new Array(length);
+            //   for (var i = 0; i < length; i++) {
+            //     var k = keys[i];
+            //     entitiesCache[i] = entities[k];
+            //   }
+            // }
+            // return entitiesCache;
+        };
+        /**
+         * Create System
+         * @param {entitas.ISystem|Function}
+         * @returns {entitas.ISystem}
+         */
+        Pool.prototype.createSystem = function (system) {
+            if ('function' === typeof system) {
+                var Klass = system;
+                system = new Klass();
+            }
+            Pool.setPool(system, this);
+            var reactiveSystem = as(system, 'trigger');
+            if (reactiveSystem != null) {
+                return new entitas.ReactiveSystem(this, reactiveSystem);
+            }
+            var multiReactiveSystem = as(system, 'triggers');
+            if (multiReactiveSystem != null) {
+                return new entitas.ReactiveSystem(this, multiReactiveSystem);
+            }
+            return system;
         };
         /**
          * Gets all of the entities that match
          *
-         * @param matcher
-         * @returns entitas.Group
+         * @param {entias.IMatcher} matcher
+         * @returns {entitas.Group}
          */
         Pool.prototype.getGroup = function (matcher) {
             var group;
@@ -1854,8 +1980,18 @@ var entitas;
             }
             return group;
         };
-        /** @type {number} */
+        /**
+         * An enum of valid component types
+         * @type {Object<string,number>} */
+        Pool.componentsEnum = null;
+        /**
+         * Count of components
+         * @type {number} */
         Pool.totalComponents = 0;
+        /**
+         * Global reference to pool instance
+         * @type {entitas.Pool} */
+        Pool.instance = null;
         return Pool;
     })();
     entitas.Pool = Pool;
@@ -1875,6 +2011,12 @@ var entitas;
         return method in object ? object : null;
     }
     var ReactiveSystem = (function () {
+        /**
+         * @constructor
+         *
+         * @param pool
+         * @param subSystem
+         */
         function ReactiveSystem(pool, subSystem) {
             var triggers = 'triggers' in subSystem ? subSystem['triggers'] : [subSystem['trigger']];
             this._subsystem = subSystem;
@@ -1899,6 +2041,10 @@ var entitas;
             this._buffer = [];
         }
         Object.defineProperty(ReactiveSystem.prototype, "subsystem", {
+            /**
+             * Get subsystems
+             * @type {entitas.IReactiveExecuteSystem}
+             * @name entitas.Pool#subsystem */
             get: function () { return this._subsystem; },
             enumerable: true,
             configurable: true
@@ -1912,6 +2058,9 @@ var entitas;
         ReactiveSystem.prototype.clear = function () {
             this._observer.clearCollectedEntities();
         };
+        /**
+         * execute
+         */
         ReactiveSystem.prototype.execute = function () {
             var collectedEntities = this._observer.collectedEntities;
             var ensureComponents = this._ensureComponents;
@@ -1982,6 +2131,10 @@ var entitas;
         return method in object ? object : null;
     }
     var Systems = (function () {
+        /**
+         * @constructor
+         *
+         */
         function Systems() {
             this._initializeSystems = [];
             this._executeSystems = [];
@@ -1989,6 +2142,11 @@ var entitas;
              * Load Extensions
              */
         }
+        /**
+         * Add System
+         * @param system
+         * @returns {entitas.Systems}
+         */
         Systems.prototype.add = function (system) {
             if ('function' === typeof system) {
                 var Klass = system;
@@ -2009,17 +2167,26 @@ var entitas;
             }
             return this;
         };
+        /**
+         * Initialize Systems
+         */
         Systems.prototype.initialize = function () {
             for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
                 this._initializeSystems[i].initialize();
             }
         };
+        /**
+         * Execute sustems
+         */
         Systems.prototype.execute = function () {
             var executeSystems = this._executeSystems;
             for (var i = 0, exeSysCount = executeSystems.length; i < exeSysCount; i++) {
                 executeSystems[i].execute();
             }
         };
+        /**
+         * Clear subsystems
+         */
         Systems.prototype.clearReactiveSystems = function () {
             for (var i = 0, exeSysCount = this._executeSystems.length; i < exeSysCount; i++) {
                 var reactiveSystem = as(this._executeSystems[i], 'subsystem');
@@ -2038,274 +2205,17 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
-    var extensions;
-    (function (extensions) {
-        var Exception = entitas.Exception;
-        var Collection = (function (_super) {
-            __extends(Collection, _super);
-            function Collection($0) {
-                _super.call(this, $0);
-            }
-            Collection.prototype.singleEntity = function () {
-                if (this.length !== 1) {
-                    throw new Exception("Expected exactly one entity but found " + this.length);
-                }
-                return this[0];
-            };
-            return Collection;
-        })(Array);
-        extensions.Collection = Collection;
-    })(extensions = entitas.extensions || (entitas.extensions = {}));
-})(entitas || (entitas = {}));
-var entitas;
-(function (entitas) {
-    var Entity = entitas.Entity;
-    function initialize(totalComponents, options) {
-        var instanceIndex = 0;
-        var alloc = null;
-        var size = options.entities || 100;
-        /**
-         * allocate entity pool
-         *
-         * @param count number of components
-         * @param size max number of entities
-         */
-        function dim(count, size) {
-            alloc = new Array(size);
-            for (var e = 0; e < size; e++) {
-                alloc[e] = new Array(count);
-                for (var k = 0; k < count; k++) {
-                    alloc[e][k] = null;
-                }
-            }
-        }
-        /**
-         * Returns the next entity pool entry
-         *
-         * @param totalComponents
-         * @returns Array<IComponent>
-         */
-        Entity.prototype.initialize = function (totalComponents) {
-            var mem;
-            if (alloc == null)
-                dim(totalComponents, size);
-            this.instanceIndex = instanceIndex++;
-            if (mem = alloc[this.instanceIndex])
-                return mem;
-            console.log('Insufficient memory allocation at ', this.instanceIndex, '. Allocating ', size, ' entities.');
-            for (var i = this.instanceIndex, l = i + size; i < l; i++) {
-                alloc[i] = new Array(totalComponents);
-                for (var k = 0; k < totalComponents; k++) {
-                    alloc[i][k] = null;
-                }
-            }
-            mem = alloc[this.instanceIndex];
-            return mem;
-        };
-    }
-    entitas.initialize = initialize;
-})(entitas || (entitas = {}));
-var entitas;
-(function (entitas) {
-    var extensions;
-    (function (extensions) {
-        var GroupEventType = entitas.GroupEventType;
-        var GroupObserver = entitas.GroupObserver;
-        entitas.Group.prototype.createObserver = function (eventType) {
-            if (eventType === void 0) { eventType = GroupEventType.OnEntityAdded; }
-            return new GroupObserver(this, eventType);
-        };
-    })(extensions = entitas.extensions || (entitas.extensions = {}));
-})(entitas || (entitas = {}));
-var entitas;
-(function (entitas) {
-    var extensions;
-    (function (extensions) {
-        var Matcher = entitas.Matcher;
-        var GroupEventType = entitas.GroupEventType;
-        var TriggerOnEvent = entitas.TriggerOnEvent;
-        Matcher.prototype.onEntityAdded = function () {
-            return new TriggerOnEvent(this, GroupEventType.OnEntityAdded);
-        };
-        Matcher.prototype.onEntityRemoved = function () {
-            return new TriggerOnEvent(this, GroupEventType.OnEntityRemoved);
-        };
-        Matcher.prototype.onEntityAddedOrRemoved = function () {
-            return new TriggerOnEvent(this, GroupEventType.OnEntityAddedOrRemoved);
-        };
-    })(extensions = entitas.extensions || (entitas.extensions = {}));
-})(entitas || (entitas = {}));
-var entitas;
-(function (entitas) {
-    var extensions;
-    (function (extensions) {
-        function as(obj, method1) {
-            return method1 in obj ? obj : null;
-        }
-        entitas.Pool.prototype.getEntities = function (matcher) {
-            if (matcher) {
-                /** PoolExtension::getEntities */
-                return this.getGroup(matcher).getEntities();
-            }
-            else {
-                if (this._entitiesCache == null) {
-                    var entities = this._entities;
-                    var keys = Object.keys(entities);
-                    var length = keys.length;
-                    var entitiesCache = this._entitiesCache = new Array(length);
-                    for (var i = 0; i < length; i++) {
-                        entitiesCache[i] = entities[keys[i]];
-                    }
-                }
-                return this._entitiesCache;
-            }
-        };
-        entitas.Pool.prototype.createSystem = function (system) {
-            if ('function' === typeof system) {
-                var Klass = system;
-                system = new Klass();
-            }
-            entitas.Pool.setPool(system, this);
-            var reactiveSystem = as(system, 'trigger');
-            if (reactiveSystem != null) {
-                return new entitas.ReactiveSystem(this, reactiveSystem);
-            }
-            var multiReactiveSystem = as(system, 'triggers');
-            if (multiReactiveSystem != null) {
-                return new entitas.ReactiveSystem(this, multiReactiveSystem);
-            }
-            return system;
-        };
-        entitas.Pool.setPool = function (system, pool) {
-            var poolSystem = as(system, 'setPool');
-            if (poolSystem != null) {
-                poolSystem.setPool(pool);
-            }
-        };
-    })(extensions = entitas.extensions || (entitas.extensions = {}));
-})(entitas || (entitas = {}));
-/**
- * Inspired by Unity
- */
-var entitas;
-(function (entitas) {
-    var browser;
-    (function (browser) {
-        var Systems = entitas.Systems;
-        var VisualDebugging = (function () {
-            function VisualDebugging() {
-            }
-            VisualDebugging.init = function (pool) {
-                if (location.search === "?debug=true" && window['dat']) {
-                    browser.gui = new dat.GUI({ height: 5 * 32 - 1, width: 300 });
-                    var observer = new PoolObserver(pool);
-                    VisualDebugging._controllers = {};
-                    VisualDebugging._entities = browser.gui.addFolder('Entities');
-                    VisualDebugging._pools = browser.gui.addFolder('Pools');
-                    VisualDebugging._systems = browser.gui.addFolder('Systems');
-                    VisualDebugging._entities.open();
-                    VisualDebugging._pools.open();
-                    VisualDebugging._systems.open();
-                    VisualDebugging._pools.add(observer, 'entities').listen();
-                    VisualDebugging._pools.add(observer, 'reusable').listen();
-                    pool.onEntityCreated.add(function (pool, entity) {
-                        var proxy = new EntityBehavior(entity);
-                        VisualDebugging._controllers[entity.id] = VisualDebugging._entities.add(proxy, proxy.name).listen();
-                    });
-                    pool.onEntityDestroyed.add(function (pool, entity) {
-                        var controller = VisualDebugging._controllers[entity.id];
-                        delete VisualDebugging._controllers[entity.id];
-                        VisualDebugging._entities.remove(controller);
-                    });
-                    Systems.prototype.initialize = function () {
-                        for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
-                            this._initializeSystems[i].initialize();
-                        }
-                        var sys = new SystemObserver(this);
-                        VisualDebugging._systems.add(sys, 'initialize').listen();
-                        VisualDebugging._systems.add(sys, 'execute').listen();
-                    };
-                    function get_Systems() {
-                        return "Systems " + " (" +
-                            this._initializeSystems.length + " init, " +
-                            this._executeSystems.length + " exe ";
-                    }
-                    Object.defineProperty(Systems.prototype, 'name', { get: function () { return 'Systems'; } });
-                    Object.defineProperty(Systems.prototype, 'Systems', { get: get_Systems });
-                }
-            };
-            return VisualDebugging;
-        })();
-        browser.VisualDebugging = VisualDebugging;
-        /**
-         * Profiler class for Entities
-         */
-        var EntityBehavior = (function () {
-            function EntityBehavior(obj) {
-                var _this = this;
-                this.obj = obj;
-                if (this.obj.name) {
-                    this._name = this.obj.name;
-                }
-                else {
-                    this._name = "Entity_" + this.obj._creationIndex;
-                }
-                Object.defineProperty(this, this._name, { get: function () { return _this.obj.toString(); } });
-            }
-            Object.defineProperty(EntityBehavior.prototype, "name", {
-                get: function () {
-                    return this._name;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return EntityBehavior;
-        })();
-        browser.EntityBehavior = EntityBehavior;
-        /**
-         * Profiler class for Systems
-         */
-        var SystemObserver = (function () {
-            function SystemObserver(_systems) {
-                this._systems = _systems;
-            }
-            Object.defineProperty(SystemObserver.prototype, "name", {
-                get: function () {
-                    return "Systems";
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(SystemObserver.prototype, "Systems", {
-                get: function () {
-                    return "Systems " + " (" +
-                        this._systems._initializeSystems.length + " init, " +
-                        this._systems._executeSystems.length + " exe ";
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(SystemObserver.prototype, "initialize", {
-                get: function () {
-                    return this._systems._initializeSystems.length;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(SystemObserver.prototype, "execute", {
-                get: function () {
-                    return this._systems._executeSystems.length;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            return SystemObserver;
-        })();
-        browser.SystemObserver = SystemObserver;
+    var viewer;
+    (function (viewer) {
         /**
          * Profiler class for Pools
          */
         var PoolObserver = (function () {
+            /**
+             * @constructor
+             *
+             * @param _pool
+             */
             function PoolObserver(_pool) {
                 this._pool = _pool;
                 this._groups = this._pool._groups;
@@ -2343,7 +2253,160 @@ var entitas;
             });
             return PoolObserver;
         })();
-        browser.PoolObserver = PoolObserver;
-    })(browser = entitas.browser || (entitas.browser = {}));
+        viewer.PoolObserver = PoolObserver;
+    })(viewer = entitas.viewer || (entitas.viewer = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var viewer;
+    (function (viewer) {
+        /** todo: SystemObserver track time spent in ms by system */
+        /**
+         * Profiler class for Systems
+         */
+        var SystemObserver = (function () {
+            /**
+             * @constructor
+             *
+             * @param _systems
+             */
+            function SystemObserver(_systems) {
+                this._systems = _systems;
+            }
+            Object.defineProperty(SystemObserver.prototype, "name", {
+                get: function () {
+                    return "Systems";
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(SystemObserver.prototype, "Systems", {
+                get: function () {
+                    return "Systems " + " (" +
+                        this._systems._initializeSystems.length + " init, " +
+                        this._systems._executeSystems.length + " exe ";
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(SystemObserver.prototype, "initialize", {
+                get: function () {
+                    return this._systems._initializeSystems.length;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(SystemObserver.prototype, "execute", {
+                get: function () {
+                    return this._systems._executeSystems.length;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return SystemObserver;
+        })();
+        viewer.SystemObserver = SystemObserver;
+    })(viewer = entitas.viewer || (entitas.viewer = {}));
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var viewer;
+    (function (viewer) {
+        /**
+         * Profiler class for Entities
+         */
+        var EntityBehavior = (function () {
+            /**
+             * @constructor
+             *
+             * @param obj
+             */
+            function EntityBehavior(obj) {
+                var _this = this;
+                this.obj = obj;
+                if (this.obj.name) {
+                    this._name = this.obj.name;
+                }
+                else {
+                    this._name = "Entity_" + this.obj._creationIndex;
+                }
+                Object.defineProperty(this, this._name, { get: function () { return _this.obj.toString(); } });
+            }
+            Object.defineProperty(EntityBehavior.prototype, "name", {
+                get: function () {
+                    return this._name;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return EntityBehavior;
+        })();
+        viewer.EntityBehavior = EntityBehavior;
+    })(viewer = entitas.viewer || (entitas.viewer = {}));
+})(entitas || (entitas = {}));
+/**
+ * Inspired by Unity
+ */
+var entitas;
+(function (entitas) {
+    var viewer;
+    (function (viewer) {
+        var Systems = entitas.Systems;
+        var EntityBehavior = entitas.viewer.EntityBehavior;
+        var SystemObserver = entitas.viewer.SystemObserver;
+        var PoolObserver = entitas.viewer.PoolObserver;
+        /**
+         * @class VisualDebugging
+         */
+        var VisualDebugging = (function () {
+            function VisualDebugging() {
+            }
+            /**
+             *
+             * @param pool
+             */
+            VisualDebugging.init = function (pool) {
+                if (location.search === "?debug=true" && window['dat']) {
+                    viewer.gui = new dat.GUI({ height: 5 * 32 - 1, width: 300 });
+                    var observer = new PoolObserver(pool);
+                    VisualDebugging._controllers = {};
+                    VisualDebugging._entities = viewer.gui.addFolder('Entities');
+                    VisualDebugging._pools = viewer.gui.addFolder('Pools');
+                    VisualDebugging._systems = viewer.gui.addFolder('Systems');
+                    VisualDebugging._entities.open();
+                    VisualDebugging._pools.open();
+                    VisualDebugging._systems.open();
+                    VisualDebugging._pools.add(observer, 'entities').listen();
+                    VisualDebugging._pools.add(observer, 'reusable').listen();
+                    pool.onEntityCreated.add(function (pool, entity) {
+                        var proxy = new EntityBehavior(entity);
+                        VisualDebugging._controllers[entity.id] = VisualDebugging._entities.add(proxy, proxy.name).listen();
+                    });
+                    pool.onEntityDestroyed.add(function (pool, entity) {
+                        var controller = VisualDebugging._controllers[entity.id];
+                        delete VisualDebugging._controllers[entity.id];
+                        VisualDebugging._entities.remove(controller);
+                    });
+                    Systems.prototype.initialize = function () {
+                        for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
+                            this._initializeSystems[i].initialize();
+                        }
+                        var sys = new SystemObserver(this);
+                        VisualDebugging._systems.add(sys, 'initialize').listen();
+                        VisualDebugging._systems.add(sys, 'execute').listen();
+                    };
+                    function get_Systems() {
+                        return "Systems " + " (" +
+                            this._initializeSystems.length + " init, " +
+                            this._executeSystems.length + " exe ";
+                    }
+                    Object.defineProperty(Systems.prototype, 'name', { get: function () { return 'Systems'; } });
+                    Object.defineProperty(Systems.prototype, 'Systems', { get: get_Systems });
+                }
+            };
+            return VisualDebugging;
+        })();
+        viewer.VisualDebugging = VisualDebugging;
+    })(viewer = entitas.viewer || (entitas.viewer = {}));
 })(entitas || (entitas = {}));
 //# sourceMappingURL=entitas.js.map

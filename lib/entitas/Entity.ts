@@ -19,52 +19,6 @@ module entitas {
   import EntityAlreadyHasComponentException = entitas.exceptions.EntityAlreadyHasComponentException;
   import EntityDoesNotHaveComponentException = entitas.exceptions.EntityDoesNotHaveComponentException;
 
-
-  export function initialize(totalComponents:number, options) {
-
-    var instanceIndex:number = 0;
-    var alloc:Array<Array<IComponent>> = null;
-    var size:number = options.entities || 100;
-
-    /**
-     * allocate entity pool
-     *
-     * @param count number of components
-     * @param size max number of entities
-     */
-    function dim(count:number, size:number): void {
-      alloc = new Array(size);
-      for (var e=0; e<size; e++) {
-        alloc[e] = new Array(count);
-        for (var k=0; k<count; k++) {
-          alloc[e][k] = null;
-        }
-      }
-    }
-    /**
-     * Returns the next entity pool entry
-     *
-     * @param totalComponents
-     * @returns Array<IComponent>
-     */
-    Entity.prototype.initialize = function(totalComponents:number):Array<IComponent> {
-      var mem;
-      if (alloc == null) dim(totalComponents, size);
-      this.instanceIndex = instanceIndex++;
-      if (mem = alloc[this.instanceIndex]) return mem;
-
-      console.log('Insufficient memory allocation at ', this.instanceIndex, '. Allocating ', size, ' entities.')
-      for (var i=this.instanceIndex, l=i+size; i<l; i++) {
-        alloc[i] = new Array(totalComponents);
-        for (var k=0; k<totalComponents; k++) {
-          alloc[i][k] = null;
-        }
-      }
-      mem = alloc[this.instanceIndex];
-      return mem;
-    };
-  }
-  
   export module Entity {
 
     /**
@@ -99,6 +53,21 @@ module entitas {
   }
 
   export class Entity {
+
+    /**
+     * @static
+     * @type {number} */
+    public static instanceIndex:number = 0;
+
+    /**
+     * @static
+     * @type {Array<Array<IComponent>>} */
+    public static alloc:Array<Array<IComponent>> = null;
+
+    /**
+     * @static
+     * @type {number} */
+    public static size:number = 0;
 
     /**
      * A unique sequential index number assigned to each entity at creation
@@ -170,6 +139,26 @@ module entitas {
       this._components = this.initialize(totalComponents);
     }
 
+    public static initialize(totalComponents:number, options) {
+      Entity.size = options.entities || 100;
+    }
+
+    /**
+     * allocate entity pool
+     *
+     * @param count number of components
+     * @param size max number of entities
+     */
+    public static dim(count:number, size:number): void {
+      Entity.alloc = new Array(size);
+      for (var e=0; e<size; e++) {
+        Entity.alloc[e] = new Array(count);
+        for (var k=0; k<count; k++) {
+          Entity.alloc[e][k] = null;
+        }
+      }
+    }
+
     /**
      * Initialize
      * Extension point to allocate enetity pool.
@@ -178,8 +167,25 @@ module entitas {
      * @returns {Array<entitas.IComponent>}
      */
     public initialize(totalComponents:number):Array<IComponent> {
-      return null;
-    }
+      var mem;
+      var size = Entity.size;
+
+      if (Entity.alloc == null) Entity.dim(totalComponents, size);
+      var alloc = Entity.alloc;
+
+      this.instanceIndex = Entity.instanceIndex++;
+      if (mem = alloc[this.instanceIndex]) return mem;
+
+      console.log('Insufficient memory allocation at ', this.instanceIndex, '. Allocating ', size, ' entities.')
+      for (var i=this.instanceIndex, l=i+size; i<l; i++) {
+        alloc[i] = new Array(totalComponents);
+        for (var k=0; k<totalComponents; k++) {
+          alloc[i][k] = null;
+        }
+      }
+      mem = alloc[this.instanceIndex];
+      return mem;
+    };
     /**
      * AddComponent
      *

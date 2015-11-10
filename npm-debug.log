@@ -2,28 +2,29 @@
 1 verbose cli [ '/home/bruce/.nvm/v0.10.38/bin/node',
 1 verbose cli   '/home/bruce/.nvm/v0.10.38/bin/npm',
 1 verbose cli   'run',
-1 verbose cli   'typedoc' ]
+1 verbose cli   'build' ]
 2 info using npm@1.4.28
 3 info using node@v0.10.38
-4 verbose run-script [ 'pretypedoc', 'typedoc', 'posttypedoc' ]
-5 info pretypedoc entitas@0.0.1
-6 info typedoc entitas@0.0.1
-7 verbose unsafe-perm in lifecycle true
-8 info entitas@0.0.1 Failed to exec typedoc script
-9 error entitas@0.0.1 typedoc: `typedoc --theme minimal --module commonjs --target ES5 --out ./build/web lib/entitas`
-9 error Exit status 3
-10 error Failed at the entitas@0.0.1 typedoc script.
-10 error This is most likely a problem with the entitas package,
-10 error not with npm itself.
-10 error Tell the author that this fails on your system:
-10 error     typedoc --theme minimal --module commonjs --target ES5 --out ./build/web lib/entitas
-10 error You can get their info via:
-10 error     npm owner ls entitas
-10 error There is likely additional logging output above.
-11 error System Linux 3.13.0-24-generic
-12 error command "/home/bruce/.nvm/v0.10.38/bin/node" "/home/bruce/.nvm/v0.10.38/bin/npm" "run" "typedoc"
-13 error cwd /home/bruce/Git/entitas
-14 error node -v v0.10.38
-15 error npm -v 1.4.28
-16 error code ELIFECYCLE
-17 verbose exit [ 1, true ]
+4 verbose run-script [ 'prebuild', 'build', 'postbuild' ]
+5 info prebuild entitas@0.0.1
+6 verbose unsafe-perm in lifecycle true
+7 info build entitas@0.0.1
+8 verbose unsafe-perm in lifecycle true
+9 info entitas@0.0.1 Failed to exec build script
+10 error entitas@0.0.1 build: `cp -f web/index_build.html build/web/example.html && cp -fr web/assets build/web && cp -fr web/res build/web && tsc -p . --outFile build/entitas.js -d && cat build/entitas.js | java -jar packages/closure-compiler/lib/vendor/compiler.jar --compilation_level ADVANCED_OPTIMIZATIONS --js_output_file build/entitas.min.js && cat web/srcsrc/stats.js/stats.min.js LF web/srcsrc/pixi.js/pixi.min.js LF web/srcsrc/howler.js/howler.min.js LF web/srcsrc/tween.ts/tween.min.js LF web/srcsrc/localstoragedb/localstoragedb.min.js LF web/srcsrc/chromestoragedb/chromestoragedb.js LF web/srcsrc/ezgui/EZGUI.js LF web/srcsrc/bosco/bosco.js LF web/srcsrc/entitas/utils/UUID.js LF web/srcsrc/entitas/utils/ImmutableBag.js LF web/srcsrc/entitas/utils/Bag.js LF web/srcsrc/entitas/utils/Signal.js LF web/srcsrc/entitas/utils/Stopwatch.js LF web/srcsrc/entitas/interfaces/IComponent.js LF web/srcsrc/entitas/interfaces/IMatcher.js LF web/srcsrc/entitas/interfaces/ISystem.js LF web/srcsrc/entitas/interfaces/IExecuteSystem.js LF web/srcsrc/entitas/interfaces/IInitializeSystem.js LF web/srcsrc/entitas/interfaces/IReactiveSystem.js LF web/srcsrc/entitas/exceptions/Exception.js LF web/srcsrc/entitas/exceptions/EntityAlreadyHasComponentException.js LF web/srcsrc/entitas/exceptions/EntityDoesNotHaveComponentException.js LF web/srcsrc/entitas/exceptions/EntityIsAlreadyReleasedException.js LF web/srcsrc/entitas/exceptions/EntityIsNotDestroyedException.js LF web/srcsrc/entitas/exceptions/EntityIsNotEnabledException.js LF web/srcsrc/entitas/exceptions/GroupObserverException.js LF web/srcsrc/entitas/exceptions/MatcherException.js LF web/srcsrc/entitas/exceptions/PoolDoesNotContainEntityException.js LF web/srcsrc/entitas/exceptions/SingleEntityException.js LF web/srcsrc/entitas/Matcher.js LF web/srcsrc/entitas/TriggerOnEvent.js LF web/srcsrc/entitas/Entity.js LF web/srcsrc/entitas/Group.js LF web/srcsrc/entitas/GroupObserver.js LF web/srcsrc/entitas/Pool.js LF web/srcsrc/entitas/ReactiveSystem.js LF web/srcsrc/entitas/Systems.js LF web/srcsrc/entitas/viewer/VisualDebugging.js LF web/srcsrc/entitas/viewer/EntityBehavior.js LF web/srcsrc/entitas/viewer/PoolObserver.js LF web/srcsrc/entitas/viewer/SystemObserver.js LF web/srcsrc/example/prolog.js LF web/srcsrc/example/generatedComponents.js LF web/srcsrc/example/generatedExtensions.js LF web/srcsrc/example/systems/AddViewSystem.js LF web/srcsrc/example/systems/CollisionSystem.js LF web/srcsrc/example/systems/ColorAnimationSystem.js LF web/srcsrc/example/systems/DestroySystem.js LF web/srcsrc/example/systems/EntitySpawningTimerSystem.js LF web/srcsrc/example/systems/ExpiringSystem.js LF web/srcsrc/example/systems/HealthRenderSystem.js LF web/srcsrc/example/systems/HudRenderSystem.js LF web/srcsrc/example/systems/MovementSystem.js LF web/srcsrc/example/systems/ParallaxStarRepeatingSystem.js LF web/srcsrc/example/systems/PlayerInputSystem.js LF web/srcsrc/example/systems/RemoveOffscreenShipsSystem.js LF web/srcsrc/example/systems/ScaleAnimationSystem.js LF web/srcsrc/example/systems/SoundEffectSystem.js LF web/srcsrc/example/systems/SpriteRenderSystem.js LF web/srcsrc/example/controllers/GameController.js LF web/srcsrc/example/controllers/MenuController.js LF web/srcsrc/example/extensions/Pool.js LF web/srcsrc/example/main.js > build/web/example.js`
+10 error Exit status 1
+11 error Failed at the entitas@0.0.1 build script.
+11 error This is most likely a problem with the entitas package,
+11 error not with npm itself.
+11 error Tell the author that this fails on your system:
+11 error     cp -f web/index_build.html build/web/example.html && cp -fr web/assets build/web && cp -fr web/res build/web && tsc -p . --outFile build/entitas.js -d && cat build/entitas.js | java -jar packages/closure-compiler/lib/vendor/compiler.jar --compilation_level ADVANCED_OPTIMIZATIONS --js_output_file build/entitas.min.js && cat web/srcsrc/stats.js/stats.min.js LF web/srcsrc/pixi.js/pixi.min.js LF web/srcsrc/howler.js/howler.min.js LF web/srcsrc/tween.ts/tween.min.js LF web/srcsrc/localstoragedb/localstoragedb.min.js LF web/srcsrc/chromestoragedb/chromestoragedb.js LF web/srcsrc/ezgui/EZGUI.js LF web/srcsrc/bosco/bosco.js LF web/srcsrc/entitas/utils/UUID.js LF web/srcsrc/entitas/utils/ImmutableBag.js LF web/srcsrc/entitas/utils/Bag.js LF web/srcsrc/entitas/utils/Signal.js LF web/srcsrc/entitas/utils/Stopwatch.js LF web/srcsrc/entitas/interfaces/IComponent.js LF web/srcsrc/entitas/interfaces/IMatcher.js LF web/srcsrc/entitas/interfaces/ISystem.js LF web/srcsrc/entitas/interfaces/IExecuteSystem.js LF web/srcsrc/entitas/interfaces/IInitializeSystem.js LF web/srcsrc/entitas/interfaces/IReactiveSystem.js LF web/srcsrc/entitas/exceptions/Exception.js LF web/srcsrc/entitas/exceptions/EntityAlreadyHasComponentException.js LF web/srcsrc/entitas/exceptions/EntityDoesNotHaveComponentException.js LF web/srcsrc/entitas/exceptions/EntityIsAlreadyReleasedException.js LF web/srcsrc/entitas/exceptions/EntityIsNotDestroyedException.js LF web/srcsrc/entitas/exceptions/EntityIsNotEnabledException.js LF web/srcsrc/entitas/exceptions/GroupObserverException.js LF web/srcsrc/entitas/exceptions/MatcherException.js LF web/srcsrc/entitas/exceptions/PoolDoesNotContainEntityException.js LF web/srcsrc/entitas/exceptions/SingleEntityException.js LF web/srcsrc/entitas/Matcher.js LF web/srcsrc/entitas/TriggerOnEvent.js LF web/srcsrc/entitas/Entity.js LF web/srcsrc/entitas/Group.js LF web/srcsrc/entitas/GroupObserver.js LF web/srcsrc/entitas/Pool.js LF web/srcsrc/entitas/ReactiveSystem.js LF web/srcsrc/entitas/Systems.js LF web/srcsrc/entitas/viewer/VisualDebugging.js LF web/srcsrc/entitas/viewer/EntityBehavior.js LF web/srcsrc/entitas/viewer/PoolObserver.js LF web/srcsrc/entitas/viewer/SystemObserver.js LF web/srcsrc/example/prolog.js LF web/srcsrc/example/generatedComponents.js LF web/srcsrc/example/generatedExtensions.js LF web/srcsrc/example/systems/AddViewSystem.js LF web/srcsrc/example/systems/CollisionSystem.js LF web/srcsrc/example/systems/ColorAnimationSystem.js LF web/srcsrc/example/systems/DestroySystem.js LF web/srcsrc/example/systems/EntitySpawningTimerSystem.js LF web/srcsrc/example/systems/ExpiringSystem.js LF web/srcsrc/example/systems/HealthRenderSystem.js LF web/srcsrc/example/systems/HudRenderSystem.js LF web/srcsrc/example/systems/MovementSystem.js LF web/srcsrc/example/systems/ParallaxStarRepeatingSystem.js LF web/srcsrc/example/systems/PlayerInputSystem.js LF web/srcsrc/example/systems/RemoveOffscreenShipsSystem.js LF web/srcsrc/example/systems/ScaleAnimationSystem.js LF web/srcsrc/example/systems/SoundEffectSystem.js LF web/srcsrc/example/systems/SpriteRenderSystem.js LF web/srcsrc/example/controllers/GameController.js LF web/srcsrc/example/controllers/MenuController.js LF web/srcsrc/example/extensions/Pool.js LF web/srcsrc/example/main.js > build/web/example.js
+11 error You can get their info via:
+11 error     npm owner ls entitas
+11 error There is likely additional logging output above.
+12 error System Linux 3.13.0-24-generic
+13 error command "/home/bruce/.nvm/v0.10.38/bin/node" "/home/bruce/.nvm/v0.10.38/bin/npm" "run" "build"
+14 error cwd /home/bruce/Git/entitas
+15 error node -v v0.10.38
+16 error npm -v 1.4.28
+17 error code ELIFECYCLE
+18 verbose exit [ 1, true ]

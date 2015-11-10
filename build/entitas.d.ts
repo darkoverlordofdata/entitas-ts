@@ -1,4 +1,7 @@
 declare module entitas.utils {
+    /**
+     * @class UUID
+     */
     class UUID {
         /**
          * Fast UUID generator, RFC4122 version 4 compliant
@@ -9,57 +12,6 @@ declare module entitas.utils {
          * @link http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
          **/
         static randomUUID(): string;
-    }
-}
-declare module entitas.utils {
-    interface Map<K, V> {
-        clear(): any;
-        containsKey(key: any): boolean;
-        containsValue(value: any): boolean;
-        get(key: any): any;
-        isEmpty(): boolean;
-        put(key: any, value: any): any;
-        remove(key: any): any;
-        size(): number;
-        values(): any;
-    }
-}
-declare module entitas.utils {
-    /**
-     * For documenting where Function refers to a class definition
-     */
-    interface Class extends Function {
-    }
-    /**
-     * Gets Class Metadata - Name
-     *
-     * @param klass
-     * @return {string}
-     */
-    function getClassName(klass: any): any;
-    /**
-     * HashMap
-     *
-     * Allow object as key.
-     */
-    class HashMap<K, V> implements Map<K, V> {
-        private map_;
-        private keys_;
-        constructor();
-        clear(): void;
-        values(): any[];
-        contains(value: any): boolean;
-        containsKey(key: any): boolean;
-        containsValue(value: any): boolean;
-        get(key: any): any;
-        isEmpty(): boolean;
-        keys(): any[];
-        /**
-         * if key is a string, use as is, else use key.id_ or key.name
-         */
-        put(key: any, value: any): void;
-        remove(key: any): any;
-        size(): number;
     }
 }
 declare module entitas.utils {
@@ -81,6 +33,7 @@ declare module entitas.utils {
          * Constructs an empty Bag with the specified initial capacity.
          * Constructs an empty Bag with an initial capacity of 64.
          *
+         * @constructor
          * @param capacity the initial capacity of Bag
          */
         constructor(capacity?: number);
@@ -200,19 +153,6 @@ declare module entitas.utils {
     }
 }
 declare module entitas.utils {
-    class BitSet {
-        private words_;
-        constructor(nbits?: number);
-        nextSetBit(fromIndex: number): number;
-        intersects(set: BitSet): boolean;
-        hasAll(set: BitSet): boolean;
-        isEmpty(): boolean;
-        set(bitIndex: number, value?: boolean): number;
-        get(bitIndex: number): boolean;
-        clear(bitIndex?: number): number;
-    }
-}
-declare module entitas.utils {
     import Bag = entitas.utils.Bag;
     interface ISignal<T> {
         dispatch(...args: any[]): void;
@@ -227,6 +167,7 @@ declare module entitas.utils {
         active: boolean;
         /**
          *
+         * @constructor
          * @param context
          * @param alloc
          */
@@ -283,6 +224,20 @@ declare module entitas {
         indices: number[];
         matches(entity: Entity): any;
     }
+    interface ICompoundMatcher extends IMatcher {
+        allOfIndices: number[];
+        anyOfIndices: number[];
+        noneOfIndices: number[];
+    }
+    interface INoneOfMatcher extends ICompoundMatcher {
+    }
+    interface IAnyOfMatcher extends ICompoundMatcher {
+        noneOf(...args: any[]): INoneOfMatcher;
+    }
+    interface IAllOfMatcher extends ICompoundMatcher {
+        anyOf(...args: any[]): IAnyOfMatcher;
+        noneOf(...args: any[]): INoneOfMatcher;
+    }
 }
 declare module entitas {
     import Pool = entitas.Pool;
@@ -326,10 +281,18 @@ declare module entitas {
     class Exception {
         /** @type {string} */
         message: string;
+        /**
+         * Base exception class
+         * @constructot
+         * @param message
+         */
         constructor(message: any);
         /** @return {string} */
         toString(): string;
     }
+}
+declare module entitas.exceptions {
+    import Exception = entitas.Exception;
     class EntityAlreadyHasComponentException extends Exception {
         /**
          * Entity Already Has Component Exception
@@ -339,6 +302,9 @@ declare module entitas {
          */
         constructor(message: string, index: number);
     }
+}
+declare module entitas.exceptions {
+    import Exception = entitas.Exception;
     class EntityDoesNotHaveComponentException extends Exception {
         /**
          * Entity Does Not Have Component Exception
@@ -348,6 +314,9 @@ declare module entitas {
          */
         constructor(message: string, index: number);
     }
+}
+declare module entitas.exceptions {
+    import Exception = entitas.Exception;
     class EntityIsNotEnabledException extends Exception {
         /**
          * Entity Is Not Enabled Exception
@@ -356,6 +325,9 @@ declare module entitas {
          */
         constructor(message: string);
     }
+}
+declare module entitas.exceptions {
+    import Exception = entitas.Exception;
     class EntityIsAlreadyReleasedException extends Exception {
         /**
          * Entity Is Already Released Exception
@@ -363,6 +335,9 @@ declare module entitas {
          */
         constructor();
     }
+}
+declare module entitas.exceptions {
+    import Exception = entitas.Exception;
     class SingleEntityException extends Exception {
         /**
          * Single Entity Exception
@@ -371,6 +346,9 @@ declare module entitas {
          */
         constructor(matcher: IMatcher);
     }
+}
+declare module entitas.exceptions {
+    import Exception = entitas.Exception;
     class GroupObserverException extends Exception {
         /**
          * Group Observer Exception
@@ -379,6 +357,9 @@ declare module entitas {
          */
         constructor(message: string);
     }
+}
+declare module entitas.exceptions {
+    import Exception = entitas.Exception;
     class PoolDoesNotContainEntityException extends Exception {
         /**
          * Pool Does Not Contain Entity Exception
@@ -388,6 +369,9 @@ declare module entitas {
          */
         constructor(entity: Entity, message: string);
     }
+}
+declare module entitas.exceptions {
+    import Exception = entitas.Exception;
     class EntityIsNotDestroyedException extends Exception {
         /**
          * Entity Is Not Destroyed Exception
@@ -396,6 +380,9 @@ declare module entitas {
          */
         constructor(message: string);
     }
+}
+declare module entitas.exceptions {
+    import Exception = entitas.Exception;
     class MatcherException extends Exception {
         /**
          * Matcher Exception
@@ -410,14 +397,38 @@ declare module entitas {
     import IAllOfMatcher = entitas.IAllOfMatcher;
     import IAnyOfMatcher = entitas.IAnyOfMatcher;
     import INoneOfMatcher = entitas.INoneOfMatcher;
+    import TriggerOnEvent = entitas.TriggerOnEvent;
     module Matcher {
     }
     class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {
+        /**
+         * Get the matcher id
+         * @type {number}
+         * @name entitas.Matcher#id */
         id: number;
+        /**
+         * A unique sequential index number assigned to each ,atch
+         * @type {number} */
         static uniqueId: number;
+        /**
+         * A list of the component ordinals that this matches
+         * @type {Array<number>}
+         * @name entitas.Matcher#indices */
         indices: number[];
+        /**
+         * A unique sequential index number assigned to each entity at creation
+         * @type {number}
+         * @name entitas.Matcher#allOfIndices */
         allOfIndices: number[];
+        /**
+         * A unique sequential index number assigned to each entity at creation
+         * @type {number}
+         * @name entitas.Matcher#anyOfIndices */
         anyOfIndices: number[];
+        /**
+         * A unique sequential index number assigned to each entity at creation
+         * @type {number}
+         * @name entitas.Matcher#noneOfIndices */
         noneOfIndices: number[];
         private _indices;
         _allOfIndices: number[];
@@ -429,17 +440,55 @@ declare module entitas {
         onEntityAdded(): TriggerOnEvent;
         onEntityRemoved(): TriggerOnEvent;
         onEntityAddedOrRemoved(): TriggerOnEvent;
+        /**
+         * @constructor
+         *
+         */
         constructor();
         anyOf(...args: Array<IMatcher>): IAnyOfMatcher;
         anyOf(...args: number[]): IAnyOfMatcher;
         noneOf(...args: number[]): INoneOfMatcher;
         noneOf(...args: Array<IMatcher>): INoneOfMatcher;
+        /**
+         * Check if the entity matches this matcher
+         * @param {entitas.Entity} entity
+         * @returns {boolean}
+         */
         matches(entity: Entity): boolean;
+        /**
+         * Merge list of component indices
+         * @returns {Array<number>}
+         */
         mergeIndices(): number[];
+        /**
+         * toString representation of this matcher
+         * @returns {string}
+         */
         toString(): string;
+        /**
+         * Check if the matchers are equal
+         * @param {Object} obj
+         * @returns {boolean}
+         */
         equals(obj: any): boolean;
+        /**
+         * Check if the lists of component indices are equal
+         * @param {Array<number>} list1
+         * @param {Array<number>} list2
+         * @returns {boolean}
+         */
         static equalIndices(i1: number[], i2: number[]): boolean;
+        /**
+         * Get the set if distinct (non-duplicate) indices from a list
+         * @param {Array<number>} indices
+         * @returns {Array<number>}
+         */
         static distinctIndices(indices: number[]): number[];
+        /**
+         * Merge all the indices of a set of Matchers
+         * @param {Array<IMatcher>} matchers
+         * @returns {Array<number>}
+         */
         static mergeIndices(matchers: Array<IMatcher>): number[];
         static allOf(...args: number[]): IAllOfMatcher;
         static allOf(...args: Array<IMatcher>): IAllOfMatcher;
@@ -449,26 +498,16 @@ declare module entitas {
     }
 }
 declare module entitas {
-    interface ICompoundMatcher extends IMatcher {
-        allOfIndices: number[];
-        anyOfIndices: number[];
-        noneOfIndices: number[];
-    }
-    interface INoneOfMatcher extends ICompoundMatcher {
-    }
-    interface IAnyOfMatcher extends ICompoundMatcher {
-        noneOf(...args: any[]): INoneOfMatcher;
-    }
-    interface IAllOfMatcher extends ICompoundMatcher {
-        anyOf(...args: any[]): IAnyOfMatcher;
-        noneOf(...args: any[]): INoneOfMatcher;
-    }
-}
-declare module entitas {
     import GroupEventType = entitas.GroupEventType;
     class TriggerOnEvent {
         trigger: IMatcher;
         eventType: GroupEventType;
+        /**
+         * @constructor
+         *
+         * @param trigger
+         * @param eventType
+         */
         constructor(trigger: IMatcher, eventType: GroupEventType);
     }
 }
@@ -519,100 +558,148 @@ declare module entitas {
             dispatch(e: Entity, index: number, component: IComponent, replacement: IComponent): void;
         }
     }
-    /**
-     * The basic game object. Everything is an entity with components that
-     * are added / removed as needed.
-     */
     class Entity {
+        /**
+         * @static
+         * @type {number} */
+        static instanceIndex: number;
+        /**
+         * @static
+         * @type {Array<Array<IComponent>>} */
+        static alloc: Array<Array<IComponent>>;
+        /**
+         * @static
+         * @type {number} */
+        static size: number;
+        /**
+         * A unique sequential index number assigned to each entity at creation
+         * @type {number}
+         * @name entitas.Entity#creationIndex */
         creationIndex: number;
+        /**
+         * Subscribe to Entity Released Event
+         * @type {entitas.ISignal} */
         onEntityReleased: IEntityReleased<EntityReleased>;
+        /**
+         * Subscribe to Component Added Event
+         * @type {entitas.ISignal} */
         onComponentAdded: IEntityChanged<EntityChanged>;
+        /**
+         * Subscribe to Component Removed Event
+         * @type {entitas.ISignal} */
         onComponentRemoved: IEntityChanged<EntityChanged>;
+        /**
+         * Subscribe to Component Replaced Event
+         * @type {entitas.ISignal} */
         onComponentReplaced: Entity.IComponentReplaced<ComponentReplaced>;
+        /**
+         * Entity name
+         * @type {string} */
         name: string;
+        /**
+         *  Entity Id
+         * @type {string} */
         id: string;
+        /**
+         *  Instance index
+         * @type {number} */
+        instanceIndex: number;
         _creationIndex: number;
         _isEnabled: boolean;
         _components: Array<IComponent>;
-        private _pool;
-        private _componentsEnum;
         _componentsCache: any;
         _componentIndicesCache: number[];
         _toStringCache: string;
-        instanceIndex: number;
         _refCount: number;
+        private _pool;
+        private _componentsEnum;
+        /**
+         * The basic game object. Everything is an entity with components that
+         * are added / removed as needed.
+         *
+         * @param {Object} componentsEnum
+         * @param {number} totalComponents
+         * @constructor
+         */
         constructor(componentsEnum: any, totalComponents?: number);
+        static initialize(totalComponents: number, options: any): void;
+        /**
+         * allocate entity pool
+         *
+         * @param count number of components
+         * @param size max number of entities
+         */
+        static dim(count: number, size: number): void;
         /**
          * Initialize
-         *
          * Extension point to allocate enetity pool.
          *
-         * @param totalComponents
-         * @returns Array<entitas.IComponent>
+         * @param {number} totalComponents
+         * @returns {Array<entitas.IComponent>}
          */
         initialize(totalComponents: number): Array<IComponent>;
         /**
          * AddComponent
          *
-         * @param index
-         * @param component
-         * @returns entitas.Entity
+         * @param {number} index
+         * @param {entitas.IComponent} component
+         * @returns {entitas.Entity}
          */
         addComponent(index: number, component: IComponent): Entity;
         /**
          * RemoveComponent
          *
-         * @param index
-         * @returns entitas.Entity
+         * @param {number} index
+         * @returns {entitas.Entity}
          */
         removeComponent(index: number): Entity;
         /**
          * ReplaceComponent
          *
-         * @param index
-         * @param component
-         * @returns entitas.Entity
+         * @param {number} index
+         * @param {entitas.IComponent} component
+         * @returns {entitas.Entity}
          */
         replaceComponent(index: number, component: IComponent): Entity;
         protected _replaceComponent(index: number, replacement: IComponent): void;
         /**
          * GetComponent
          *
-         * @param index
-         * @param component
+         * @param {number} index
+         * @param {entitas.IComponent} component
          */
         getComponent(index: number): IComponent;
         /**
          * GetComponents
          *
-         * @returns Array<entitas.IComponent>
+         * @returns {Array<entitas.IComponent>}
          */
         getComponents(): IComponent[];
         /**
          * GetComponentIndices
          *
-         * @returns Array<number>
+         * @returns {Array<number>}
          */
         getComponentIndices(): number[];
         /**
          * HasComponent
          *
-         * @param index
-         * @returns boolean
+         * @param {number} index
+         * @returns {boolean}
          */
         hasComponent(index: number): boolean;
         /**
          * HasComponents
          *
-         * @param indices
-         * @returns boolean
+         * @param {Array<number>} indices
+         * @returns {boolean}
          */
         hasComponents(indices: number[]): boolean;
         /**
          * HasAnyComponent
          *
-         * @param indices
-         * @returns boolean
+         * @param {Array<number>} indices
+         * @returns {boolean}
          */
         hasAnyComponent(indices: number[]): boolean;
         /**
@@ -628,13 +715,13 @@ declare module entitas {
         /**
          * ToString
          *
-         * @returns string
+         * @returns {string}
          */
         toString(): string;
         /**
          * AddRef
          *
-         * @returns entitas.Entity
+         * @returns {entitas.Entity}
          */
         addRef(): Entity;
         /**
@@ -670,40 +757,50 @@ declare module entitas {
         }
     }
     class Group {
-        /** @type {entitas.utils.ISignal} */
+        /**
+         * Subscribe to Entity Addded events
+         * @type {entitas.utils.ISignal} */
         onEntityAdded: Group.IGroupChanged<GroupChanged>;
-        /** @type {entitas.utils.ISignal} */
+        /**
+         * Subscribe to Entity Removed events
+         * @type {entitas.utils.ISignal} */
         onEntityRemoved: Group.IGroupChanged<GroupChanged>;
-        /** @type {entitas.utils.ISignal} */
+        /**
+         * Subscribe to Entity Updated events
+         * @type {entitas.utils.ISignal} */
         onEntityUpdated: Group.IGroupUpdated<GroupUpdated>;
-        /** @type {number} */
+        /**
+         * Count the number of entities in this group
+         * @type {number}
+         * @name entitas.Group#count */
         count: number;
-        /** @type {entitas.IMatcher} */
+        /**
+         * Get the Matcher for this group
+         * @type {entitas.IMatcher}
+         * @name entitas.Group#matcher */
         matcher: IMatcher;
-        /** @type {entitas.IMatcher} */
-        _matcher: IMatcher;
-        /** @type {Object<string,entitas.Entity>} */
-        _entities: {};
-        /** @type {entitas.Entity<Array>} */
+        private _entities;
+        private _matcher;
         _entitiesCache: Array<Entity>;
-        /** @type {entitas.Entity} */
         _singleEntityCache: Entity;
-        /** @type {string} */
         _toStringCache: string;
-        /** @type {entitas.GroupObserver} Extension Points */
-        createObserver(eventType: GroupEventType): GroupObserver;
         /**
          * @constructor
          * @param matcher
          */
         constructor(matcher: IMatcher);
         /**
-         * Handle entity without raising events
+         * Create an Observer for the event type on this group
+         * @param eventType
+         */
+        createObserver(eventType: GroupEventType): GroupObserver;
+        /**
+         * Handle adding and removing component from the entity without raising events
          * @param entity
          */
         handleEntitySilently(entity: Entity): void;
         /**
-         * Handle entity and raise events
+         * Handle adding and removing component from the entity and raisieevents
          * @param entity
          * @param index
          * @param component
@@ -749,19 +846,22 @@ declare module entitas {
          */
         containsEntity(entity: Entity): boolean;
         /**
-         * Get the entities in this group
+         * Get a list of the entities in this group
          *
          * @returns Array<entitas.Entity>
          */
         getEntities(): Entity[];
         /**
-         * Gets a single entity.
+         * Gets an entity singleton.
          * If a group has more than 1 entity, this is an error condition.
          *
          * @returns entitas.Entity
          */
         getSingleEntity(): Entity;
         /**
+         * Create a string representation for this group:
+         *
+         *  ex: 'Group(Position)'
          *
          * @returns string
          */
@@ -772,34 +872,46 @@ declare module entitas {
     import Group = entitas.Group;
     import Entity = entitas.Entity;
     import IComponent = entitas.IComponent;
-    /** @typedef {Object<string|number>} */
+    /**
+     * Event Types
+     * @readonly
+     * @enum {number}
+     */
     enum GroupEventType {
         OnEntityAdded = 0,
         OnEntityRemoved = 1,
         OnEntityAddedOrRemoved = 2,
     }
     class GroupObserver {
-        /** @type {Object<string,entitas.Entity>}*/
-        collectedEntities: {};
-        /** @type {Object<string,entitas.Entity>}*/
-        private _collectedEntities;
-        /** @type {Array<entitas.Group} */
-        _groups: Array<Group>;
-        /** @type {Array<entitas.GroupEventType} */
-        _eventTypes: Array<GroupEventType>;
-        /** @type {Array<entitas.Group.GroupChanged} */
-        _addEntityCache: Group.GroupChanged;
         /**
-         *
-         * @param groups
-         * @param eventTypes
+         * Entities being observed
+         * @type {Object<string,entitas.Entity>}
+         * @name entitas.GroupObserver#collectedEntities */
+        collectedEntities: {};
+        private _collectedEntities;
+        protected _groups: Array<Group>;
+        protected _eventTypes: Array<GroupEventType>;
+        protected _addEntityCache: Group.GroupChanged;
+        /**
+         * @constructor
+         * @param {Array<entitas.Group>} groups
+         * @param {number} eventTypes
          */
         constructor(groups: any, eventTypes: any);
+        /**
+         * Activate events
+         */
         activate(): void;
+        /**
+         * Deavtivate events
+         */
         deactivate(): void;
+        /**
+         * Clear the list of entities
+         */
         clearCollectedEntities(): void;
         /**
-         *
+         * Adds an entity to this observer group
          * @param group
          * @param {entitas.Entity}entity
          * @param index
@@ -849,76 +961,98 @@ declare module entitas {
      * The games world.
      */
     class Pool {
-        /** @type {number} */
+        /**
+         * The total number of components in this pool
+         * @type {number}
+         * @name entitas.Pool#totalComponents */
         totalComponents: number;
-        /** @type {number} */
+        /**
+         * Count of active entities
+         * @type {number}
+         * @name entitas.Pool#count */
         count: number;
-        /** @type {number} */
+        /**
+         * Count of entities waiting to be recycled
+         * @type {number}
+         * @name entitas.Pool#reusableEntitiesCount */
         reusableEntitiesCount: number;
-        /** @type {number} */
+        /**
+         * Count of entities that sill have references
+         * @type {number}
+         * @name entitas.Pool#retainedEntitiesCount */
         retainedEntitiesCount: number;
-        /** @type {entitas.utils.ISignal} */
+        /**
+         * Subscribe to Entity Created Event
+         * @type {entitas.utils.ISignal} */
         onEntityCreated: Pool.IPoolChanged<PoolChanged>;
-        /** @type {entitas.utils.ISignal} */
+        /**
+         * Subscribe to Entity Will Be Destroyed Event
+         * @type {entitas.utils.ISignal} */
         onEntityWillBeDestroyed: Pool.IPoolChanged<PoolChanged>;
-        /** @type {entitas.utils.ISignal} */
+        /**
+         * Subscribe to Entity Destroyed Event
+         * @type {entitas.utils.ISignal} */
         onEntityDestroyed: Pool.IPoolChanged<PoolChanged>;
-        /** @type {entitas.utils.ISignal} */
+        /**
+         * Subscribe to Group Created Event
+         * @type {entitas.utils.ISignal} */
         onGroupCreated: Pool.IGroupChanged<GroupChanged>;
-        /** @type {string} */
+        /**
+         * Entity name for debugging
+         * @type {string} */
         name: string;
-        /** @type {Object<string,entitas.Entity>} */
-        _entities: {};
-        /** @type {Object<string,entitas.Group>} */
-        _groups: {};
-        /** @type {entitas.util.Bag<Group>} */
-        _groupsForIndex: Bag<Bag<Group>>;
-        /** @type {entitas.util.Bag<Entity>} */
-        _reusableEntities: Bag<Entity>;
-        /** @type {Object<string,entitas.Entity>} */
-        _retainedEntities: {};
-        /** @type {Object<string,number>} */
+        /**
+         * An enum of valid component types
+         * @type {Object<string,number>} */
         static componentsEnum: Object;
-        /** @type {number} */
+        /**
+         * Count of components
+         * @type {number} */
         static totalComponents: number;
-        /** @type {entitas.Pool} */
+        /**
+         * Global reference to pool instance
+         * @type {entitas.Pool} */
         static instance: Pool;
-        /** @type {Object<string,number>} */
+        _entities: {};
+        _groups: {};
+        _groupsForIndex: Bag<Bag<Group>>;
+        _reusableEntities: Bag<Entity>;
+        _retainedEntities: {};
         _componentsEnum: Object;
-        /** @type {number} */
         _totalComponents: number;
-        /** @type {number} */
         _creationIndex: number;
-        /** @type {Array<entitas.Entity?} */
         _entitiesCache: Array<Entity>;
-        /** @type {Function} */
         _cachedUpdateGroupsComponentAddedOrRemoved: Entity.EntityChanged;
-        /** @type {Function} */
         _cachedUpdateGroupsComponentReplaced: Entity.ComponentReplaced;
-        /** @type {Function} */
         _cachedOnEntityReleased: Entity.EntityReleased;
-        /** Extension Points */
         getEntities(matcher: IMatcher): Entity[];
         getEntities(): Entity[];
         createSystem(system: ISystem): any;
         createSystem(system: Function): any;
-        static setPool(system: ISystem, pool: Pool): any;
         /**
+         * Set the system pool if supported
          *
-         * @param components
-         * @param totalComponents
-         * @param startCreationIndex
+         * @static
+         * @param {entitas.ISystem} system
+         * @param {entitas.Pool} pool
+         */
+        static setPool(system: ISystem, pool: Pool): void;
+        /**
+         * @constructor
+         * @param {Object} components
+         * @param {number} totalComponents
+         * @param {number} startCreationIndex
          */
         constructor(components: {}, totalComponents: number, startCreationIndex?: number);
         /**
          * Create a new entity
-         * @param name
-         * @returns entitas.Entity
+         * @param {string} name
+         * @returns {entitas.Entity}
          */
         createEntity(name: string): Entity;
         /**
          * Destroy an entity
-         * @param entity
+         * @param {entitas.Entity} entity
          */
         destroyEntity(entity: Entity): void;
         /**
@@ -928,32 +1062,32 @@ declare module entitas {
         /**
          * Check if pool has this entity
          *
-         * @param entity
-         * @returns boolean
+         * @param {entitas.Entity} entity
+         * @returns {boolean}
          */
         hasEntity(entity: Entity): boolean;
         /**
          * Gets all of the entities that match
          *
-         * @param matcher
-         * @returns entitas.Group
+         * @param {entias.IMatcher} matcher
+         * @returns {entitas.Group}
          */
         getGroup(matcher: IMatcher): Group;
         /**
-         * @param entity
-         * @param index
-         * @param component
+         * @param {entitas.Entity} entity
+         * @param {number} index
+         * @param {entitas.IComponent} component
          */
         protected updateGroupsComponentAddedOrRemoved: (entity: Entity, index: number, component: IComponent) => void;
         /**
-         * @param entity
-         * @param index
-         * @param previousComponent
-         * @param newComponent
+         * @param {entitas.Entity} entity
+         * @param {number} index
+         * @param {entitas.IComponent} previousComponent
+         * @param {entitas.IComponent} newComponent
          */
         protected updateGroupsComponentReplaced: (entity: Entity, index: number, previousComponent: IComponent, newComponent: IComponent) => void;
         /**
-         * @param entity
+         * @param {entitas.Entity} entity
          */
         protected onEntityReleased: (entity: Entity) => void;
     }
@@ -964,6 +1098,10 @@ declare module entitas {
     import IReactiveSystem = entitas.IReactiveSystem;
     import IMultiReactiveSystem = entitas.IMultiReactiveSystem;
     class ReactiveSystem implements IExecuteSystem {
+        /**
+         * Get subsystems
+         * @type {entitas.IReactiveExecuteSystem}
+         * @name entitas.Pool#subsystem */
         subsystem: entitas.IReactiveExecuteSystem;
         private _subsystem;
         _observer: GroupObserver;
@@ -971,10 +1109,19 @@ declare module entitas {
         _excludeComponents: IMatcher;
         _clearAfterExecute: boolean;
         _buffer: Array<Entity>;
+        /**
+         * @constructor
+         *
+         * @param pool
+         * @param subSystem
+         */
         constructor(pool: Pool, subSystem: IReactiveSystem | IMultiReactiveSystem);
         activate(): void;
         deactivate(): void;
         clear(): void;
+        /**
+         * execute
+         */
         execute(): void;
     }
 }
@@ -985,64 +1132,28 @@ declare module entitas {
     class Systems implements IInitializeSystem, IExecuteSystem {
         protected _initializeSystems: Array<IInitializeSystem>;
         protected _executeSystems: Array<IExecuteSystem>;
+        /**
+         * @constructor
+         *
+         */
         constructor();
         add(system: ISystem): any;
         add(system: Function): any;
+        /**
+         * Initialize Systems
+         */
         initialize(): void;
+        /**
+         * Execute sustems
+         */
         execute(): void;
+        /**
+         * Clear subsystems
+         */
         clearReactiveSystems(): void;
     }
 }
-declare module entitas.extensions {
-    import Entity = entitas.Entity;
-    class Collection extends Array {
-        constructor($0: any);
-        singleEntity(): Entity;
-    }
-}
-declare module entitas {
-    function initialize(totalComponents: number, options: any): void;
-}
-declare module entitas.extensions {
-}
-declare module entitas.extensions {
-}
-declare module entitas.extensions {
-}
-/**
- * Inspired by Unity
- */
-declare module entitas.browser {
-    import Pool = entitas.Pool;
-    /** todo: SystemObserver track time spent in ms by system */
-    var gui: any;
-    class VisualDebugging {
-        static _controllers: any;
-        static _entities: any;
-        static _pools: any;
-        static _systems: any;
-        static init(pool: Pool): void;
-    }
-    /**
-     * Profiler class for Entities
-     */
-    class EntityBehavior {
-        protected obj: any;
-        name: string;
-        private _name;
-        constructor(obj: any);
-    }
-    /**
-     * Profiler class for Systems
-     */
-    class SystemObserver {
-        protected _systems: any;
-        name: string;
-        Systems: string;
-        initialize: string;
-        execute: string;
-        constructor(_systems: any);
-    }
+declare module entitas.viewer {
     /**
      * Profiler class for Pools
      */
@@ -1053,6 +1164,67 @@ declare module entitas.browser {
         entities: string;
         reusable: string;
         protected _groups: any;
+        /**
+         * @constructor
+         *
+         * @param _pool
+         */
         constructor(_pool: any);
+    }
+}
+declare module entitas.viewer {
+    /** todo: SystemObserver track time spent in ms by system */
+    /**
+     * Profiler class for Systems
+     */
+    class SystemObserver {
+        protected _systems: any;
+        name: string;
+        Systems: string;
+        initialize: string;
+        execute: string;
+        /**
+         * @constructor
+         *
+         * @param _systems
+         */
+        constructor(_systems: any);
+    }
+}
+declare module entitas.viewer {
+    /**
+     * Profiler class for Entities
+     */
+    class EntityBehavior {
+        protected obj: any;
+        name: string;
+        private _name;
+        /**
+         * @constructor
+         *
+         * @param obj
+         */
+        constructor(obj: any);
+    }
+}
+/**
+ * Inspired by Unity
+ */
+declare module entitas.viewer {
+    import Pool = entitas.Pool;
+    var gui: any;
+    /**
+     * @class VisualDebugging
+     */
+    class VisualDebugging {
+        static _controllers: any;
+        static _entities: any;
+        static _pools: any;
+        static _systems: any;
+        /**
+         *
+         * @param pool
+         */
+        static init(pool: Pool): void;
     }
 }
