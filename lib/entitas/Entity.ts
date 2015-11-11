@@ -3,6 +3,7 @@
  * @const
  */
 module entitas {
+  "use strict";
 
   import Pool = entitas.Pool;
   import Signal = entitas.utils.Signal;

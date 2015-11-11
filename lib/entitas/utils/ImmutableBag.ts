@@ -1,4 +1,5 @@
 module entitas.utils {
+	"use strict";
 
 	export interface ImmutableBag<E> {
 

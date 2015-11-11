@@ -1,4 +1,5 @@
 module entitas.utils {
+  "use strict";
 
   export class Stopwatch {
     public get isRunning():boolean {

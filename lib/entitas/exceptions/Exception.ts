@@ -1,4 +1,5 @@
 module entitas {
+  "use strict";
 
   export class Exception {
     /** @type {string} */

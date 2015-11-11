@@ -1,4 +1,5 @@
 module entitas {
+  "use strict";
 
   import ISystem = entitas.ISystem;
   import ReactiveSystem = entitas.ReactiveSystem;

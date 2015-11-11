@@ -1,4 +1,5 @@
 module entitas {
+  "use strict";
 
   import UUID = entitas.utils.UUID;
   import Bag = entitas.utils.Bag;

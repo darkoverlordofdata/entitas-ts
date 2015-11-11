@@ -1,4 +1,5 @@
 module entitas.utils {
+  "use strict";
 
   /**
    * Collection type a bit like ArrayList but does not preserve the order of its

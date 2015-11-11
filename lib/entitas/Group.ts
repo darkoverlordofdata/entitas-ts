@@ -1,4 +1,5 @@
 module entitas {
+  "use strict";
 
   import Entity = entitas.Entity;
   import Signal = entitas.utils.Signal;

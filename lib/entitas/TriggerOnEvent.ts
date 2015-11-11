@@ -1,4 +1,5 @@
 module entitas {
+  "use strict";
 
   import GroupEventType = entitas.GroupEventType;
 

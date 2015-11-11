@@ -1,4 +1,5 @@
 module entitas {
+  "use strict";
 
   import Group = entitas.Group;
   import Entity = entitas.Entity;

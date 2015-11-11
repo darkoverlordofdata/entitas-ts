@@ -2,6 +2,7 @@ var entitas;
 (function (entitas) {
     var utils;
     (function (utils) {
+        "use strict";
         var hex = [
             "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f",
             "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1a", "1b", "1c", "1d", "1e", "1f",
@@ -50,6 +51,13 @@ var entitas;
         utils.UUID = UUID;
     })(utils = entitas.utils || (entitas.utils = {}));
 })(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    var utils;
+    (function (utils) {
+        "use strict";
+    })(utils = entitas.utils || (entitas.utils = {}));
+})(entitas || (entitas = {}));
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -59,6 +67,7 @@ var entitas;
 (function (entitas) {
     var utils;
     (function (utils) {
+        "use strict";
         /**
          * Collection type a bit like ArrayList but does not preserve the order of its
          * entities, speedwise it is very good, especially suited for games.
@@ -304,6 +313,7 @@ var entitas;
 (function (entitas) {
     var utils;
     (function (utils) {
+        "use strict";
         var Bag = entitas.utils.Bag;
         var Signal = (function () {
             /**
@@ -371,6 +381,7 @@ var entitas;
 (function (entitas) {
     var utils;
     (function (utils) {
+        "use strict";
         var Stopwatch = (function () {
             function Stopwatch() {
                 Stopwatch.isHighRes = performance ? true : false;
@@ -425,6 +436,7 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
+    "use strict";
     var Exception = (function () {
         /**
          * Base exception class
@@ -446,6 +458,7 @@ var entitas;
 (function (entitas) {
     var exceptions;
     (function (exceptions) {
+        "use strict";
         var Exception = entitas.Exception;
         var EntityAlreadyHasComponentException = (function (_super) {
             __extends(EntityAlreadyHasComponentException, _super);
@@ -467,6 +480,7 @@ var entitas;
 (function (entitas) {
     var exceptions;
     (function (exceptions) {
+        "use strict";
         var Exception = entitas.Exception;
         var EntityDoesNotHaveComponentException = (function (_super) {
             __extends(EntityDoesNotHaveComponentException, _super);
@@ -488,6 +502,7 @@ var entitas;
 (function (entitas) {
     var exceptions;
     (function (exceptions) {
+        "use strict";
         var Exception = entitas.Exception;
         var EntityIsNotEnabledException = (function (_super) {
             __extends(EntityIsNotEnabledException, _super);
@@ -508,6 +523,7 @@ var entitas;
 (function (entitas) {
     var exceptions;
     (function (exceptions) {
+        "use strict";
         var Exception = entitas.Exception;
         var EntityIsAlreadyReleasedException = (function (_super) {
             __extends(EntityIsAlreadyReleasedException, _super);
@@ -527,6 +543,7 @@ var entitas;
 (function (entitas) {
     var exceptions;
     (function (exceptions) {
+        "use strict";
         var Exception = entitas.Exception;
         var SingleEntityException = (function (_super) {
             __extends(SingleEntityException, _super);
@@ -547,6 +564,7 @@ var entitas;
 (function (entitas) {
     var exceptions;
     (function (exceptions) {
+        "use strict";
         var Exception = entitas.Exception;
         var GroupObserverException = (function (_super) {
             __extends(GroupObserverException, _super);
@@ -567,6 +585,7 @@ var entitas;
 (function (entitas) {
     var exceptions;
     (function (exceptions) {
+        "use strict";
         var Exception = entitas.Exception;
         var PoolDoesNotContainEntityException = (function (_super) {
             __extends(PoolDoesNotContainEntityException, _super);
@@ -588,6 +607,7 @@ var entitas;
 (function (entitas) {
     var exceptions;
     (function (exceptions) {
+        "use strict";
         var Exception = entitas.Exception;
         var EntityIsNotDestroyedException = (function (_super) {
             __extends(EntityIsNotDestroyedException, _super);
@@ -608,6 +628,7 @@ var entitas;
 (function (entitas) {
     var exceptions;
     (function (exceptions) {
+        "use strict";
         var Exception = entitas.Exception;
         var MatcherException = (function (_super) {
             __extends(MatcherException, _super);
@@ -626,6 +647,7 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
+    "use strict";
     var MatcherException = entitas.exceptions.MatcherException;
     var GroupEventType = entitas.GroupEventType;
     var TriggerOnEvent = entitas.TriggerOnEvent;
@@ -935,6 +957,7 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
+    "use strict";
     var TriggerOnEvent = (function () {
         /**
          * @constructor
@@ -956,6 +979,7 @@ var entitas;
  */
 var entitas;
 (function (entitas) {
+    "use strict";
     var Signal = entitas.utils.Signal;
     var EntityIsNotEnabledException = entitas.exceptions.EntityIsNotEnabledException;
     var EntityIsAlreadyReleasedException = entitas.exceptions.EntityIsAlreadyReleasedException;
@@ -1333,6 +1357,7 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
+    "use strict";
     var Signal = entitas.utils.Signal;
     var GroupEventType = entitas.GroupEventType;
     var SingleEntityException = entitas.exceptions.SingleEntityException;
@@ -1563,6 +1588,7 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
+    "use strict";
     var GroupObserverException = entitas.exceptions.GroupObserverException;
     /**
      * Event Types
@@ -1672,6 +1698,7 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
+    "use strict";
     var UUID = entitas.utils.UUID;
     var Bag = entitas.utils.Bag;
     var Group = entitas.Group;
@@ -1998,6 +2025,7 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
+    "use strict";
     var GroupObserver = entitas.GroupObserver;
     /**
      * As
@@ -2119,6 +2147,7 @@ var entitas;
 })(entitas || (entitas = {}));
 var entitas;
 (function (entitas) {
+    "use strict";
     /**
      * As
      * Retuns the object if it implements the interface, else null

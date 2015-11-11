@@ -1,4 +1,5 @@
 module entitas.utils {
+  "use strict";
 
   import Bag = entitas.utils.Bag;
 

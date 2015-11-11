@@ -1,4 +1,5 @@
 module entitas.exceptions {
+  "use strict";
 
   import Exception = entitas.Exception;
 
