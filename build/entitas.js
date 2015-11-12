@@ -469,7 +469,7 @@ var entitas;
              * @param index
              */
             function EntityAlreadyHasComponentException(message, index) {
-                _super.call(this, message + "\nEntity already has a component at index " + index);
+                _super.call(this, message + "\nEntity already has a component at index (" + index + ") " + entitas.Pool.componentsEnum[index]);
             }
             return EntityAlreadyHasComponentException;
         })(Exception);
@@ -491,7 +491,7 @@ var entitas;
              * @param index
              */
             function EntityDoesNotHaveComponentException(message, index) {
-                _super.call(this, message + "\nEntity does not have a component at index " + index);
+                _super.call(this, message + "\nEntity does not have a component at index (" + index + ") " + entitas.Pool.componentsEnum[index]);
             }
             return EntityDoesNotHaveComponentException;
         })(Exception);
@@ -1167,7 +1167,8 @@ var entitas;
                 components[index] = replacement;
                 this._componentsCache = null;
                 if (replacement == null) {
-                    delete components[index];
+                    //delete components[index];
+                    components[index] = null;
                     this._componentIndicesCache = null;
                     this._toStringCache = null;
                     var onComponentRemoved = this.onComponentRemoved;

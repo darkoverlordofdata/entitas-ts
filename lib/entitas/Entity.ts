@@ -262,7 +262,8 @@ module entitas {
         components[index] = replacement;
         this._componentsCache = null;
         if (replacement == null) {
-          delete components[index];
+          //delete components[index];
+          components[index] = null;
           this._componentIndicesCache = null;
           this._toStringCache = null;
           var onComponentRemoved:any = this.onComponentRemoved;

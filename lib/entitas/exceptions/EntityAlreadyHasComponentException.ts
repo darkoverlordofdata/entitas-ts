@@ -11,7 +11,7 @@ module entitas.exceptions {
      * @param index
      */
     public constructor(message:string, index:number) {
-      super(message + "\nEntity already has a component at index " + index);
+      super(message + "\nEntity already has a component at index (" + index + ") " + entitas.Pool.componentsEnum[index]);
     }
   }
 
