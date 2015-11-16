@@ -322,7 +322,7 @@ module.exports =
           js.push "   * @returns {entitas.Entity}"
           js.push "   */"
           js.push "  Pool.prototype.remove#{Name} = function() {"
-          js.push "    this.destroyEntity(#{name}Entity);"
+          js.push "    this.destroyEntity(this.#{name}Entity);"
           js.push "  };"
 
           d3.push "        #{name}Entity: Entity;"
