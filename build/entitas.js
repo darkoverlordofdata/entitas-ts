@@ -648,6 +648,24 @@ var entitas;
 var entitas;
 (function (entitas) {
     "use strict";
+    var TriggerOnEvent = (function () {
+        /**
+         * @constructor
+         *
+         * @param trigger
+         * @param eventType
+         */
+        function TriggerOnEvent(trigger, eventType) {
+            this.trigger = trigger;
+            this.eventType = eventType;
+        }
+        return TriggerOnEvent;
+    })();
+    entitas.TriggerOnEvent = TriggerOnEvent;
+})(entitas || (entitas = {}));
+var entitas;
+(function (entitas) {
+    "use strict";
     var MatcherException = entitas.exceptions.MatcherException;
     var TriggerOnEvent = entitas.TriggerOnEvent;
     /**
@@ -964,24 +982,6 @@ var entitas;
         return Matcher;
     })();
     entitas.Matcher = Matcher;
-})(entitas || (entitas = {}));
-var entitas;
-(function (entitas) {
-    "use strict";
-    var TriggerOnEvent = (function () {
-        /**
-         * @constructor
-         *
-         * @param trigger
-         * @param eventType
-         */
-        function TriggerOnEvent(trigger, eventType) {
-            this.trigger = trigger;
-            this.eventType = eventType;
-        }
-        return TriggerOnEvent;
-    })();
-    entitas.TriggerOnEvent = TriggerOnEvent;
 })(entitas || (entitas = {}));
 /**
  * entitas ecs

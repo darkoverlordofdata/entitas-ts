@@ -126,9 +126,10 @@ module.exports = (project, options = {}) ->
       ###
       # Build with tsc, then compress
       ###
+      files = require(JSCONFIG).files.join(" LF ")
       step.push """
         tsc -p . --outFile build/#{LIB_NAME}.js -d
-        cat build/#{LIB_NAME}.js | \
+        cat #{files} | \
           java -jar #{COMPILER_JAR} \
             --compilation_level #{options.compile} \
             --js_output_file build/#{LIB_NAME}.min.js

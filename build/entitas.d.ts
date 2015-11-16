@@ -393,6 +393,20 @@ declare module entitas.exceptions {
     }
 }
 declare module entitas {
+    import GroupEventType = entitas.GroupEventType;
+    class TriggerOnEvent {
+        trigger: IMatcher;
+        eventType: GroupEventType;
+        /**
+         * @constructor
+         *
+         * @param trigger
+         * @param eventType
+         */
+        constructor(trigger: IMatcher, eventType: GroupEventType);
+    }
+}
+declare module entitas {
     import Entity = entitas.Entity;
     import IAllOfMatcher = entitas.IAllOfMatcher;
     import IAnyOfMatcher = entitas.IAnyOfMatcher;
@@ -505,20 +519,6 @@ declare module entitas {
         static anyOf(...args: number[]): IAnyOfMatcher;
         static anyOf(...args: Array<IMatcher>): IAnyOfMatcher;
         private static appendIndices(sb, prefix, indexArray);
-    }
-}
-declare module entitas {
-    import GroupEventType = entitas.GroupEventType;
-    class TriggerOnEvent {
-        trigger: IMatcher;
-        eventType: GroupEventType;
-        /**
-         * @constructor
-         *
-         * @param trigger
-         * @param eventType
-         */
-        constructor(trigger: IMatcher, eventType: GroupEventType);
     }
 }
 /**
