@@ -5,18 +5,8 @@ module entitas {
   import Entity = entitas.Entity;
   import Matcher = entitas.Matcher;
   import IComponent = entitas.IComponent;
+  import GroupEventType = entitas.GroupEventType;
   import GroupObserverException = entitas.exceptions.GroupObserverException;
-
-  /**
-   * Event Types
-   * @readonly
-   * @enum {number}
-   */
-  export enum GroupEventType {
-    OnEntityAdded,
-    OnEntityRemoved,
-    OnEntityAddedOrRemoved
-  }
 
   export class GroupObserver {
 

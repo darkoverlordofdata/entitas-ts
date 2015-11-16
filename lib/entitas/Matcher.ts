@@ -7,13 +7,25 @@ module entitas {
   import IAnyOfMatcher = entitas.IAnyOfMatcher;
   import INoneOfMatcher = entitas.INoneOfMatcher;
   import MatcherException = entitas.exceptions.MatcherException;
-  import GroupEventType = entitas.GroupEventType;
   import GroupObserver = entitas.GroupObserver;
   import TriggerOnEvent = entitas.TriggerOnEvent;
+
+  /**
+   * Event Types
+   * @readonly
+   * @enum {number}
+   */
+  export enum GroupEventType {
+    OnEntityAdded,
+    OnEntityRemoved,
+    OnEntityAddedOrRemoved
+  }
+
 
   export module Matcher {
 
   }
+  
   export class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {
 
     /**

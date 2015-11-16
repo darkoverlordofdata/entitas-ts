@@ -398,6 +398,16 @@ declare module entitas {
     import IAnyOfMatcher = entitas.IAnyOfMatcher;
     import INoneOfMatcher = entitas.INoneOfMatcher;
     import TriggerOnEvent = entitas.TriggerOnEvent;
+    /**
+     * Event Types
+     * @readonly
+     * @enum {number}
+     */
+    enum GroupEventType {
+        OnEntityAdded = 0,
+        OnEntityRemoved = 1,
+        OnEntityAddedOrRemoved = 2,
+    }
     module Matcher {
     }
     class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {
@@ -872,16 +882,7 @@ declare module entitas {
     import Group = entitas.Group;
     import Entity = entitas.Entity;
     import IComponent = entitas.IComponent;
-    /**
-     * Event Types
-     * @readonly
-     * @enum {number}
-     */
-    enum GroupEventType {
-        OnEntityAdded = 0,
-        OnEntityRemoved = 1,
-        OnEntityAddedOrRemoved = 2,
-    }
+    import GroupEventType = entitas.GroupEventType;
     class GroupObserver {
         /**
          * Entities being observed

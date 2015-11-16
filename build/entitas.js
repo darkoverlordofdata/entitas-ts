@@ -649,8 +649,18 @@ var entitas;
 (function (entitas) {
     "use strict";
     var MatcherException = entitas.exceptions.MatcherException;
-    var GroupEventType = entitas.GroupEventType;
     var TriggerOnEvent = entitas.TriggerOnEvent;
+    /**
+     * Event Types
+     * @readonly
+     * @enum {number}
+     */
+    (function (GroupEventType) {
+        GroupEventType[GroupEventType["OnEntityAdded"] = 0] = "OnEntityAdded";
+        GroupEventType[GroupEventType["OnEntityRemoved"] = 1] = "OnEntityRemoved";
+        GroupEventType[GroupEventType["OnEntityAddedOrRemoved"] = 2] = "OnEntityAddedOrRemoved";
+    })(entitas.GroupEventType || (entitas.GroupEventType = {}));
+    var GroupEventType = entitas.GroupEventType;
     var Matcher = (function () {
         /**
          * @constructor
@@ -1590,18 +1600,8 @@ var entitas;
 var entitas;
 (function (entitas) {
     "use strict";
-    var GroupObserverException = entitas.exceptions.GroupObserverException;
-    /**
-     * Event Types
-     * @readonly
-     * @enum {number}
-     */
-    (function (GroupEventType) {
-        GroupEventType[GroupEventType["OnEntityAdded"] = 0] = "OnEntityAdded";
-        GroupEventType[GroupEventType["OnEntityRemoved"] = 1] = "OnEntityRemoved";
-        GroupEventType[GroupEventType["OnEntityAddedOrRemoved"] = 2] = "OnEntityAddedOrRemoved";
-    })(entitas.GroupEventType || (entitas.GroupEventType = {}));
     var GroupEventType = entitas.GroupEventType;
+    var GroupObserverException = entitas.exceptions.GroupObserverException;
     var GroupObserver = (function () {
         /**
          * @constructor
