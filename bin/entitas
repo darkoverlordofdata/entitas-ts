@@ -23,7 +23,6 @@ Options:
   -c  [--component] # create a component
   -s  [--system]    # create a system
   -e  [--entity]    # create an entity
-  -u  [--unity]     # generate csharp stubs for unity
   -x  [--extension] # extend a class
 
 """

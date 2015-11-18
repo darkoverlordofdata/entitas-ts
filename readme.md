@@ -51,6 +51,7 @@ use entitas cli to generate empty components, extensions & typescript declaratio
       entitas create -s name interface...
       entitas create -e name
       entitas generate
+      entitas unity
 
     Options:
       -c  [--component] # create a component
