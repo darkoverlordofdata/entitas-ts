@@ -185,54 +185,54 @@ module entitas {
       return this._toStringCache;
     }
 
-    /**
-     * Check if the matchers are equal
-     * @param {Object} obj
-     * @returns {boolean}
-     */
-    public equals(obj) {
-      if (obj == null || obj == null) return false;
-      var matcher:Matcher = obj;
+    // /**
+    //  * Check if the matchers are equal
+    //  * @param {Object} obj
+    //  * @returns {boolean}
+    //  */
+    // public equals(obj) {
+    //   if (obj == null || obj == null) return false;
+    //   var matcher:Matcher = obj;
 
-      if (!Matcher.equalIndices(matcher.allOfIndices, this._allOfIndices)) {
-        return false;
-      }
-      if (!Matcher.equalIndices(matcher.anyOfIndices, this._anyOfIndices)) {
-        return false;
-      }
-      if (!Matcher.equalIndices(matcher.noneOfIndices, this._noneOfIndices)) {
-        return false;
-      }
-      return true;
+    //   if (!Matcher.equalIndices(matcher.allOfIndices, this._allOfIndices)) {
+    //     return false;
+    //   }
+    //   if (!Matcher.equalIndices(matcher.anyOfIndices, this._anyOfIndices)) {
+    //     return false;
+    //   }
+    //   if (!Matcher.equalIndices(matcher.noneOfIndices, this._noneOfIndices)) {
+    //     return false;
+    //   }
+    //   return true;
 
-    }
+    // }
 
-    /**
-     * Check if the lists of component indices are equal
-     * @param {Array<number>} list1
-     * @param {Array<number>} list2
-     * @returns {boolean}
-     */
-    public static equalIndices(i1:number[], i2:number[]):boolean {
-      if ((i1 == null) != (i2 == null)) {
-        return false;
-      }
-      if (i1 == null) {
-        return true;
-      }
-      if (i1.length !== i2.length) {
-        return false;
-      }
+    // /**
+    //  * Check if the lists of component indices are equal
+    //  * @param {Array<number>} list1
+    //  * @param {Array<number>} list2
+    //  * @returns {boolean}
+    //  */
+    // public static equalIndices(i1:number[], i2:number[]):boolean {
+    //   if ((i1 == null) != (i2 == null)) {
+    //     return false;
+    //   }
+    //   if (i1 == null) {
+    //     return true;
+    //   }
+    //   if (i1.length !== i2.length) {
+    //     return false;
+    //   }
 
-      for (var i = 0, indicesLength = i1.length; i < indicesLength; i++) {
-        /** compare coerced values so we can compare string type to number type */
-        if (i1[i] != i2[i]) {
-          return false;
-        }
-      }
+    //   for (var i = 0, indicesLength = i1.length; i < indicesLength; i++) {
+    //     /** compare coerced values so we can compare string type to number type */
+    //     if (i1[i] != i2[i]) {
+    //       return false;
+    //     }
+    //   }
 
-      return true;
-    }
+    //   return true;
+    // }
 
     /**
      * Get the set if distinct (non-duplicate) indices from a list

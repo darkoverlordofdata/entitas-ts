@@ -162,7 +162,7 @@ module entitas {
 
     /**
      * Initialize
-     * Extension point to allocate enetity pool.
+     * allocate the entity pool.
      *
      * @param {number} totalComponents
      * @returns {Array<entitas.IComponent>}

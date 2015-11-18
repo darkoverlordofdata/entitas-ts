@@ -87,21 +87,71 @@
     ]
   },
   "systems": {
-    "MovementSystem": true,
-    "PlayerInputSystem": true,
-    "SoundEffectSystem": true,
-    "CollisionSystem": true,
-    "ExpiringSystem": true,
-    "EntitySpawningTimerSystem": true,
-    "ParallaxStarRepeatingSystem": true,
-    "ColorAnimationSystem": true,
-    "ScaleAnimationSystem": true,
-    "RemoveOffscreenShipsSystem": true,
-    "SpriteRenderSystem": true,
-    "HealthRenderSystem": true,
-    "HudRenderSystem": true,
-    "DestroySystem": true,
-    "AddViewSystem": true
+    "MovementSystem": [
+      "IExecuteSystem",
+      "ISetPool"
+    ],
+    "PlayerInputSystem": [
+      "IInitializeSystem",
+      "IExecuteSystem",
+      "ISetPool"
+    ],
+    "SoundEffectSystem": [
+      "IInitializeSystem",
+      "IExecuteSystem",
+      "ISetPool"
+    ],
+    "CollisionSystem": [
+      "IInitializeSystem",
+      "IExecuteSystem",
+      "ISetPool"
+    ],
+    "ExpiringSystem": [
+      "IExecuteSystem",
+      "ISetPool"
+    ],
+    "EntitySpawningTimerSystem": [
+      "IInitializeSystem",
+      "IExecuteSystem",
+      "ISetPool"
+    ],
+    "ParallaxStarRepeatingSystem": [
+      "IInitializeSystem",
+      "IExecuteSystem",
+      "ISetPool"
+    ],
+    "ColorAnimationSystem": [
+      "IExecuteSystem",
+      "ISetPool"
+    ],
+    "ScaleAnimationSystem": [
+      "IExecuteSystem",
+      "ISetPool"
+    ],
+    "RemoveOffscreenShipsSystem": [
+      "IExecuteSystem",
+      "ISetPool"
+    ],
+    "SpriteRenderSystem": [
+      "IExecuteSystem",
+      "ISetPool"
+    ],
+    "HealthRenderSystem": [
+      "IExecuteSystem",
+      "ISetPool"
+    ],
+    "HudRenderSystem": [
+      "IInitializeSystem",
+      "IExecuteSystem",
+      "ISetPool"
+    ],
+    "DestroySystem": [
+      "IExecuteSystem",
+      "ISetPool"
+    ],
+    "AddViewSystem": [
+      "ISetPool"
+    ]
   },
   "entities": {
     "Score": true,

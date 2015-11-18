@@ -34,6 +34,7 @@ module.exports =
         create.extension(name, args...)
 
 
+  
 ###
  *
  * Create E/C/S
@@ -50,7 +51,7 @@ create =
     fs.writeFileSync("#{process.cwd()}/entitas.json", JSON.stringify(config, null, 2))
 
   system:(name, args...) ->
-    config.systems[name] = true
+    config.systems[name] = ('"'+system+'"' for system in args).join(', ')
     fs.writeFileSync("#{process.cwd()}/entitas.json", JSON.stringify(config, null, 2))
     template = systemTemplate(name, args)
     mkdirp.sync "#{process.cwd()}/#{config.src}/systems"

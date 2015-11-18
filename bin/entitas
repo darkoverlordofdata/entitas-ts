@@ -16,12 +16,14 @@ Usage:
   entitas create -e name 
   entitas create -x class name field:type...
   entitas generate
+  entitas unity
 
 Options:
   -t  [--template]  # template name
   -c  [--component] # create a component
   -s  [--system]    # create a system
   -e  [--entity]    # create an entity
+  -u  [--unity]     # generate csharp stubs for unity
   -x  [--extension] # extend a class
 
 """
@@ -32,6 +34,8 @@ switch process.argv[2]
   when 'create' then entitas.create process.argv.slice(3)...
 
   when 'generate' then entitas.generate process.argv.slice(3)...
+  
+  when 'unity' then entitas.unity process.argv.slice(3)...
 
   when '--version' then console.log "entitas v"+require('../package.json').version
 
