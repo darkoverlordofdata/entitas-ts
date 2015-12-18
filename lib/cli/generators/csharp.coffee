@@ -3,7 +3,7 @@
  * Entitas code generation
  *
  * Generate CSharp stubs for
- * use by Entitas_CSharp
+ * use by Entitas_CSharp in Unity
  *
 ###
 fs = require('fs')
@@ -45,9 +45,7 @@ module.exports =
       sb.push "using Entitas;"
       sb.push ""
       if config.entities[Name]?
-        sb.push "[Core, SingleEntity]"
-      else
-        sb.push "[Core]"
+        sb.push "[SingleEntity]"
       sb.push "public class #{Name}Component : IComponent {"
       for p in properties
         name = p.split(':')[0]
@@ -56,7 +54,7 @@ module.exports =
       sb.push "}"
       
       mkdirp.sync path.join(process.cwd(), 'build/Sources/Features')
-      fs.writeFileSync(path.join(process.cwd(), "build/Sources/Features/#{Name}Components.cs"), sb.join('\n'))
+      fs.writeFileSync(path.join(process.cwd(), "build/Sources/Features/#{Name}Component.cs"), sb.join('\n'))
       
     
     for Name, interfaces of config.systems

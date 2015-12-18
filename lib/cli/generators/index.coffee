@@ -13,17 +13,18 @@
 #
 # entitas command dispatch
 #
-generate = require("./generate")
 
-module.exports =
-  run: (flag, lang, args...) ->
+Object.defineProperties module.exports,
 
-    if flag is '-p' or flag is '--platform'
-      switch lang
-        when 'html5' then generate.html5 args...
-        when 'csharp' then generate.csharp args...
-        when 'fsharp' then generate.fsharp args...
+  html5:  # initialize the entitas ecs project
+    get: ->
+      require('./html5.coffee').run
 
-    else
-      when 'html5' then generate.html5 args...
-    
+  csharp: # generate entity extensions
+    get: ->
+      require('./csharp.coffee').run
+
+  fsharp: # create entity/component/system
+    get: ->
+      require('./fsharp.coffee').run
+      

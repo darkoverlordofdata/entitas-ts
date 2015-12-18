@@ -28,7 +28,3 @@ Object.defineProperties module.exports,
     get: ->
       require('./create.coffee').run
       
-  unity: # generate csharp stubs for unity
-    get: ->
-      require('./unity.coffee').run
-

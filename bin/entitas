@@ -8,15 +8,14 @@
 ###
 entitas = require("../lib/cli")
 
-$usage = """
+usage = """
 Usage:
   entitas init namespace [-t name]
   entitas create -c name field:type... 
   entitas create -s name interface...
   entitas create -e name 
   entitas create -x class name field:type...
-  entitas generate
-  entitas unity
+  entitas generate [-p <html5|csharp|fsharp>]
 
 Options:
   -t  [--template]  # template name
@@ -24,7 +23,13 @@ Options:
   -s  [--system]    # create a system
   -e  [--entity]    # create an entity
   -x  [--extension] # extend a class
-
+  -p  [--platform]  # target platform for generated code: 
+                        html5 - typescript & javascript combination (default)
+                        csharp ** Unity compatable
+                        fsharp ** Unity compatable
+                        
+  ** = experimental: not finished or fully supported                        
+                        
 """
 switch process.argv[2]
 
@@ -34,15 +39,13 @@ switch process.argv[2]
 
   when 'generate' then entitas.generate process.argv.slice(3)...
   
-  when 'unity' then entitas.unity process.argv.slice(3)...
-
   when '--version' then console.log "entitas v"+require('../package.json').version
 
   when '-v' then console.log "entitas v"+require('../package.json').version
 
-  when '--help' then console.log $usage
+  when '--help' then console.log usage
 
-  when '-h' then console.log $usage
+  when '-h' then console.log usage
 
-  else console.log $usage
+  else console.log usage
 

@@ -46,18 +46,25 @@ use entitas cli to generate empty components, extensions & typescript declaratio
 
 
     Usage:
-      entitas init namespace
-      entitas create -c name field:type...
-      entitas create -s name interface...
-      entitas create -e name
-      entitas generate
-      entitas unity
-
+    entitas init namespace [-t name]
+    entitas create -c name field:type... 
+    entitas create -s name interface...
+    entitas create -e name 
+    entitas create -x class name field:type...
+    entitas generate [-p <html5|csharp|fsharp>]
+    
     Options:
-      -c  [--component] # create a component
-      -s  [--system]    # create a system
-      -e  [--entity]    # create entity
-      -x  [--extension] # create an extension
+    -t  [--template]  # template name
+    -c  [--component] # create a component
+    -s  [--system]    # create a system
+    -e  [--entity]    # create an entity
+    -x  [--extension] # extend a class
+    -p  [--platform]  # target platform for generated code: 
+                            html5 - typescript & javascript combination (default)
+                            csharp ** Unity compatable
+                            fsharp ** Unity compatable
+                            
+    ** = experimental: not finished or fully supported                        
 
 Components classes are generated from json configuration, enforcing data oriented design.
 
