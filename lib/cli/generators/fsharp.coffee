@@ -19,6 +19,14 @@ getType = (arg) ->
     when 'any'      then 'Object'
     else arg
 
+getDefault = (arg) ->
+  switch arg
+    when 'boolean'  then 'false'
+    when 'string'   then '""'
+    when 'number'   then '0f'
+    when 'any'      then 'null'
+    else arg
+    
 
 params = (args) ->
   sb = []
@@ -38,114 +46,59 @@ module.exports =
 #
   run: (flags...) ->
 
+    sb = []
+    sb.push "open Entitas"
+    sb.push "open System"
+    sb.push "open System.Collections.Generic"
+    sb.push "open Microsoft.FSharp.Reflection"
+    
+    sb.push ""
+    sb.push "type ComponentIds = "
+    for Name, properties of config.components
+      name = Name[0].toLowerCase()+Name[1...]
+      sb.push "  | #{Name}Component of #{Name}Component"    
+    sb.push ""
+    sb.push "let Components = FSharpType.GetUnionCases typeof<ComponentIds>"   
+    sb.push ""
   
     for Name, properties of config.components
       name = Name[0].toLowerCase()+Name[1...]
-      sb = []
-      sb.push "using Entitas;"
       sb.push ""
-      if config.entities[Name]?
-        sb.push "[SingleEntity]"
-      sb.push "public class #{Name}Component : IComponent {"
-      for p in properties
-        name = p.split(':')[0]
-        type = getType(p.split(':')[1])
-        sb.push "    public #{type} #{name};"
-      sb.push "}"
+      sb.push "type #{Name}Component() ="
+      sb.push "    inherit Component()"
+      if properties is false 
+        sb.push "    member val active = false with get, set"
+      else
+        for p in properties
+          name = p.split(':')[0]
+          value = getDefault(p.split(':')[1])
+          sb.push "    member val #{name} = #{value} with get, set"
       
-      mkdirp.sync path.join(process.cwd(), 'build/Sources/Features')
-      fs.writeFileSync(path.join(process.cwd(), "build/Sources/Features/#{Name}Component.cs"), sb.join('\n'))
-      
-    
     for Name, interfaces of config.systems
       name = Name[0].toLowerCase()+Name[1...]
-      sb = []
-      sb.push "using Entitas;"
-      sb.push "using System.Collections.Generic;"
-      sb.push "public class #{Name} : #{interfaces.join(', ')} {"
       sb.push ""
+      sb.push "type #{Name}(world) ="
       
-      if interfaces.indexOf('IReactiveSystem') isnt -1
-        sb.push "    public TriggerOnEvent trigger { get { return Matcher.Component.OnEntityAddedOrRemoved(); } }"
-        sb.push ""
+      found = false
+      for iface in interfaces
 
-      if interfaces.indexOf('IMultiReactiveSystem') isnt -1
-        sb.push "    public TriggerOnEvent[] triggers { get { return new [] { }; } }"
-        sb.push ""
+        if 'IExecuteSystem' is iface
+          sb.push "    interface IExecuteSystem with"
+          sb.push "        member this.Execute() ="
+          sb.push "            ()"
+          found = true
+          
+        if 'IInitializeSystem' is iface
+          sb.push "    interface IInitializeSystem with"
+          sb.push "        member this.Initialize() ="
+          sb.push "            ()"
+          found = true
 
-      if interfaces.indexOf('IEnsureComponents') isnt -1
-        sb.push "    public IMatcher ensureComponents { get { return Matcher.Components; } }"
-        sb.push ""
-            
-      if interfaces.indexOf('IExcludeComponents') isnt -1
-        sb.push "    public IMatcher excludeComponents { get { return Matcher.Components; } }"
-        sb.push ""
-
-      if interfaces.indexOf('IClearReactiveSystem') isnt -1
-        sb.push "    public bool clearAfterExecute() { get { return true;} }"
-        sb.push ""
-        
-      if interfaces.indexOf('ISetPool') isnt -1
-        sb.push "    Pool _pool;"
-        sb.push "    Group _group;"
-        sb.push ""
-        sb.push "    public void SetPool(Pool pool) {"
-        sb.push "        _pool = pool;"
-        sb.push "        _group = pool.GetGroup(Matcher.AllOf(Matcher.Component));"
-        sb.push "    }"
-        sb.push ""
-        
-      if interfaces.indexOf('IMultiReactiveSystem') isnt -1
-        sb.push "    public void Execute(List<Entity> entities) {"
-        sb.push "        foreach (var e in entities) {"
-        sb.push "        }"
-        sb.push "    }"
-        sb.push ""
-
-      if interfaces.indexOf('IReactiveSystem') isnt -1
-        sb.push "    public void Execute(List<Entity> entities) {"
-        sb.push "        foreach (var e in entities) {"
-        sb.push "        }"
-        sb.push "    }"
-        sb.push ""
-      
-      if interfaces.indexOf('IExecuteSystem') isnt -1
-        sb.push "    public void Execute() {"
-        if 'ISetPool' in interfaces
-          sb.push "        foreach (var e in _group.GetEntities()) {"
-          sb.push "        }"
-        sb.push "    }"
-        sb.push ""
-      
-      
-      if interfaces.indexOf('IInitializeSystem') isnt -1
-        sb.push "    public void Initialize() {"
-        sb.push "    }"
-        sb.push ""
-      
-      
-      sb.push "}"
-      
-      mkdirp.sync path.join(process.cwd(), 'build/Sources/Features')
-      fs.writeFileSync(path.join(process.cwd(), "build/Sources/Features/#{Name}.cs"), sb.join('\n'))
-
-
-    for Name, klass of config.extensions
-      name = Name[0].toLowerCase()+Name[1...]
-      sb = []
-      sb.push "using Entitas;"
-      sb.push "using UnityEngine;"
-      sb.push ""
-      sb.push "public static class #{Name}Extensions {"
-
-      for method, args of klass
-        [method, type] = method.split(':')
-        Method = method[0].toUpperCase()+method[1...]
-        sb.push "    public static #{type} #{Method}(this #{Name} #{name}#{params(args)}){"
-        sb.push "        return null;"
-        sb.push "    }"
-
-
-      sb.push "}"
-      mkdirp.sync path.join(process.cwd(), 'build/Sources/Extensions')
-      fs.writeFileSync(path.join(process.cwd(), "build/Sources/Extensions/#{Name}Extensions.cs"), sb.join('\n'))
+      sb.push "    ()" unless found 
+               
+          
+    console.log sb.join('\n')          
+    
+    
+    # mkdirp.sync path.join(process.cwd(), 'build/')
+    # fs.writeFileSync(path.join(process.cwd(), "build/#{Name}.fs"), sb.join('\n'))

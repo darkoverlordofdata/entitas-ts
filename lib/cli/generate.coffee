@@ -25,14 +25,13 @@
 #   funscript - maybe...if it works, might be one code base for both web & unity! 
 #
 #
-generate = require("./generate")
 
 module.exports =
   run: (flag, lang, args...) ->
 
     if flag is '-p' or flag is '--platform'
-      require("./generate/#{lang}.coffee").run args...
+      require("../cli/generators/#{lang}.coffee").run args...
 
     else
-      require("./generate/html5.coffee").run args...
+      require("../cli/generators/html5.coffee").run args...
     
