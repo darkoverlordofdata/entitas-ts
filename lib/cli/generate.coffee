@@ -13,6 +13,18 @@
 #
 # entitas command dispatch
 #
+# languages supported:
+#
+#   html5 - this is the default. Generates a combination of typescript
+#           and javascript
+#   csharp - WIP just generates components and systems from json. Then use Entitas-CSharp
+#           to finish generating helper code in unity. Used once to migrate Shmup Warz from
+#           web to unity
+#   fsharp - WIP generates fsharp code for ecs-fsharp, which is entitas based. 
+#   nemerle - someday...a lot of possiblity. nemerle replaces roslyn as code generator
+#   funscript - maybe...if it works, might be one code base for both web & unity! 
+#
+#
 generate = require("./generate")
 
 module.exports =
