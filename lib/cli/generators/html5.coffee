@@ -26,7 +26,7 @@ module.exports =
 #
   run: (flags...) ->
 
-    if flags.indexOf('-u') or flags.indexOf('--unity')
+    #if flags.indexOf('-u') or flags.indexOf('--unity')
 
     ts = [] # StringBuilder for generated typescript code
     js = [] # StringBuilder for generated javascript code
