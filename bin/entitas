@@ -1,9 +1,7 @@
 #!/usr/bin/env coffee
 ###
- * Entitas code generation
+ * Entitas cli
  *
- * emulate the partial class strategy for extensions
- * used by Entitas_CSharp
  *
 ###
 entitas = require("../lib/cli")
