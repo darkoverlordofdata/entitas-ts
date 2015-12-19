@@ -8,7 +8,7 @@ languages supported:
             to finish generating helper code in unity. WIP - used once to migrate 
             Shmup Warz from web to unity
             
-    fsharp - Starting... generates fsharp code for ecs-fsharp, which is entitas based. 
+    fsharp - generates fsharp code for ecs-fsharp, which is entitas based. 
     
     nemerle - someday...a lot of possiblity. nemerle replaces roslyn as code generator
     
