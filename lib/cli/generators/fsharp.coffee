@@ -137,6 +137,7 @@ module.exports =
      * Components List
     ###
     ex.push "let isNull x = match x with null -> true | _ -> false"
+    ex.push "let notNull x = match x with null -> false | _ -> true"
     ex.push ""
     ex.push "type Component with "
     kc = 0
@@ -221,6 +222,60 @@ module.exports =
           ex.push ""
           ex.push "type Matcher with "
           ex.push "    static member #{Name} with get() = Matcher.AllOf(Component.#{Name}) "
+          ex.push ""
+          
+    ###
+     * Pooled Entities
+    ###
+    ex.push "type World with"
+    for Name, pooled of config.entities
+      if pooled
+        name = Name[0].toLowerCase()+Name[1...];
+        properties = config.components[Name]
+        if config.components[Name] is false
+          ex.push ""
+          ex.push "    member this.#{name}Entity"
+          ex.push "        with get() = this.GetGroup(Matcher.#{Name}).GetSingleEntity()"
+          ex.push ""
+          ex.push "    member this.is#{Name}"
+          ex.push "        with get() ="
+          ex.push "            notNull(this.#{name}Entity)"
+          ex.push "        and  set(value) ="
+          ex.push "            let entity = this.#{name}Entity"
+          ex.push "            if value <> notNull(entity) then"
+          ex.push "                if value then"
+          ex.push "                    this.CreateEntity().is#{Name} <- true"
+          ex.push "                else"
+          ex.push "                    this.DestroyEntity(entity)"
+          ex.push ""
+        else
+          ex.push ""
+          ex.push "    member this.#{name}Entity"
+          ex.push "        with get() = this.GetGroup(Matcher.#{Name}).GetSingleEntity()"
+          ex.push ""
+          ex.push "    member this.#{name}"
+          ex.push "        with get() = this.#{name}Entity.#{name}"
+          ex.push ""
+          ex.push "    member this.has#{Name}"
+          ex.push "        with get() = notNull(this.#{name}Entity)"
+          ex.push ""
+          ex.push "    member this.Set#{Name}(newValue) ="
+          ex.push "        if this.has#{Name} then"
+          ex.push "            failwith \"Single Entity Exception: #{Name}\""
+          ex.push "        let entity = this.CreateEntity()"
+          ex.push "        entity.Add#{Name}(newValue) |> ignore"
+          ex.push "        entity"
+          ex.push ""
+          ex.push "    member this.Replace#{Name}(newValue) ="
+          ex.push "        let entity = this.#{name}Entity"
+          ex.push "        if isNull(entity) then"
+          ex.push "            entity = this.Set#{Name}(newValue) |> ignore"
+          ex.push "        else"
+          ex.push "            entity.Replace#{Name}(newValue) |> ignore"
+          ex.push "        entity"
+          ex.push ""
+          ex.push "    member this.Remove#{Name}() ="
+          ex.push "        this.DestroyEntity(this.#{name}Entity)"
           ex.push ""
           
                
