@@ -66,6 +66,10 @@ module.exports =
     sb.push "    let isNull x = match x with null -> true | _ -> false"
     sb.push "    let notNull x = match x with null -> false | _ -> true"
     sb.push "    let rnd = new System.Random()"
+    sb.push "    let IsNull x = (** Unity Version *)"
+    sb.push "        let y = box x // In case of value types"
+    sb.push "        obj.ReferenceEquals(y, Unchecked.defaultof<_>) || // Regular null check"
+    sb.push "        y.Equals(Unchecked.defaultof<_>) // Will call Unity overload if needed"
     sb.push ""
     
     s0.push "namespace #{config.namespace}"
@@ -159,7 +163,7 @@ module.exports =
       sy.push "open System"
       sy.push "open System.Collections.Generic"
       sy.push ""
-      sy.push "type #{Name}(world) ="
+      sy.push "type #{Name}(world:World) ="
       
       found = false
       for iface in interfaces
@@ -182,6 +186,7 @@ module.exports =
     ###
      * Components List
     ###
+    s0.push ""
     s0.push "    type Component with "
     s1.push "    type Entity with"     
     s1.push ""     
@@ -190,7 +195,6 @@ module.exports =
     s3.push ""     
     
     kc = 0
-    s0.push ""
     for Name, properties of config.components
       name = Name[0].toLowerCase()+Name[1...]
       s0.push "        static member #{Name} with get() = #{++kc}"    
@@ -294,7 +298,7 @@ module.exports =
           s3.push "                let entity = this.#{name}Entity"
           s3.push "                if value <> notNull(entity) then"
           s3.push "                    if value then"
-          s3.push "                        this.CreateEntity().is#{Name} <- true"
+          s3.push "                        this.CreateEntity(\"#{Name}\").is#{Name} <- true"
           s3.push "                    else"
           s3.push "                        this.DestroyEntity(entity)"
           s3.push ""
@@ -312,7 +316,7 @@ module.exports =
           s3.push "        member this.Set#{Name}(newValue) ="
           s3.push "            if this.has#{Name} then"
           s3.push "                failwith \"Single Entity Exception: #{Name}\""
-          s3.push "            let entity = this.CreateEntity()"
+          s3.push "            let entity = this.CreateEntity(\"#{Name}\")"
           s3.push "            entity.Add#{Name}(newValue) |> ignore"
           s3.push "            entity"
           s3.push ""
@@ -344,17 +348,18 @@ module.exports =
     fs.writeFileSync(path.join(process.cwd(), config.output.fsharp, 
       "Extensions/GlobalExtensions.fs"), sb.join('\n'))
     
-    # Components
+    # Components - overwrite
     fs.writeFileSync(path.join(process.cwd(), config.output.fsharp, 
       "Extensions/ComponentExtensions.fs"), s0.join('\n'))
     
-    # Extensions
+    # Extensions - overwrite
     for Name, ex of ext
       fs.writeFileSync(path.join(process.cwd(), config.output.fsharp, 
         "Extensions/#{Name}Extensions.fs"), ex.join('\n'))
 
-    # Systems
+    # Systems - Do Not overwrite
     for Name, sy of sys
-      fs.writeFileSync(path.join(process.cwd(), config.output.fsharp, 
-        "Systems/#{Name}.fs"), sy.join('\n'))
+      fileName = path.join(process.cwd(), config.output.fsharp, "Systems/#{Name}.fs")
+      fs.writeFileSync(fileName, sy.join('\n')) unless fs.existsSync(fileName)
+
       
