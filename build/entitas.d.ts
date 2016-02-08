@@ -490,19 +490,6 @@ declare module entitas {
          */
         toString(): string;
         /**
-         * Check if the matchers are equal
-         * @param {Object} obj
-         * @returns {boolean}
-         */
-        equals(obj: any): boolean;
-        /**
-         * Check if the lists of component indices are equal
-         * @param {Array<number>} list1
-         * @param {Array<number>} list2
-         * @returns {boolean}
-         */
-        static equalIndices(i1: number[], i2: number[]): boolean;
-        /**
          * Get the set if distinct (non-duplicate) indices from a list
          * @param {Array<number>} indices
          * @returns {Array<number>}
@@ -642,7 +629,7 @@ declare module entitas {
         static dim(count: number, size: number): void;
         /**
          * Initialize
-         * Extension point to allocate enetity pool.
+         * allocate the entity pool.
          *
          * @param {number} totalComponents
          * @returns {Array<entitas.IComponent>}

@@ -7,13 +7,15 @@
 entitas = require("../lib/cli")
 
 usage = """
+Generated code for entitas compatable ecs
+
 Usage:
   entitas init namespace [-t name]
   entitas create -c name field:type... 
   entitas create -s name interface...
   entitas create -e name 
   entitas create -x class name field:type...
-  entitas generate [-p <html5|csharp|fsharp>]
+  entitas generate [-p <html5|csharp|fsharp|vala>]
 
 Options:
   -t  [--template]  # template name
@@ -23,6 +25,7 @@ Options:
   -x  [--extension] # extend a class
   -p  [--platform]  # target platform for generated code: 
                         html5 - typescript & javascript combination (default)
+                        vala   ** https://wiki.gnome.org/Projects/Vala
                         csharp ** Unity compatable
                         fsharp ** Unity compatable
                         
