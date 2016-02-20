@@ -1,15 +1,15 @@
 #!/usr/bin/env coffee
 ###
- * Entitas code generation
+ * bosco code generation
  *
- * Generate Vala stubs for
- * use by Bosco.ECS/Genie
+ * Generate Nim stubs for
+ * use by bosco.ECS
  *
 ###
 fs = require('fs')
 path = require('path')
 mkdirp = require('mkdirp')
-config = require("#{process.cwd()}/entitas.json")
+config = require("#{process.cwd()}/bosco.json")
 
 
 params = (a, sep = ', ') ->
@@ -75,8 +75,6 @@ module.exports =
     s2.push "import bosco/ECS"
     s2.push "import ComponentEx"
     s2.push "type TMatch = ref object of RootObj"
-    s2.push ""
-    s2.push ""
 
     s3.push "##"
     s3.push "## Entitas Generated World Extensions for #{config.namespace}"
@@ -126,6 +124,7 @@ module.exports =
         when false
           sv.push "  ## @type {#{config.namespace}.#{Name}Component}"
           sv.push "  #{name}Component* : #{Name}Component"
+          sc.push ""
           sc.push "Pool.#{name}Component = #{Name}Component()"
           s1.push "## @type {boolean} "
           s1.push "proc is#{Name}*(this : Entity) : bool ="
@@ -139,7 +138,7 @@ module.exports =
           s1.push ""
           s1.push "##"
           s1.push "## @param {boolean} value"
-          s1.push "## @returns {entitas.Entity}"
+          s1.push "## @returns {bosco.Entity}"
           s1.push "##"
           s1.push "proc set#{Name}*(this : Entity, value : bool) : Entity ="
           s1.push "  this.is#{Name} = value"
@@ -147,17 +146,16 @@ module.exports =
           s1.push ""
 
         else
-          sv.push "  ## @type {entitas.utils.Bag}"
-          sv.push "  #{name}ComponentPool* : Queue[#{Name}Component]"
+          sv.push "  ## @type {bosco.utils.Bag}"
+          sv.push "  #{name}Component* : Queue[#{Name}Component]"
           s1.push ""
           
-          sc.push "#Pool.{name}ComponentPool = initQueue[Entity]()"
-          sc.push "Pool.#{name}ComponentPool = initQueue[#{Name}Component]()"
-          sc.push "for i in 1..POOL_SIZE:"
-          sc.push "  Pool.#{name}ComponentPool.add(#{Name}Component())"
+          sc.push ""
+          sc.push "Pool.#{name}Component = initQueue[#{Name}Component]()"
+          sc.push "for i in 1..POOL_SIZE:Pool.#{name}Component.add(#{Name}Component())"
           
-          s1.push "proc clear#{Name}ComponentPool*(this : Entity) ="
-          s1.push "  Pool.#{name}ComponentPool = initQueue[#{Name}Component]()"
+          s1.push "proc clear#{Name}Component*(this : Entity) ="
+          s1.push "  Pool.#{name}Component = initQueue[#{Name}Component]()"
           s1.push ""
           s1.push "## @type {#{config.namespace}.#{Name}Component} "
           s1.push "proc #{name}*(this : Entity) : #{Name}Component ="
@@ -170,10 +168,10 @@ module.exports =
           s1.push "##"
           for p in properties
             s1.push "## @param {#{p.split(':')[1]}} #{p.split(':')[0]}"
-          s1.push "## @returns {entitas.Entity}"
+          s1.push "## @returns {bosco.Entity}"
           s1.push "##"
           s1.push "proc add#{Name}*(this : Entity, #{properties.join(', ')}) : Entity ="
-          s1.push "  var component = if Pool.#{name}ComponentPool.len > 0 : Pool.#{name}ComponentPool.dequeue() else: #{Name}Component()"
+          s1.push "  var component = if Pool.#{name}Component.len > 0 : Pool.#{name}Component.dequeue() else: #{Name}Component()"
           for p in properties
             s1.push "  component.#{p.split(':')[0]} = #{p.split(':')[0]}"
           s1.push "  discard this.addComponent(int(Component.#{Name}), component)"
@@ -182,26 +180,26 @@ module.exports =
           s1.push "##"
           for p in properties
             s1.push "## @param {#{p.split(':')[1]}} #{p.split(':')[0]}"
-          s1.push "## @returns {entitas.Entity}"
+          s1.push "## @returns {bosco.Entity}"
           s1.push "##"
           s1.push "proc replace#{Name}*(this : Entity, #{properties.join(', ')}) : Entity ="
           s1.push "  var previousComponent = if this.has#{Name} : this.#{name} else: nil"
-          s1.push "  var component = if Pool.#{name}ComponentPool.len > 0 : Pool.#{name}ComponentPool.dequeue() else: #{Name}Component()"
+          s1.push "  var component = if Pool.#{name}Component.len > 0 : Pool.#{name}Component.dequeue() else: #{Name}Component()"
           for p in properties
             s1.push "  component.#{p.split(':')[0]} = #{p.split(':')[0]}"
           s1.push "  discard this.replaceComponent(int(Component.#{Name}), component)"
           s1.push "  if previousComponent != nil:"
-          s1.push "    Pool.#{name}ComponentPool.enqueue(previousComponent)"
+          s1.push "    Pool.#{name}Component.enqueue(previousComponent)"
           s1.push ""
           s1.push "  return this"
           s1.push ""
           s1.push "##"
-          s1.push "## @returns {entitas.Entity}"
+          s1.push "## @returns {bosco.Entity}"
           s1.push "##"
           s1.push "proc remove#{Name}*(this : Entity) : Entity ="
           s1.push "  var component = this.#{name}"
           s1.push "  discard this.removeComponent(int(Component.#{Name}))"
-          s1.push "  Pool.#{name}ComponentPool.enqueue(component)"
+          s1.push "  Pool.#{name}Component.enqueue(component)"
           s1.push "  return this"
           s1.push ""
 
@@ -211,16 +209,15 @@ module.exports =
     ###
     for Name, properties of config.components
       name = Name[0].toLowerCase()+Name[1...];
-      s2.push "  ## @type {entitas.Match} "
+      s2.push "  ## @type {bosco.Match} "
       s2.push "  match#{Name} : Matcher"
       
       sm.push ""
-      sm.push "## @type {entitas.Matcher} "
+      sm.push "## @type {bosco.Matcher} "
       sm.push "proc #{Name}*(this : TMatch) : Matcher ="
       sm.push "  if this.match#{Name} == nil:"
       sm.push "    this.match#{Name} = MatchAllOf(@[int(Component.#{Name})])"
       sm.push "  return this.match#{Name}"
-      sm.push ""
 
 
     
@@ -229,7 +226,7 @@ module.exports =
         name = Name[0].toLowerCase()+Name[1...];
         properties = config.components[Name]
         if config.components[Name] is false
-          s3.push "## @type {entitas.Match} "
+          s3.push "## @type {bosco.Match} "
           s3.push "proc #{name}Entity*(this : World) : Entity ="
           s3.push "  return this.getGroup(Match.#{Name}).getSingleEntity()"
           s3.push ""
@@ -247,7 +244,7 @@ module.exports =
 
 
         else
-          s3.push "## @type {entitas.Entity} "
+          s3.push "## @type {bosco.Entity} "
           s3.push "proc #{name}Entity*(this : World) : Entity ="
           s3.push "  return this.getGroup(Match.#{Name}).getSingleEntity()"
           s3.push ""
@@ -262,7 +259,7 @@ module.exports =
           s3.push "##"
           for p in properties
             s3.push "## @param {#{p.split(':')[1]}} #{p.split(':')[0]}"
-          s3.push "## @returns {entitas.Entity}"
+          s3.push "## @returns {bosco.Entity}"
           s3.push "##"
           s3.push "proc set#{Name}*(this : World, #{properties.join(', ')}) : Entity ="
           s3.push "  if this.has#{Name}:"
@@ -275,7 +272,7 @@ module.exports =
           s3.push "##"
           for p in properties
             s3.push "## @param {#{p.split(':')[1]}} #{p.split(':')[0]}"
-          s3.push "## @returns {entitas.Entity}"
+          s3.push "## @returns {bosco.Entity}"
           s3.push "##"
           s3.push "proc replace#{Name}*(this : World, #{properties.join(', ')}) : Entity ="
           s3.push "  var entity = this.#{name}Entity"
@@ -286,7 +283,7 @@ module.exports =
           s3.push "  return entity"
           s3.push ""
           s3.push "##"
-          s3.push "## @returns {entitas.Entity}"
+          s3.push "## @returns {bosco.Entity}"
           s3.push "##"
           s3.push "proc remove#{Name}*(this : World) ="
           s3.push "  this.destroyEntity(this.#{name}Entity)"
@@ -294,7 +291,7 @@ module.exports =
 
 
           
-    se.push "type TPool = ref object"
+    se.push "type TPool = ref object of RootObj"
     se.push sv.join('\n')
     se.push "var Pool* = TPool()"
     se.push sc.join('\n')
