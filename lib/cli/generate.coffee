@@ -15,13 +15,13 @@
 #
 # languages supported:
 #
-#   html5 - this is the default. Generates a combination of typescript
+#   html5   - this is the default. Generates a combination of typescript
 #           and javascript
-#   csharp - WIP just generates components and systems from json. Then use Entitas-CSharp
+#   csharp  - WIP just generates components and systems from json. Then use Entitas-CSharp
 #           to finish generating helper code in unity. Used once to migrate Shmup Warz from
 #           web to unity
-#   fsharp - generates fsharp code for Bosco.ECS, which is entitas based. 
-#   vala - generates vala code for Bosco.ECS, which is entitas based. 
+#   fsharp  - generates fsharp code for Bosco.ECS, which is entitas based. 
+#   nim     - generates nim code for Bosco.ECS, which is entitas based. 
 #
 #
 
