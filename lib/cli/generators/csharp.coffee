@@ -5,6 +5,9 @@
  * Generate CSharp stubs for
  * use by Entitas_CSharp in Unity
  *
+ * Unfinished, this was just part of the bootstrap
+ * Use https://github.com/sschmid/Entitas-CSharp
+ *
 ###
 fs = require('fs')
 path = require('path')

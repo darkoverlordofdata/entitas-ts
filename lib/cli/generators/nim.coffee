@@ -5,6 +5,10 @@
  * Generate Nim stubs for
  * use by bosco.ECS
  *
+ * Working with 0.13.0
+ * Waiting for 1.0.0 to finalize nim support
+ * Demo: https://github.com/darkoverlordofdata/shmupwarz-nim
+ *
 ###
 fs = require('fs')
 path = require('path')

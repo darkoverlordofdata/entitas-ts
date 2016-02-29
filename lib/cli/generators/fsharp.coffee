@@ -5,6 +5,10 @@
  * Generate FSharp stubs for
  * use by ecs-fsharp in Unity
  *
+ * Demo: 
+ * https://github.com/darkoverlordofdata/Bosco.ECS
+ * https://github.com/darkoverlordofdata/shmupwarz-unity
+ *
 ###
 fs = require('fs')
 path = require('path')
@@ -293,10 +297,10 @@ module.exports =
           s3.push ""
           s3.push "        member this.is#{Name}"
           s3.push "            with get() ="
-          s3.push "                notNull(this.#{name}Entity)"
+          s3.push "                this.#{name}Entity.NotNull"
           s3.push "            and  set(value) ="
           s3.push "                let entity = this.#{name}Entity"
-          s3.push "                if value <> notNull(entity) then"
+          s3.push "                if value <> entity.NotNull then"
           s3.push "                    if value then"
           s3.push "                        this.CreateEntity(\"#{Name}\").is#{Name} <- true"
           s3.push "                    else"
@@ -311,7 +315,7 @@ module.exports =
           s3.push "            with get() = this.#{name}Entity.#{name}"
           s3.push ""
           s3.push "        member this.has#{Name}"
-          s3.push "            with get() = notNull(this.#{name}Entity)"
+          s3.push "            with get() = this.#{name}Entity.NotNull"
           s3.push ""
           s3.push "        member this.Set#{Name}(newValue) ="
           s3.push "            if this.has#{Name} then"
@@ -322,7 +326,7 @@ module.exports =
           s3.push ""
           s3.push "        member this.Replace#{Name}(newValue) ="
           s3.push "            let entity = this.#{name}Entity"
-          s3.push "            if isNull(entity) then"
+          s3.push "            if entity.IsNull then"
           s3.push "                entity = this.Set#{Name}(newValue) |> ignore"
           s3.push "            else"
           s3.push "                entity.Replace#{Name}(newValue) |> ignore"

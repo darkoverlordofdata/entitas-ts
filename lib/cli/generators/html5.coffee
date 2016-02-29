@@ -5,6 +5,11 @@
  * emulate the partial class strategy for extensions
  * used by Entitas_CSharp
  *
+ * Demos:
+ * https://github.com/darkoverlordofdata/entitas-ts-example
+ * https://github.com/darkoverlordofdata/entitas-ts-match-one
+ * https://github.com/darkoverlordofdata/shmupwarz
+ *
 ###
 fs = require('fs')
 path = require('path')

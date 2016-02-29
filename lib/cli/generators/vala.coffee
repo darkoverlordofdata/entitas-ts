@@ -5,6 +5,18 @@
  * Generate Vala stubs for
  * use by Bosco.ECS/Genie
  *
+ *
+ * Not recomended. GObject isn't performant enough for games.
+ * GObject uses thread safe reference counting, so there is a
+ * possible wait for mutex at each increment and decrement. 
+ * Factoring out GObject cripples the object system, such that
+ * things like interfaces are no longer available.
+ * Perhaps something like this: https://github.com/kamanashisroy/aroop 
+ * could work.
+ *
+ * Demo: https://github.com/darkoverlordofdata/shmupwarz-vala
+ *   
+ *
 ###
 fs = require('fs')
 path = require('path')

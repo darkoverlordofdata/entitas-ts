@@ -15,7 +15,7 @@ Usage:
   entitas create -s name interface...
   entitas create -e name 
   entitas create -x class name field:type...
-  entitas generate [-p <html5|csharp|fsharp|vala>]
+  entitas generate [-p <html5|fsharp|nim>]
 
 Options:
   -t  [--template]  # template name
@@ -25,10 +25,8 @@ Options:
   -x  [--extension] # extend a class
   -p  [--platform]  # target platform for generated code: 
                         html5 - typescript & javascript combination (default)
-                        vala   ** https://wiki.gnome.org/Projects/Vala
-                        nim    ** http://nim-lang.org/
-                        csharp ** Unity compatable
-                        fsharp ** Unity compatable
+                        nim     ** http://nim-lang.org/
+                        fsharp  Unity compatable
                         
   ** = experimental: not finished or fully supported                        
                         
