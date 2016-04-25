@@ -272,15 +272,6 @@ module.exports =
             s3.push ""
             
                
-    #
-    # ./<Namespace>.fs - Component declarations
-    # ./Systems/*.fs - System Classes
-    # ./Extensions/GlobalExtensions.fs
-    # ./Extensions/EntityExtensions.fs
-    # ./Extensions/MatcherExtensions.fs
-    # ./Extensions/WorldExtensions.fs
-    #               
-
     # Components - overwrite
     fs.writeFileSync(path.join(process.cwd(), config.src, 
       "GeneratedComponents.kt"), s0.join('\n'))
@@ -296,3 +287,82 @@ module.exports =
     # Pool Extensions - overwrite
     fs.writeFileSync(path.join(process.cwd(), config.src, 
       "PoolExtensions.kt"), s3.join('\n'))
+
+    ###
+     * Systems Type Definitions
+    ###
+    for Name, interfaces of config.systems
+      name = Name[0].toLowerCase()+Name[1...]
+      sy = sys[Name] = []
+      sy.push "package #{config.namespace}"
+      sy.push ""
+      sy.push "/**"
+      sy.push " * Entitas Generated Systems for #{config.namespace}"
+      sy.push " *"
+      sy.push " */"
+      sy.push ""
+      sy.push "import com.darkoverlordofdata.entitas.ecs.ISetPool"
+      sy.push "import com.darkoverlordofdata.entitas.ecs.IExecuteSystem"
+      sy.push "import com.darkoverlordofdata.entitas.ecs.IInitializeSystem"
+      sy.push "import com.darkoverlordofdata.entitas.ecs.IReactiveExecuteSystem"
+      sy.push "import com.darkoverlordofdata.entitas.ecs.IMultiReactiveSystem"
+      sy.push "import com.darkoverlordofdata.entitas.ecs.IReactiveSystem"
+      sy.push "import com.darkoverlordofdata.entitas.ecs.IEnsureComponents"
+      sy.push "import com.darkoverlordofdata.entitas.ecs.IExcludeComponents"
+      sy.push "import com.darkoverlordofdata.entitas.ecs.IClearReactiveSystem"
+      sy.push "import com.darkoverlordofdata.entitas.ecs.Pool"
+      sy.push ""
+      sy.push "class #{Name}(pool:Pool) "
+      
+      line  = "    : "
+      for iface in interfaces
+        line += iface + ", "
+      
+      l = line.lastIndexOf(",")
+      line = line[0...l] + " { "
+      sy.push line
+
+      for iface in interfaces
+        if 'IMultiReactiveSystem' is iface
+          sy.push "    override val triggers:Array<TriggerOnEvent>  {"
+          sy.push "    }"
+          
+        if 'IReactiveSystem' is iface
+          sy.push "    override val trigger:TriggerOnEvent  {"
+          sy.push "    }"
+          
+        if 'IEnsureComponents' is iface
+          sy.push "    override val ensureComponents:IMatcher  {"
+          sy.push "    }"
+          
+        if 'IExcludeComponents' is iface
+          sy.push "    override val excludeComponents:IMatcher  {"
+          sy.push "    }"
+          
+        if 'IClearReactiveSystem' is iface
+          sy.push "    override val clearAfterExecute:Boolean  {"
+          sy.push "    }"
+          
+        if 'IReactiveExecuteSystem' is iface
+          sy.push "    override fun execute(entities:Array<Entity>) {"
+          sy.push "    }"
+          
+        if 'ISetPool' is iface
+          sy.push "    override fun setPool(pool: Pool) {"
+          sy.push "    }"
+        
+        if 'IExecuteSystem' is iface
+          sy.push "    override fun execute() {"
+          sy.push "    }"
+          
+        if 'IInitializeSystem' is iface
+          sy.push "    override fun initialize() {"
+          sy.push "    }"
+
+      sy.push "}" 
+    sy.push ""
+
+    # Systems - Do Not overwrite
+    for Name, sy of sys
+      fileName = path.join(process.cwd(), config.src, "#{Name}.kt")
+      fs.writeFileSync(fileName, sy.join('\n')) unless fs.existsSync(fileName)
