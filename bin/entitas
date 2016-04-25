@@ -27,6 +27,7 @@ Options:
                         html5 - typescript & javascript combination (default)
                         nim     ** http://nim-lang.org/
                         fsharp  Unity compatable
+                        kotlin  libGDX compatable
                         
   ** = experimental: not finished or fully supported                        
                         
