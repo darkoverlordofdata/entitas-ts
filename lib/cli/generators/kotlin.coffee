@@ -17,18 +17,18 @@ config = require("#{process.cwd()}/entitas.json")
 
 getType = (arg) ->
   switch arg
-    when 'number'   then 'Float'
-    when 'string'   then 'String'
-    when 'boolean'  then 'Boolean'
-    when 'any'      then 'Any?'
+    when 'Int'      then 'Int'
+    when 'Float'    then 'Float'
+    when 'String'   then 'String'
+    when 'Boolean'  then 'Boolean'
     else arg+"?"
 
 getDefault = (arg) ->
   switch arg
-    when 'boolean'  then 'false'
-    when 'string'   then '""'
-    when 'number'   then '0f'
-    when 'any'      then 'null'
+    when 'Int'      then '0'
+    when 'Float'    then '0f'
+    when 'String'   then '""'
+    when 'Boolean'  then 'false'
     else 'null'
     
 
@@ -163,6 +163,11 @@ module.exports =
           s1.push "        else"
           s1.push "            removeComponent(Component.#{Name}.ordinal)"
           s1.push "    }"
+          s1.push ""
+          s1.push "fun Entity.to#{Name}(value:Boolean):Entity {"
+          s1.push "    is#{Name} = value"
+          s1.push "    return this"
+          s1.push "}"
           s1.push ""
           
           s2.push "val Matcher.static.#{Name}:IMatcher"
@@ -312,7 +317,7 @@ module.exports =
       sy.push "import com.darkoverlordofdata.entitas.ecs.IClearReactiveSystem"
       sy.push "import com.darkoverlordofdata.entitas.ecs.Pool"
       sy.push ""
-      sy.push "class #{Name}(pool:Pool) "
+      sy.push "class #{Name}() "
       
       line  = "    : "
       for iface in interfaces
@@ -364,5 +369,5 @@ module.exports =
 
     # Systems - Do Not overwrite
     for Name, sy of sys
-      fileName = path.join(process.cwd(), config.src, "#{Name}.kt")
+      fileName = path.join(process.cwd(), config.src, "systems/#{Name}.kt")
       fs.writeFileSync(fileName, sy.join('\n')) unless fs.existsSync(fileName)
