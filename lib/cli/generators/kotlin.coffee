@@ -299,7 +299,7 @@ module.exports =
     for Name, interfaces of config.systems
       name = Name[0].toLowerCase()+Name[1...]
       sy = sys[Name] = []
-      sy.push "package #{config.namespace}"
+      sy.push "package #{config.namespace}.systems"
       sy.push ""
       sy.push "/**"
       sy.push " * Entitas Generated Systems for #{config.namespace}"
