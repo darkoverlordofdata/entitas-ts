@@ -164,7 +164,7 @@ module.exports =
           s1.push "            removeComponent(Component.#{Name}.ordinal)"
           s1.push "    }"
           s1.push ""
-          s1.push "fun Entity.to#{Name}(value:Boolean):Entity {"
+          s1.push "fun Entity.set#{Name}(value:Boolean):Entity {"
           s1.push "    is#{Name} = value"
           s1.push "    return this"
           s1.push "}"
