@@ -118,7 +118,8 @@ module.exports =
       s0.push ""
       s0.push "class #{Name}Component() : IComponent {"
       if properties is false 
-        s0.push "    var active:Boolean = false"
+        # s0.push "    var active:Boolean = false"
+        s0.push "    // existential component"
       else
         for p in properties
           name = p.split(':')[0]
