@@ -21,7 +21,7 @@ getType = (arg) ->
     when 'Float'    then 'Float'
     when 'String'   then 'String'
     when 'Boolean'  then 'Boolean'
-    else arg+"?"
+    else arg+'?'
 
 getDefault = (arg) ->
   switch arg
@@ -36,7 +36,7 @@ params = (args) ->
   s = []
   for arg in args
     name = arg.split(':')[0]
-    type = getType(arg.split(':')[1])
+    type = getType(arg.split(':')[1]).replace('?', '')
     s.push "#{name}:#{type}"
     
   s.join(', ') 
