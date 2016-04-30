@@ -8,11 +8,13 @@ languages supported:
             to finish generating helper code in unity. WIP - used once to migrate 
             Shmup Warz from web to unity
             
-    fsharp - generates fsharp code for ecs-fsharp, which is entitas based. 
+    kotlin - use with libGDX/AndroidStudio
+
+            
+    fsharp - generates fsharp code for ecs-fsharp, which is a light weight entitas based ecs 
     
     nim - works on desktop. Has performance problems.
     vala - works on desktop. Has performance problems.
-    kotlin - works with libGDX. 
     
     
 Bosco.dll for Unity to provide some extra utilities from web.

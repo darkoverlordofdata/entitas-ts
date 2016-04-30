@@ -55,6 +55,7 @@ create =
     console.log config.systems[name]
     fs.writeFileSync("#{process.cwd()}/entitas.json", JSON.stringify(config, null, 2))
     
+    # - moved to generate
     # template = systemTemplate(name, args)
     # mkdirp.sync "#{process.cwd()}/#{config.src}/systems"
     # fs.writeFileSync("#{process.cwd()}/#{config.src}/systems/#{name}.ts", template)
@@ -73,7 +74,7 @@ create =
 
 
 
-# - moved to generate
+# deprecated - moved to generate
 systemTemplate = (name, interfaces) ->
   sb = [] # StringBuilder
 

@@ -61,6 +61,7 @@ use entitas cli to generate empty components, extensions & typescript declaratio
     -x  [--extension] # extend a class
     -p  [--platform]  # target platform for generated code: 
                             html5 - typescript & javascript combination (default)
+                            kotlin - libGDX compatable
                             csharp ** Unity compatable
                             fsharp ** Unity compatable
                             
