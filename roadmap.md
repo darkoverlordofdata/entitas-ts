@@ -10,9 +10,9 @@ languages supported:
             
     fsharp - generates fsharp code for ecs-fsharp, which is entitas based. 
     
-    nemerle - someday...a lot of possiblity. nemerle replaces roslyn as code generator
-    
-    funscript - maybe...if it works, might be one code base for both web & unity! 
+    nim - works on desktop. Has performance problems.
+    vala - works on desktop. Has performance problems.
+    kotlin - works with libGDX. 
     
     
 Bosco.dll for Unity to provide some extra utilities from web.
@@ -21,4 +21,3 @@ CSharp uses standard Entitas-CSharp
 
 FSharp uses FSharp.Core.dll & ecs.fs (Bosco.ECS.dll?)
 
-Nemerle uses Nermerle.dll ...

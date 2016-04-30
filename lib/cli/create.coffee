@@ -51,17 +51,19 @@ create =
     fs.writeFileSync("#{process.cwd()}/entitas.json", JSON.stringify(config, null, 2))
 
   system:(name, args...) ->
-    config.systems[name] = ('"'+system+'"' for system in args).join(', ')
+    config.systems[name] = args
+    console.log config.systems[name]
     fs.writeFileSync("#{process.cwd()}/entitas.json", JSON.stringify(config, null, 2))
-    template = systemTemplate(name, args)
-    mkdirp.sync "#{process.cwd()}/#{config.src}/systems"
-    fs.writeFileSync("#{process.cwd()}/#{config.src}/systems/#{name}.ts", template)
+    
+    # template = systemTemplate(name, args)
+    # mkdirp.sync "#{process.cwd()}/#{config.src}/systems"
+    # fs.writeFileSync("#{process.cwd()}/#{config.src}/systems/#{name}.ts", template)
 
-    # update the project
-    tsconfig = JSON.parse(fs.readFileSync("#{process.cwd()}/tsconfig.json", 'utf8'))
-    if tsconfig.files.indexOf("#{config.src}/systems/#{name}.ts") is -1
-      tsconfig.files.push "#{config.src}/systems/#{name}.ts"
-      fs.writeFileSync("#{process.cwd()}/tsconfig.json", JSON.stringify(tsconfig, null, 2))
+    # # update the project
+    # tsconfig = JSON.parse(fs.readFileSync("#{process.cwd()}/tsconfig.json", 'utf8'))
+    # if tsconfig.files.indexOf("#{config.src}/systems/#{name}.ts") is -1
+    #   tsconfig.files.push "#{config.src}/systems/#{name}.ts"
+    #   fs.writeFileSync("#{process.cwd()}/tsconfig.json", JSON.stringify(tsconfig, null, 2))
 
   extension:(name, method, args...) ->
     config.extensions = config.extensions || {}
@@ -71,6 +73,7 @@ create =
 
 
 
+# - moved to generate
 systemTemplate = (name, interfaces) ->
   sb = [] # StringBuilder
 
