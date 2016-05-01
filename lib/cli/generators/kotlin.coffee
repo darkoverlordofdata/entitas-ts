@@ -43,7 +43,7 @@ params = (args) ->
   s.join(', ') 
   
 filename = (name) ->
-    if config[name]? then config[name] else "#{name}.kt"
+    if config.output? then if config.output[name]? then config.output[name] else "#{name}.kt" else "#{name}.kt"
 
 module.exports =
 #
