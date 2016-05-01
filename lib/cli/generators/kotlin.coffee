@@ -14,6 +14,7 @@ fs = require('fs')
 path = require('path')
 mkdirp = require('mkdirp')
 config = require("#{process.cwd()}/entitas.json")
+location = "#{config.src}/#{config.namespace.replace('.','/')}/"
 
 getType = (arg) ->
   switch arg
@@ -41,6 +42,8 @@ params = (args) ->
     
   s.join(', ') 
   
+filename = (name) ->
+    if config[name]? then config[name] else "#{name}.kt"
 
 module.exports =
 #
@@ -279,20 +282,20 @@ module.exports =
             
                
     # Components - overwrite
-    fs.writeFileSync(path.join(process.cwd(), config.src, 
-      "GeneratedComponents.kt"), s0.join('\n'))
+    fs.writeFileSync(path.join(process.cwd(), location, 
+      filename("GeneratedComponents")), s0.join('\n'))
     
     # Entity Extensions - overwrite
-    fs.writeFileSync(path.join(process.cwd(), config.src, 
-      "EntityExtensions.kt"), s1.join('\n'))
+    fs.writeFileSync(path.join(process.cwd(), location, 
+      filename("EntityExtensions")), s1.join('\n'))
 
     # Matcher Extensions - overwrite
-    fs.writeFileSync(path.join(process.cwd(), config.src, 
-      "MatcherExtensions.kt"), s2.join('\n'))
+    fs.writeFileSync(path.join(process.cwd(), location, 
+      filename("MatcherExtensions")), s2.join('\n'))
 
     # Pool Extensions - overwrite
-    fs.writeFileSync(path.join(process.cwd(), config.src, 
-      "PoolExtensions.kt"), s3.join('\n'))
+    fs.writeFileSync(path.join(process.cwd(), location, 
+      filename("PoolExtensions")), s3.join('\n'))
 
     ###
      * Systems Type Definitions
@@ -370,5 +373,5 @@ module.exports =
 
     # Systems - Do Not overwrite
     for Name, sy of sys
-      fileName = path.join(process.cwd(), config.src, "systems/#{Name}.kt")
+      fileName = path.join(process.cwd(), location, "systems/#{Name}.kt")
       fs.writeFileSync(fileName, sy.join('\n')) unless fs.existsSync(fileName)
