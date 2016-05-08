@@ -57,7 +57,7 @@
     "walker": "^1.0.7"
   },
   "dependencies": {
-    "liquid.coffee": "^0.1.1",
+    "liquid.coffee": "^0.1.2",
     "mkdirp": "^0.5.1"
   }
 }
