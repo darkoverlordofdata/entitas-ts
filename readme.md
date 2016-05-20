@@ -1,4 +1,4 @@
-# Entitas ECS
+# Entitas CLI
 
 ### Entitas cli
 use entitas cli to generate components, extensions & typescript declarations for entitas-ts
