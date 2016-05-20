@@ -44,33 +44,6 @@ This repository includes a Typescript implementation. Also:
     https://github.com/darkoverlordofdata/entitas-kotlin
     https://github.com/darkoverlordofdata/entitas-scala
 
-### Entitas ECS
-Entitas ECS
-
-    +------------------+
-    |       Pool       |
-    |------------------|
-    |    e       e     |      +-----------+
-    |        e     e---|----> |  Entity   |
-    |  e        e      |      |-----------|
-    |     e  e       e |      | Component |
-    | e            e   |      |           |      +-----------+
-    |    e     e       |      | Component-|----> | Component |
-    |  e    e     e    |      |           |      |-----------|
-    |    e      e    e |      | Component |      |   Data    |
-    +------------------+      +-----------+      +-----------+
-      |
-      |
-      |     +-------------+  Groups:
-      |     |      e      |  Subsets of entities in the pool
-      |     |   e     e   |  for blazing fast querying
-      +---> |        +------------+
-            |     e  |    |       |
-            |  e     | e  |  e    |
-            +--------|----+    e  |
-                     |     e      |
-                     |  e     e   |
-                     +------------+
 
 ### Live Demos
 * https://darkoverlordofdata.com/entitas-ts-example/
