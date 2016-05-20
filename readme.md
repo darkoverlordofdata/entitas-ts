@@ -1,5 +1,9 @@
 # Entitas ECS
 
+### Entitas cli
+Use entitas cli to generate stubs for entitas ecs
+
+### Entitas ECS
 Entitas ECS
 Typescript implementation ported from https://github.com/sschmid/Entitas-CSharp
 
@@ -61,6 +65,7 @@ use entitas cli to generate empty components, extensions & typescript declaratio
     -x  [--extension] # extend a class
     -p  [--platform]  # target platform for generated code: 
                             html5 - typescript & javascript combination (default)
+                            scala & scalaJs
                             kotlin - libGDX compatable
                             csharp ** Unity compatable
                             fsharp ** Unity compatable
@@ -81,6 +86,12 @@ Components classes are generated from json configuration, enforcing data oriente
     tools/configure
     tools/ts2goog
     npm run jsodc
+    
+    
+### Entitas RunTime
+For CSharp, use the original: https://github.com/sschmid/Entitas-CSharp
+I've created ports of entitas to sever other languages, this repository includes a typescript port.
+
     
 # MIT License
 

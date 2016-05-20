@@ -26,8 +26,9 @@ Options:
   -p  [--platform]  # target platform for generated code: 
                         html5 - typescript & javascript combination (default)
                         nim     ** http://nim-lang.org/
-                        fsharp  Unity compatable
-                        kotlin  libGDX compatable
+                        fsharp 
+                        kotlin 
+                        scala  
                         
   ** = experimental: not finished or fully supported                        
                         

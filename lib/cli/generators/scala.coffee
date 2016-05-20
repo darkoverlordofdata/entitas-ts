@@ -2,12 +2,10 @@
 ###
  * Entitas code generation
  *
- * Generate Kotlin stubs for
- * use with libGDX
+ * Generate Scala / ScalaJS stubs for
+ * use with libGDX / CreateJS
  *
  * Demo: 
- * https://github.com/darkoverlordofdata/Bosco.ECS
- * https://github.com/darkoverlordofdata/shmupwarz-unity
  *
 ###
 fs = require('fs')
@@ -23,7 +21,7 @@ getType = (arg) ->
     when 'Float'    then 'Float'
     when 'String'   then 'String'
     when 'Boolean'  then 'Boolean'
-    else arg+'?'
+    else arg
 
 getDefault = (arg) ->
   switch arg
@@ -48,7 +46,7 @@ filename = (name) ->
 
 module.exports =
 #
-# generate GeneratedComponents.kt from Liquid template
+# generate GeneratedComponents.scala from Liquid template
 #
 # @return none
 #
@@ -64,12 +62,12 @@ module.exports =
         @params: params
     
     # generate the template
-    tpl = liquid.Template.parse(fs.readFileSync("#{__dirname}/kotlin.components.tpl", 'utf8'))
-    kotlin = tpl.render(config).replace(/\n\n/g, '\n') # strip out empty lines
+    tpl = liquid.Template.parse(fs.readFileSync("#{__dirname}/scala.components.tpl", 'utf8'))
+    scala = tpl.render(config).replace(/\n\n/g, '\n') # strip out empty lines
     
     # Components - overwrite
-    fs.writeFileSync(path.join(process.cwd(), location, filename("generated")), kotlin)
+    fs.writeFileSync(path.join(process.cwd(), location, filename("generated")), scala)
     
     # systems
-    sys = liquid.Template.parse(fs.readFileSync("#{__dirname}/kotlin.systems.tpl", 'utf8'))
+    #sys = liquid.Template.parse(fs.readFileSync("#{__dirname}/scala.systems.tpl", 'utf8'))
 
