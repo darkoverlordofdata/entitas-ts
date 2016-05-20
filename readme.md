@@ -1,51 +1,6 @@
 # Entitas ECS
 
 ### Entitas cli
-Use entitas cli to generate stubs for entitas ecs
-
-### Entitas ECS
-Entitas ECS
-Typescript implementation ported from https://github.com/sschmid/Entitas-CSharp
-
-    +------------------+
-    |       Pool       |
-    |------------------|
-    |    e       e     |      +-----------+
-    |        e     e---|----> |  Entity   |
-    |  e        e      |      |-----------|
-    |     e  e       e |      | Component |
-    | e            e   |      |           |      +-----------+
-    |    e     e       |      | Component-|----> | Component |
-    |  e    e     e    |      |           |      |-----------|
-    |    e      e    e |      | Component |      |   Data    |
-    +------------------+      +-----------+      +-----------+
-      |
-      |
-      |     +-------------+  Groups:
-      |     |      e      |  Subsets of entities in the pool
-      |     |   e     e   |  for blazing fast querying
-      +---> |        +------------+
-            |     e  |    |       |
-            |  e     | e  |  e    |
-            +--------|----+    e  |
-                     |     e      |
-                     |  e     e   |
-                     +------------+
-
-### Live Demos
-* https://darkoverlordofdata.com/entitas-ts-example/
-    port of https://github.com/sschmid/Entitas-CSharp-Example
-* https://darkoverlordofdata.com/entitas-ts-match-one/
-    port of https://github.com/sschmid/Match-One
-* [Spaceship Warriors](example.html) 
-    port of artemis https://github.com/Flet/spaceship-warrior-redux
-
-
-### Visual Debugging
-Include dat.gui, and entitas-ts will display live stats for entities, pools, and systems.
- * http://code.google.com/p/dat-gui
-
-### Entitas cli
 use entitas cli to generate empty components, extensions & typescript declarations:
 
 
@@ -90,12 +45,63 @@ Components classes are generated from json configuration, enforcing data oriente
     
 ### Entitas RunTime
 For CSharp, use the original: https://github.com/sschmid/Entitas-CSharp
-I've created ports of entitas to sever other languages, this repository includes a typescript port.
+This repository includes a Typescript implementation
+
+    https://github.com/darkoverlordofdata/entitas-ts
+    https://github.com/darkoverlordofdata/entitas-fsharp
+    https://github.com/darkoverlordofdata/entitas-kotlin
+    https://github.com/darkoverlordofdata/entitas-scala
+
+### Entitas ECS
+Entitas ECS
+
+    +------------------+
+    |       Pool       |
+    |------------------|
+    |    e       e     |      +-----------+
+    |        e     e---|----> |  Entity   |
+    |  e        e      |      |-----------|
+    |     e  e       e |      | Component |
+    | e            e   |      |           |      +-----------+
+    |    e     e       |      | Component-|----> | Component |
+    |  e    e     e    |      |           |      |-----------|
+    |    e      e    e |      | Component |      |   Data    |
+    +------------------+      +-----------+      +-----------+
+      |
+      |
+      |     +-------------+  Groups:
+      |     |      e      |  Subsets of entities in the pool
+      |     |   e     e   |  for blazing fast querying
+      +---> |        +------------+
+            |     e  |    |       |
+            |  e     | e  |  e    |
+            +--------|----+    e  |
+                     |     e      |
+                     |  e     e   |
+                     +------------+
+
+### Live Demos
+* https://darkoverlordofdata.com/entitas-ts-example/
+    port of https://github.com/sschmid/Entitas-CSharp-Example
+* https://darkoverlordofdata.com/entitas-ts-match-one/
+    port of https://github.com/sschmid/Match-One
+* [Spaceship Warriors](https://darkoverlordofdata.com/entitas-ts/example.html) 
+    port of artemis https://github.com/Flet/spaceship-warrior-redux
+* [Scala.js Example](https://darkoverlordofdata.com/entitas-scala-js/)
+    new experiment...
+
+
+### Visual Debugging
+See https://darkoverlordofdata.com/entitas-ts-example/
+
+Include dat.gui, and entitas-ts will display live stats for entities, pools, and systems.
+ * http://code.google.com/p/dat-gui
+
 
     
 # MIT License
 
-Copyright (c) 2015 Bruce Davidson &lt;darkoverlordofdata@gmail.com&gt;
+Copyright (c) 2015-2016 Bruce Davidson &lt;darkoverlordofdata@gmail.com&gt;
 
 Copyright (c) 2014 Simon Schmid
 
