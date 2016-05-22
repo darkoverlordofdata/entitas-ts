@@ -17,13 +17,10 @@
 #
 #   html5   - this is the default. Generates a combination of typescript
 #           and javascript
-#   csharp  - WIP just generates components and systems from json. Then use Entitas-CSharp
-#           to finish generating helper code in unity. Used once to migrate Shmup Warz from
-#           web to unity
+#   csharp  - just generate components. Use the Entitas-CSharp runtime to generate the rest
 #   kotlin
 #   scala
 #   fsharp 
-#   nim    
 #
 #
 
@@ -31,7 +28,11 @@ module.exports =
   run: (flag, lang, args...) ->
 
     if flag is '-p' or flag is '--platform'
-      require("../cli/generators/#{lang}.coffee").run args...
+      switch lang 
+      when 'csharp' require("../cli/generators/csharp.coffee").run args... 
+      when 'vala' require("../cli/generators/vala.coffee").run args... 
+      when 'nim' require("../cli/generators/nim.coffee").run args... 
+      else require("../cli/generators/platform.coffee").run lang, args...
 
     else
       require("../cli/generators/html5.coffee").run args...
