@@ -24,10 +24,10 @@ Options:
   -e  [--entity]    # create an entity
   -x  [--extension] # extend a class
   -p  [--platform]  # target platform for generated code: 
-                        html5 - typescript & javascript combination (default)
-                        fs 
-                        kt
-                        scala  
+                        html5   - typescript & javascript combination (default)
+                        scala   - scala & scalaJs
+                        kt      - kotlin 
+                        fs      - fsharp
                         
   ** = experimental: not finished or fully supported                        
                         

@@ -13,10 +13,10 @@ use entitas cli to generate components, extensions & typescript declarations for
     -t  [--template]  # template name
     -c  [--component] # create a component
     -p  [--platform]  # target platform for generated code: 
-                            html5 - typescript & javascript combination (default)
-                            scala & scalaJs
-                            kotlin
-                            fsharp
+                            html5   - typescript & javascript combination (default)
+                            scala   - scala & scalaJs
+                            kt      - kotlin 
+                            fs      - fsharp
                             
 
 Components classes are generated from json configuration, enforcing data oriented design.
