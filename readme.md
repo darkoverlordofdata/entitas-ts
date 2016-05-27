@@ -52,7 +52,7 @@ This repository includes a Typescript implementation. Also:
     port of https://github.com/sschmid/Match-One
 * [Spaceship Warriors](https://darkoverlordofdata.com/entitas-ts/example.html) 
     port of artemis https://github.com/Flet/spaceship-warrior-redux
-* [Scala.js Example](https://darkoverlordofdata.com/entitas-scala-js/)
+* [Scala.js Example](https://darkoverlordofdata.com/invaders-scala-js/)
     new experiment...
 
 
