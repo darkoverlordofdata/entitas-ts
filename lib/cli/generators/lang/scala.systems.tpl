@@ -1,14 +1,15 @@
-package {{ namespace }} 
+package {{ namespace }}.systems
 
 import com.darkoverlordofdata.entitas.Pool
 import com.darkoverlordofdata.entitas.Group
 import com.darkoverlordofdata.entitas.Entity
 import com.darkoverlordofdata.entitas.Matcher
-import com.darkoverlordofdata.entitas.Exception
 import com.darkoverlordofdata.entitas.TriggerOnEvent
-{% for iface in interfaces %}\import import com.darkoverlordofdata.entitas.{{ iface }}{% endfor %}   
+import {{ namespace }}.EntityExtensions._
+import {{ namespace }}.Match
+{% for iface in interfaces %}import com.darkoverlordofdata.entitas.{{ iface }}{% endfor %}   
 
-class #{name}(pool:Pool) : {% for iface in interfaces %}{{ iface }}{% if forloop.index <  forloop.length %},{% endif %}{% endfor %} {
+class {{name}}System(pool:Pool) extends {% for iface in interfaces %}{{ iface }}{% if forloop.index <  forloop.length %} with {% endif %}{% endfor %} {
 {% for iface in interfaces %}
 {% case iface %}
 {% when "IReactiveSystem" %}   val triggers:Array<TriggerOnEvent>

@@ -7,7 +7,7 @@ package {{ namespace }}
 
 import scala.collection.mutable.ListBuffer
 import com.darkoverlordofdata.entitas.{Entity, Matcher, IMatcher, IComponent}
-
+{% for type in ext %}import {{ type }}{% endfor %}
 /**
  * Components
  */
@@ -18,17 +18,14 @@ object Component extends Enumeration {
 {% endfor %}    TotalComponents = Value
 }
 {% for component in components %}
-{% if component.value == false %}case class {{ component.key }}Component(active:Boolean=true) extends IComponent 
-{% else %}case class {{ component.key }}Component({% for field in component.value %}{{ field }} = {{ field | defaultValue }}{% if forloop.index <  forloop.length %},{% endif %}{% endfor %}) extends IComponent 
-{% endif %}{% endfor %}
+{% if component.value == false %}case class {{ component.key }}Component({{ mutable }} active:Boolean=true) extends IComponent {% else %}case class {{ component.key }}Component({% for field in component.value %}{{ mutable }} {{ field }} = {{ field | defaultValue }}{% if forloop.index <  forloop.length %},{% endif %}{% endfor %}) extends IComponent {% endif %}{% endfor %}
 
 /**
  * Matcher extensions
  */
 object Match {
 {% for component in components %}
-    val {{ component.key }}:IMatcher = Matcher.allOf(Array(Component.{{ component.key }}.id)) 
-{% endfor %}
+    val {{ component.key }}:IMatcher = Matcher.allOf(Array(Component.{{ component.key }}.id)) {% endfor %}
 }
 
 /**
@@ -36,15 +33,12 @@ object Match {
  */
 object EntityExtensions {
 {% for component in components %}
-{% if component.value == false %}    private val {{ component.key | camel }}Component =  new {{ component.key }}Component()
-{% else %}    private val {{ component.key | camel }}ComponentPool = new ListBuffer[{{ component.key }}Component]()
-{% endif %}{% endfor %}
+{% if component.value == false %}    private val {{ component.key | camel }}Component =  new {{ component.key }}Component(){% else %}    private val {{ component.key | camel }}ComponentPool = new ListBuffer[{{ component.key }}Component](){% endif %}{% endfor %}
 
     implicit class ExtendEntity(val entity:Entity) {
 
 {% for component in components %}
-        /** Entity: {{ component.key }} methods*/
-{% if component.value == false %}
+        /** Entity: {{ component.key }} methods*/{% if component.value == false %}
         def is{{ component.key }}:Boolean = entity.hasComponent(Component.{{ component.key }}.id)
 
         def set{{ component.key }}(value:Boolean):Entity = {
@@ -54,7 +48,6 @@ object EntityExtensions {
                 entity.removeComponent(Component.{{ component.key }}.id)
             entity
         }
-
 {% else %}
         def {{ component.key | camel }}:{{ component.key }}Component = entity.getComponent(Component.{{ component.key }}.id).asInstanceOf[{{ component.key }}Component]
 
@@ -95,8 +88,6 @@ object EntityExtensions {
         
         def update{{ component.key }}(component: {{ component.key }}Component) = {
             entity.updateComponent(Component.{{ component.key }}.id, component)
-        }
-{% endif %}
-{% endfor %}
+        }{% endif %}{% endfor %}
     }
 }

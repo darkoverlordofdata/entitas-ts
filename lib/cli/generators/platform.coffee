@@ -32,7 +32,6 @@ getDefault = (arg) ->
     when 'float32'  then '0.0f'
     when 'boolean'  then 'false'
     when 'string'   then '""'
-    
     else 'null'
     
 
@@ -56,12 +55,18 @@ paramsonly = (args) ->
 filename = (name) ->
     if config.output? then if config.output[name]? then config.output[name] else "#{name}.#{lang}" 
     
-merge = (config, options) ->
+merge = (options...) ->
   result = {}
-  result[key] = value for key, value of config
-  result[key] = value for key, value of options
+  for opt in options
+    result[key] = value for key, value of opt
   result
   
+parse = (flags) ->
+  result = {}
+  for flag in flags
+    pair = flag.split(/\s*=\s*/)
+    result[pair[0]] = pair[1]
+  result
 
 module.exports =
 #
@@ -70,6 +75,8 @@ module.exports =
 # @return none
 #
   run: (lang, flags...) ->
+    ext = []
+    options = parse(flags)
 
     # define some custom filters
     liquid.Template.registerFilter class
@@ -79,20 +86,30 @@ module.exports =
         @params: params
         @paramsonly: paramsonly
     
+    # find externals
+    for component, fields of config.components
+      unless fields is false
+        for field in fields
+          type = field.split(':')[1]
+          if type.indexOf('.') > -1 then ext.push type
+              
+          
+    
     # generate the template
     tpl = liquid.Template.parse(fs.readFileSync("#{__dirname}/lang/#{lang}.components.tpl", 'utf8'))
-    code = tpl.render(config)
+    code = tpl.render(merge(config, options, ext:ext))
     
     # Components - overwrite
+    mkdirp.sync path.dirname(path.join(process.cwd(), location, filename("generated")))
     fs.writeFileSync(path.join(process.cwd(), location, filename("generated")), code)
     
-    
     # systems
+    mkdirp.sync path.join(process.cwd(), location, sysloc)
     tpl = liquid.Template.parse(fs.readFileSync("#{__dirname}/lang/#{lang}.systems.tpl", 'utf8'))
     for Name, interfaces of config.systems
-      name = path.join(process.cwd(), location, "#{sysloc}/#{Name}.#{lang}")
+      name = path.join(process.cwd(), location, "#{sysloc}/#{Name}System.#{lang}")
       unless fs.existsSync(name)
-        code = tpl.render(merge(config, name:Name, interfaces:interfaces))
+        code = tpl.render(merge(config, options, name:Name, interfaces:interfaces))
         fs.writeFileSync(name, code) 
 
 

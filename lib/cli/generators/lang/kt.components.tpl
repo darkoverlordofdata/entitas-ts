@@ -10,6 +10,7 @@ import com.darkoverlordofdata.entitas.IComponent
 import com.darkoverlordofdata.entitas.IMatcher
 import com.darkoverlordofdata.entitas.Matcher
 import com.darkoverlordofdata.entitas.Entity
+{% for type in ext %}import {{ type }}{% endfor %}
 
 
 /**
