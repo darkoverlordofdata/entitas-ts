@@ -34,7 +34,7 @@ module example {
       //  sprite.alpha = Rnd.random(127);
       //  sprite.anchor.set(0.5, 0.5);
       //  sprite.position.set(~~x, ~~y);
-      //  viewContainer.addChild(sprite);
+      //  bosco['viewContainer'].addChild(sprite);
       //
       //  this.pool.createEntity('star')
       //    .addPosition(~~x, ~~y)

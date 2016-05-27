@@ -23,7 +23,7 @@ module example {
         var e = entities[i];
         if ((e.expires.delay -= bosco.delta) <= 0) {
           e.isDestroy = true;
-          //viewContainer.removeChild(e.sprite.object);
+          //bosco['viewContainer'].removeChild(e.sprite.object);
           //pool.destroyEntity(e);
         }
       }

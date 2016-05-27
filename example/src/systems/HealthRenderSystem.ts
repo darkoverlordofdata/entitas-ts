@@ -55,13 +55,13 @@ module example {
       var b:BitmapText = new BitmapText('100%', {font: '20px Radio Stars', align: 'left'});
       b.scale.set(0.5, 0.5);
 
-      viewContainer.addChild(b);
+      bosco['viewContainer'].addChild(b);
       this.texts[e.id] = b;
     };
 
     protected onEntityRemoved = (group:Group, e:Entity, index:number, component:IComponent) => {
       // remove the text element from the sprite
-      viewContainer.removeChild(this.texts[e.id]);
+      bosco['viewContainer'].removeChild(this.texts[e.id]);
       this.texts[e.id] = null;
       delete this.texts[e.id];
     };

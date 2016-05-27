@@ -24,7 +24,7 @@ module example {
         var e = entities[i];
         if (e.position.y > height - e.bounds.radius) {
           e.isDestroy = true;
-          //viewContainer.removeChild(e.sprite.object);
+          //bosco['viewContainer'].removeChild(e.sprite.object);
           //pool.destroyEntity(e);
         }
       }

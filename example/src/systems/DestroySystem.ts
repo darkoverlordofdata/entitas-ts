@@ -20,7 +20,7 @@ module example {
       var entities = this.group.getEntities();
       for (var i = 0, l = entities.length; i < l; i++) {
         var e = entities[i];
-        viewContainer.removeChild(e.sprite.object);
+        bosco['viewContainer'].removeChild(e.sprite.object);
         this.pool.destroyEntity(e);
       }
     }

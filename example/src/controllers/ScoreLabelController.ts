@@ -18,7 +18,7 @@ module example {
 
       this.label = new Text('Score', { font: 'bold 50px Arial', fill: 'white' });
       this.label.position.set((bosco.config.width - this.label.width) / 2, 10);
-      viewContainer.addChild(this.label);
+      bosco['viewContainer'].addChild(this.label);
       var pool = Pools.pool;
       pool.getGroup(Matcher.Score).onEntityAdded.add((group, entity, index, component) => {
         this.updateScore(entity.score.value);
@@ -27,7 +27,7 @@ module example {
       this.updateScore(pool.score.value);
       this.fps = new Text('FPS', { font: 'bold 30px Arial', fill: 'white' });
       this.fps.position.set(0, 10);
-      viewContainer.addChild(this.fps);
+      bosco['viewContainer'].addChild(this.fps);
 
     }
 

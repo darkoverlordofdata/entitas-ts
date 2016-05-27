@@ -36,9 +36,9 @@ module example {
       this.totalCreated.position.set(0, 40);
       this.totalDeleted.position.set(0, 60);
 
-      viewContainer.addChild(this.activeEntities);
-      viewContainer.addChild(this.totalCreated);
-      viewContainer.addChild(this.totalDeleted);
+      bosco['viewContainer'].addChild(this.activeEntities);
+      bosco['viewContainer'].addChild(this.totalCreated);
+      bosco['viewContainer'].addChild(this.totalDeleted);
 
     }
 

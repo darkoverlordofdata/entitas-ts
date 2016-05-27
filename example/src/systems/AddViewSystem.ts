@@ -49,19 +49,19 @@ module example {
         sprite.scale.set(scale.x, scale.y);
       }
       var layer = sprite['layer'] = e.layer.ordinal;
-      var sprites = viewContainer.children;
+      var sprites = bosco['viewContainer'].children;
 
       /**
        * Insert sprite in layer order
        */
       for (var i=0, l=sprites.length; i<l; i++) {
         if (layer <= sprites[i]['layer']) {
-          viewContainer.addChildAt(sprite, i);
+          bosco['viewContainer'].addChildAt(sprite, i);
           e.addSprite(layer, sprite);
           return;
         }
       }
-      viewContainer.addChild(sprite);
+      bosco['viewContainer'].addChild(sprite);
       e.addSprite(layer, sprite);
     };
 

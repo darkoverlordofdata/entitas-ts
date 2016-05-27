@@ -16,7 +16,7 @@ module example {
     protected group: Group;
     protected bullets: Group;
     protected enemies: Group;
-    protected collisionPairs: Array<CollisionPair>;
+    private collisionPairs: Array<CollisionPair>;
 
     public setPool(pool: Pool) {
       this.pool = pool;
