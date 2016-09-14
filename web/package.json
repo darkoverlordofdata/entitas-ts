@@ -1,0 +1,17 @@
+{
+  "name": "shmupwarz",
+  "main": "index.html",
+  "window": {
+    "title": "ShmupWarz",
+    "icon": "d16a.icon.png",
+    "toolbar": true,
+    "frame": true,
+    "width": 1000,
+    "height": 600,
+    "position": "center",
+    "min_width": 400,
+    "min_height": 200,
+    "max_width": 1280,
+    "max_height": 700
+  }
+}

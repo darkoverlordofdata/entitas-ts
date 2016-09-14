@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "target": "ES5",
-    "module": "commonjs",
     "noImplicitAny": false,
     "removeComments": false,
     "preserveConstEnums": false,
@@ -39,11 +38,6 @@
     "lib/entitas/Pool.ts",
     "lib/entitas/ReactiveSystem.ts",
     "lib/entitas/Systems.ts",
-    "lib/entitas/extensions/CollectionExtension.ts",
-    "lib/entitas/extensions/EntityExtension.ts",
-    "lib/entitas/extensions/GroupExtension.ts",
-    "lib/entitas/extensions/MatcherExtension.ts",
-    "lib/entitas/extensions/PoolExtension.ts",
     "lib/entitas/viewer/PoolObserver.ts",
     "lib/entitas/viewer/SystemObserver.ts",
     "lib/entitas/viewer/EntityBehavior.ts",
