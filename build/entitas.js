@@ -2306,72 +2306,6 @@ var entitas;
     entitas.Systems = Systems;
 })(entitas || (entitas = {}));
 //# sourceMappingURL=Systems.js.map
-/**
- * Inspired by Unity
- */
-var entitas;
-(function (entitas) {
-    var viewer;
-    (function (viewer) {
-        var Systems = entitas.Systems;
-        var EntityBehavior = entitas.viewer.EntityBehavior;
-        var SystemObserver = entitas.viewer.SystemObserver;
-        var PoolObserver = entitas.viewer.PoolObserver;
-        /**
-         * @class VisualDebugging
-         */
-        var VisualDebugging = (function () {
-            function VisualDebugging() {
-            }
-            /**
-             *
-             * @param pool
-             */
-            VisualDebugging.init = function (pool) {
-                if (location.search === "?debug=true" && window['dat']) {
-                    viewer.gui = new dat.GUI({ height: 5 * 32 - 1, width: 300 });
-                    var observer = new PoolObserver(pool);
-                    VisualDebugging._controllers = {};
-                    VisualDebugging._entities = viewer.gui.addFolder('Entities');
-                    VisualDebugging._pools = viewer.gui.addFolder('Pools');
-                    VisualDebugging._systems = viewer.gui.addFolder('Systems');
-                    VisualDebugging._entities.open();
-                    VisualDebugging._pools.open();
-                    VisualDebugging._systems.open();
-                    VisualDebugging._pools.add(observer, 'entities').listen();
-                    VisualDebugging._pools.add(observer, 'reusable').listen();
-                    pool.onEntityCreated.add(function (pool, entity) {
-                        var proxy = new EntityBehavior(entity);
-                        VisualDebugging._controllers[entity.id] = VisualDebugging._entities.add(proxy, proxy.name).listen();
-                    });
-                    pool.onEntityDestroyed.add(function (pool, entity) {
-                        var controller = VisualDebugging._controllers[entity.id];
-                        delete VisualDebugging._controllers[entity.id];
-                        VisualDebugging._entities.remove(controller);
-                    });
-                    Systems.prototype.initialize = function () {
-                        for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
-                            this._initializeSystems[i].initialize();
-                        }
-                        var sys = new SystemObserver(this);
-                        VisualDebugging._systems.add(sys, 'initialize').listen();
-                        VisualDebugging._systems.add(sys, 'execute').listen();
-                    };
-                    function get_Systems() {
-                        return "Systems " + " (" +
-                            this._initializeSystems.length + " init, " +
-                            this._executeSystems.length + " exe ";
-                    }
-                    Object.defineProperty(Systems.prototype, 'name', { get: function () { return 'Systems'; } });
-                    Object.defineProperty(Systems.prototype, 'Systems', { get: get_Systems });
-                }
-            };
-            return VisualDebugging;
-        }());
-        viewer.VisualDebugging = VisualDebugging;
-    })(viewer = entitas.viewer || (entitas.viewer = {}));
-})(entitas || (entitas = {}));
-//# sourceMappingURL=VisualDebugging.js.map
 var entitas;
 (function (entitas) {
     var viewer;
@@ -2516,3 +2450,69 @@ var entitas;
     })(viewer = entitas.viewer || (entitas.viewer = {}));
 })(entitas || (entitas = {}));
 //# sourceMappingURL=SystemObserver.js.map
+/**
+ * Inspired by Unity
+ */
+var entitas;
+(function (entitas) {
+    var viewer;
+    (function (viewer) {
+        var Systems = entitas.Systems;
+        var EntityBehavior = entitas.viewer.EntityBehavior;
+        var SystemObserver = entitas.viewer.SystemObserver;
+        var PoolObserver = entitas.viewer.PoolObserver;
+        /**
+         * @class VisualDebugging
+         */
+        var VisualDebugging = (function () {
+            function VisualDebugging() {
+            }
+            /**
+             *
+             * @param pool
+             */
+            VisualDebugging.init = function (pool) {
+                if (location.search === "?debug=true" && window['dat']) {
+                    viewer.gui = new dat.GUI({ height: 5 * 32 - 1, width: 300 });
+                    var observer = new PoolObserver(pool);
+                    VisualDebugging._controllers = {};
+                    VisualDebugging._entities = viewer.gui.addFolder('Entities');
+                    VisualDebugging._pools = viewer.gui.addFolder('Pools');
+                    VisualDebugging._systems = viewer.gui.addFolder('Systems');
+                    VisualDebugging._entities.open();
+                    VisualDebugging._pools.open();
+                    VisualDebugging._systems.open();
+                    VisualDebugging._pools.add(observer, 'entities').listen();
+                    VisualDebugging._pools.add(observer, 'reusable').listen();
+                    pool.onEntityCreated.add(function (pool, entity) {
+                        var proxy = new EntityBehavior(entity);
+                        VisualDebugging._controllers[entity.id] = VisualDebugging._entities.add(proxy, proxy.name).listen();
+                    });
+                    pool.onEntityDestroyed.add(function (pool, entity) {
+                        var controller = VisualDebugging._controllers[entity.id];
+                        delete VisualDebugging._controllers[entity.id];
+                        VisualDebugging._entities.remove(controller);
+                    });
+                    Systems.prototype.initialize = function () {
+                        for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
+                            this._initializeSystems[i].initialize();
+                        }
+                        var sys = new SystemObserver(this);
+                        VisualDebugging._systems.add(sys, 'initialize').listen();
+                        VisualDebugging._systems.add(sys, 'execute').listen();
+                    };
+                    function get_Systems() {
+                        return "Systems " + " (" +
+                            this._initializeSystems.length + " init, " +
+                            this._executeSystems.length + " exe ";
+                    }
+                    Object.defineProperty(Systems.prototype, 'name', { get: function () { return 'Systems'; } });
+                    Object.defineProperty(Systems.prototype, 'Systems', { get: get_Systems });
+                }
+            };
+            return VisualDebugging;
+        }());
+        viewer.VisualDebugging = VisualDebugging;
+    })(viewer = entitas.viewer || (entitas.viewer = {}));
+})(entitas || (entitas = {}));
+//# sourceMappingURL=VisualDebugging.js.map

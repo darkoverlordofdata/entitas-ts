@@ -29,9 +29,9 @@
     "web/src/entitas/Pool.js",
     "web/src/entitas/ReactiveSystem.js",
     "web/src/entitas/Systems.js",
-    "web/src/entitas/viewer/VisualDebugging.js",
     "web/src/entitas/viewer/EntityBehavior.js",
     "web/src/entitas/viewer/PoolObserver.js",
-    "web/src/entitas/viewer/SystemObserver.js"
+    "web/src/entitas/viewer/SystemObserver.js",
+    "web/src/entitas/viewer/VisualDebugging.js"
   ]
 }
