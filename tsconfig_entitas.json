@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES5",
+    "target": "es6",
     "noImplicitAny": false,
     "removeComments": false,
     "preserveConstEnums": false,
@@ -23,24 +23,24 @@
     "lib/entitas/exceptions/Exception.ts",
     "lib/entitas/exceptions/EntityAlreadyHasComponentException.ts",
     "lib/entitas/exceptions/EntityDoesNotHaveComponentException.ts",
-    "lib/entitas/exceptions/EntityIsNotEnabledException.ts",
     "lib/entitas/exceptions/EntityIsAlreadyReleasedException.ts",
-    "lib/entitas/exceptions/SingleEntityException.ts",
-    "lib/entitas/exceptions/GroupObserverException.ts",
-    "lib/entitas/exceptions/PoolDoesNotContainEntityException.ts",
     "lib/entitas/exceptions/EntityIsNotDestroyedException.ts",
+    "lib/entitas/exceptions/EntityIsNotEnabledException.ts",
+    "lib/entitas/exceptions/GroupObserverException.ts",
     "lib/entitas/exceptions/MatcherException.ts",
-    "lib/entitas/Matcher.ts",
+    "lib/entitas/exceptions/PoolDoesNotContainEntityException.ts",
+    "lib/entitas/exceptions/SingleEntityException.ts",
     "lib/entitas/TriggerOnEvent.ts",
+    "lib/entitas/Matcher.ts",
     "lib/entitas/Entity.ts",
     "lib/entitas/Group.ts",
     "lib/entitas/GroupObserver.ts",
     "lib/entitas/Pool.ts",
     "lib/entitas/ReactiveSystem.ts",
     "lib/entitas/Systems.ts",
+    "lib/entitas/viewer/EntityBehavior.ts",
     "lib/entitas/viewer/PoolObserver.ts",
     "lib/entitas/viewer/SystemObserver.ts",
-    "lib/entitas/viewer/EntityBehavior.ts",
     "lib/entitas/viewer/VisualDebugging.ts"
   ]
 }

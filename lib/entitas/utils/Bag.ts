@@ -1,5 +1,9 @@
+/**
+ * @port https://github.com/junkdog/artemis-odb/blob/master/artemis/src/main/java/com/artemis/utils/Bag.java
+ * not a full implementation, mostly just what is needed by the game engine.
+ */
 module entitas.utils {
-  "use strict";
+  "use strict"
 
   /**
    * Collection type a bit like ArrayList but does not preserve the order of its
@@ -7,7 +11,7 @@ module entitas.utils {
    */
 
   export class Bag<E> extends Array implements ImmutableBag<E> {
-    public size_:number = 0;
+    public size_:number = 0
 
     /**
      * Constructs an empty Bag with the specified initial capacity.
@@ -17,8 +21,8 @@ module entitas.utils {
      * @param capacity the initial capacity of Bag
      */
     constructor(capacity:number = 64) {
-      super();
-      this.length = capacity;
+      super()
+      this.length = capacity
     }
 
     /**
@@ -31,10 +35,10 @@ module entitas.utils {
      */
     removeAt(index:number):E {
 
-      var e:E = this[index]; // make copy of element to remove so it can be returned
+      const e:E = this[index]; // make copy of element to remove so it can be returned
       this[index] = this[--this.size_]; // overwrite item to remove with last element
       this[this.size_] = null; // null last element, so gc can do its work
-      return e;
+      return e
     }
 
 
@@ -48,21 +52,21 @@ module entitas.utils {
      * @return {boolean} true if this list contained the specified element
      */
     remove(e:E):boolean {
-      var i:number;
-      var e2:E;
-      var size = this.size_;
+      let i:number
+      let e2:E
+      const size = this.size_
 
       for (i = 0; i < size; i++) {
-        e2 = this[i];
+        e2 = this[i]
 
         if (e == e2) {
           this[i] = this[--this.size_]; // overwrite item to remove with last element
           this[this.size_] = null; // null last element, so gc can do its work
-          return true;
+          return true
         }
       }
 
-      return false;
+      return false
     }
 
     /**
@@ -72,12 +76,12 @@ module entitas.utils {
      */
     removeLast():E {
       if (this.size_ > 0) {
-        var e:E = this[--this.size_];
-        this[this.size_] = null;
-        return e;
+        const e:E = this[--this.size_]
+        this[this.size_] = null
+        return e
       }
 
-      return null;
+      return null
     }
 
     /**
@@ -87,15 +91,15 @@ module entitas.utils {
      * @return {boolean}
      */
     contains(e:E):boolean {
-      var i:number;
-      var size:number;
+      let i:number
+      let size:number
 
       for (i=0, size=this.size_; size > i; i++) {
         if (e === this[i]) {
-          return true;
+          return true
         }
       }
-      return false;
+      return false
     }
 
     /**
@@ -107,29 +111,29 @@ module entitas.utils {
      * @return {boolean} true if this Bag changed as a result of the call
      */
     removeAll(bag:ImmutableBag<E>):boolean {
-      var modified:boolean = false;
-      var i:number;
-      var j:number;
-      var l:number;
-      var e1:E;
-      var e2:E;
+      let modified:boolean = false
+      let i:number
+      let j:number
+      let l:number
+      let e1:E
+      let e2:E
 
       for (i = 0, l=bag.size(); i < l; i++) {
-        e1 = bag.get(i);
+        e1 = bag.get(i)
 
         for (j = 0; j < this.size_; j++) {
-          e2 = this[j];
+          e2 = this[j]
 
           if (e1 === e2) {
-            this.removeAt(j);
-            j--;
-            modified = true;
-            break;
+            this.removeAt(j)
+            j--
+            modified = true
+            break
           }
         }
       }
 
-      return modified;
+      return modified
     }
 
     /**
@@ -143,7 +147,7 @@ module entitas.utils {
       if (index >= this.length) {
         throw new Error('ArrayIndexOutOfBoundsException')
       }
-      return this[index];
+      return this[index]
     }
 
     /**
@@ -161,7 +165,7 @@ module entitas.utils {
       if (index >= this.length) {
         this.grow((index * 7) / 4 + 1)
       }
-      return this[index];
+      return this[index]
     }
 
     /**
@@ -170,7 +174,7 @@ module entitas.utils {
      * @return {number} the number of elements in this bag
      */
     size():number {
-      return this.size_;
+      return this.size_
     }
 
     /**
@@ -179,7 +183,7 @@ module entitas.utils {
      * @return {number} the number of elements the bag can hold without growing.
      */
     getCapacity():number {
-      return this.length;
+      return this.length
     }
 
     /**
@@ -189,7 +193,7 @@ module entitas.utils {
      * @return {boolean}
      */
     isIndexWithinBounds(index:number):boolean {
-      return index < this.getCapacity();
+      return index < this.getCapacity()
     }
 
     /**
@@ -198,7 +202,7 @@ module entitas.utils {
      * @return {boolean} true if this list contains no elements
      */
     isEmpty():boolean {
-      return this.size_ == 0;
+      return this.size_ == 0
     }
 
     /**
@@ -211,10 +215,10 @@ module entitas.utils {
     add(e:E) {
       // is size greater than capacity increase capacity
       if (this.size_ === this.length) {
-        this.grow();
+        this.grow()
       }
 
-      this[this.size_++] = e;
+      this[this.size_++] = e
     }
 
     /**
@@ -225,19 +229,19 @@ module entitas.utils {
      */
     set(index:number, e:E) {
       if (index >= this.length) {
-        this.grow(index * 2);
+        this.grow(index * 2)
       }
-      this.size_ = index + 1;
-      this[index] = e;
+      this.size_ = index + 1
+      this[index] = e
     }
 
     grow(newCapacity:number = ~~((this.length * 3) / 2) + 1) {
-      this.length = ~~newCapacity;
+      this.length = ~~newCapacity
     }
 
     ensureCapacity(index:number) {
       if (index >= this.length) {
-        this.grow(index * 2);
+        this.grow(index * 2)
       }
     }
 
@@ -246,14 +250,14 @@ module entitas.utils {
      * this call returns.
      */
     clear() {
-      var i:number;
-      var size:number;
+      let i:number
+      let size:number
       // null all elements so gc can clean up
       for (i=0, size=this.size_; i < size; i++) {
-        this[i] = null;
+        this[i] = null
       }
 
-      this.size_ = 0;
+      this.size_ = 0
     }
 
     /**
@@ -261,10 +265,10 @@ module entitas.utils {
      * @param items
      */
     addAll(items:ImmutableBag<E>) {
-      var i:number;
+      let i:number
 
       for (i = 0; items.size() > i; i++) {
-        this.add(items.get(i));
+        this.add(items.get(i))
       }
     }
 

@@ -1,9 +1,9 @@
 module entitas {
-  "use strict";
+  "use strict"
 
   export class Exception {
     /** @type {string} */
-    public message:string;
+    public message:string
 
     /**
      * Base exception class
@@ -11,11 +11,11 @@ module entitas {
      * @param message
      */
     constructor(message) {
-      this.message = message;
+      this.message = message
     }
     /** @return {string} */
     public toString():string {
-      return this.message;
+      return this.message
     }
   }
 }

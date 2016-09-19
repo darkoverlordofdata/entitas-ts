@@ -1,10 +1,10 @@
 module entitas {
-  "use strict";
+  "use strict"
 
-  import ISystem = entitas.ISystem;
-  import ReactiveSystem = entitas.ReactiveSystem;
-  import IExecuteSystem = entitas.IExecuteSystem;
-  import IInitializeSystem = entitas.IInitializeSystem;
+  import ISystem = entitas.ISystem
+  import ReactiveSystem = entitas.ReactiveSystem
+  import IExecuteSystem = entitas.IExecuteSystem
+  import IInitializeSystem = entitas.IInitializeSystem
 
   /**
    * As
@@ -15,28 +15,28 @@ module entitas {
    * @returns Object
    */
   function as(object, method:string) {
-    return method in object ? object : null;
+    return method in object ? object : null
   }
 
   export class Systems implements IInitializeSystem, IExecuteSystem {
 
-    protected _initializeSystems:Array<IInitializeSystem>;
-    protected _executeSystems:Array<IExecuteSystem>;
+    protected _initializeSystems:Array<IInitializeSystem>
+    protected _executeSystems:Array<IExecuteSystem>
 
     /**
      * @constructor
      *
      */
     constructor() {
-      this._initializeSystems = [];
-      this._executeSystems = [];
+      this._initializeSystems = []
+      this._executeSystems = []
       /**
        * Load Extensions
        */
     }
 
-    public add(system:ISystem);
-    public add(system:Function);
+    public add(system:ISystem)
+    public add(system:Function)
 
     /**
      * Add System
@@ -46,35 +46,35 @@ module entitas {
     public add(system) {
 
       if ('function' === typeof system) {
-        var Klass:any = system;
-        system = new Klass();
+        const Klass:any = system
+        system = new Klass()
       }
 
-      var reactiveSystem = as(system, 'subsystem');
-      var initializeSystem = reactiveSystem != null
+      const reactiveSystem = as(system, 'subsystem')
+      const initializeSystem = reactiveSystem != null
           ? as(reactiveSystem.subsystem, 'initialize')
-          : as(system, 'initialize');
+          : as(system, 'initialize')
 
       if (initializeSystem != null) {
-        var _initializeSystems = this._initializeSystems;
-        _initializeSystems[_initializeSystems.length] = initializeSystem;
+        const _initializeSystems = this._initializeSystems
+        _initializeSystems[_initializeSystems.length] = initializeSystem
       }
 
-      var executeSystem:IExecuteSystem = as(system, 'execute');
+      const executeSystem:IExecuteSystem = as(system, 'execute')
       if (executeSystem != null) {
-        var _executeSystems = this._executeSystems;
-        _executeSystems[_executeSystems.length] = executeSystem;
+        const _executeSystems = this._executeSystems
+        _executeSystems[_executeSystems.length] = executeSystem
       }
 
-      return this;
+      return this
     }
 
     /**
      * Initialize Systems
      */
     public initialize() {
-      for (var i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
-        this._initializeSystems[i].initialize();
+      for (let i = 0, initializeSysCount = this._initializeSystems.length; i < initializeSysCount; i++) {
+        this._initializeSystems[i].initialize()
       }
     }
 
@@ -82,9 +82,9 @@ module entitas {
      * Execute sustems
      */
     public execute() {
-      var executeSystems = this._executeSystems;
-      for (var i = 0, exeSysCount = executeSystems.length; i < exeSysCount; i++) {
-        executeSystems[i].execute();
+      const executeSystems = this._executeSystems
+      for (let i = 0, exeSysCount = executeSystems.length; i < exeSysCount; i++) {
+        executeSystems[i].execute()
       }
     }
 
@@ -93,15 +93,15 @@ module entitas {
      * Clear subsystems
      */
     public clearReactiveSystems() {
-      for (var i = 0, exeSysCount = this._executeSystems.length; i < exeSysCount; i++) {
-        var reactiveSystem = as(this._executeSystems[i], 'subsystem');
+      for (let i = 0, exeSysCount = this._executeSystems.length; i < exeSysCount; i++) {
+        const reactiveSystem = as(this._executeSystems[i], 'subsystem')
         if (reactiveSystem != null) {
-          reactiveSystem.clear();
+          reactiveSystem.clear()
         }
 
-        var nestedSystems:Systems = as(this._executeSystems[i], 'clearReactiveSystems');
+        const nestedSystems:Systems = as(this._executeSystems[i], 'clearReactiveSystems')
         if (nestedSystems != null) {
-          nestedSystems.clearReactiveSystems();
+          nestedSystems.clearReactiveSystems()
         }
       }
 

@@ -1,27 +1,27 @@
 module entitas {
 
   export interface IReactiveExecuteSystem extends ISystem {
-    execute(entities:Array<Entity>);
+    execute(entities:Array<Entity>)
   }
 
   export interface IMultiReactiveSystem extends IReactiveExecuteSystem {
-    triggers:Array<TriggerOnEvent>;
+    triggers:Array<TriggerOnEvent>
   }
 
   export interface IReactiveSystem extends IReactiveExecuteSystem {
-    trigger:TriggerOnEvent;
+    trigger:TriggerOnEvent
   }
 
   export interface IEnsureComponents {
-    ensureComponents:IMatcher;
+    ensureComponents:IMatcher
   }
 
   export interface IExcludeComponents {
-    excludeComponents:IMatcher;
+    excludeComponents:IMatcher
   }
 
   export interface IClearReactiveSystem {
-    clearAfterExecute:boolean;
+    clearAfterExecute:boolean
   }
 
 

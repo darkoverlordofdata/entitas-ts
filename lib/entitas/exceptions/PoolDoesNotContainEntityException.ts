@@ -1,7 +1,7 @@
 module entitas.exceptions {
-  "use strict";
+  "use strict"
 
-  import Exception = entitas.Exception;
+  import Exception = entitas.Exception
 
   export class PoolDoesNotContainEntityException extends Exception {
     /**
@@ -11,7 +11,7 @@ module entitas.exceptions {
      * @param message
      */
     public constructor(entity:Entity, message:string) {
-      super(message + "\nPool does not contain entity " + entity);
+      super(message + "\nPool does not contain entity " + entity)
     }
   }
 }

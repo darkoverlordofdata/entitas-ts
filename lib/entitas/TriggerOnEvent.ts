@@ -1,7 +1,7 @@
 module entitas {
-  "use strict";
+  "use strict"
 
-  import GroupEventType = entitas.GroupEventType;
+  import GroupEventType = entitas.GroupEventType
 
   export class TriggerOnEvent {
     /**

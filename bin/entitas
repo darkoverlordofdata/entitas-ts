@@ -23,13 +23,11 @@ Options:
   -s  [--system]    # create a system
   -e  [--entity]    # create an entity
   -x  [--extension] # extend a class
+  -d  [--debug]     # set debug flag, where available
   -p  [--platform]  # target platform for generated code: 
                         html5   - typescript & javascript combination (default)
                         scala   - scala & scalaJs
-                        kt      - kotlin 
-                        fs      - fsharp
                         
-  ** = experimental: not finished or fully supported                        
                         
 """
 switch process.argv[2]

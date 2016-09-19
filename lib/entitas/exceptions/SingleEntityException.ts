@@ -1,7 +1,7 @@
 module entitas.exceptions {
-  "use strict";
+  "use strict"
 
-  import Exception = entitas.Exception;
+  import Exception = entitas.Exception
 
   export class SingleEntityException extends Exception {
     /**
@@ -10,7 +10,7 @@ module entitas.exceptions {
      * @param matcher
      */
     public constructor(matcher:IMatcher) {
-      super("Multiple entities exist matching " + matcher);
+      super("Multiple entities exist matching " + matcher)
     }
   }
 }

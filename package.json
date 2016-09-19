@@ -8,17 +8,16 @@
   },
   "config": {},
   "scripts": {
-    "_vscode_build": "tsc",
-    "build": "tsc -p . --outFile build/entitas.js -d && cat web/src/entitas/utils/UUID.js LF web/src/entitas/utils/ImmutableBag.js LF web/src/entitas/utils/Bag.js LF web/src/entitas/utils/Signal.js LF web/src/entitas/utils/Stopwatch.js LF web/src/entitas/interfaces/IComponent.js LF web/src/entitas/interfaces/IMatcher.js LF web/src/entitas/interfaces/ISystem.js LF web/src/entitas/interfaces/IExecuteSystem.js LF web/src/entitas/interfaces/IInitializeSystem.js LF web/src/entitas/interfaces/IReactiveSystem.js LF web/src/entitas/exceptions/Exception.js LF web/src/entitas/exceptions/EntityAlreadyHasComponentException.js LF web/src/entitas/exceptions/EntityDoesNotHaveComponentException.js LF web/src/entitas/exceptions/EntityIsAlreadyReleasedException.js LF web/src/entitas/exceptions/EntityIsNotDestroyedException.js LF web/src/entitas/exceptions/EntityIsNotEnabledException.js LF web/src/entitas/exceptions/GroupObserverException.js LF web/src/entitas/exceptions/MatcherException.js LF web/src/entitas/exceptions/PoolDoesNotContainEntityException.js LF web/src/entitas/exceptions/SingleEntityException.js LF web/src/entitas/TriggerOnEvent.js LF web/src/entitas/Matcher.js LF web/src/entitas/Entity.js LF web/src/entitas/Group.js LF web/src/entitas/GroupObserver.js LF web/src/entitas/Pool.js LF web/src/entitas/ReactiveSystem.js LF web/src/entitas/Systems.js LF web/src/entitas/viewer/EntityBehavior.js LF web/src/entitas/viewer/PoolObserver.js LF web/src/entitas/viewer/SystemObserver.js LF web/src/entitas/viewer/VisualDebugging.js | java -jar packages/closure-compiler/lib/vendor/compiler.jar --compilation_level ADVANCED_OPTIMIZATIONS --js_output_file build/entitas.min.js && cat web/src/entitas/utils/UUID.js LF web/src/entitas/utils/ImmutableBag.js LF web/src/entitas/utils/Bag.js LF web/src/entitas/utils/Signal.js LF web/src/entitas/utils/Stopwatch.js LF web/src/entitas/interfaces/IComponent.js LF web/src/entitas/interfaces/IMatcher.js LF web/src/entitas/interfaces/ISystem.js LF web/src/entitas/interfaces/IExecuteSystem.js LF web/src/entitas/interfaces/IInitializeSystem.js LF web/src/entitas/interfaces/IReactiveSystem.js LF web/src/entitas/exceptions/Exception.js LF web/src/entitas/exceptions/EntityAlreadyHasComponentException.js LF web/src/entitas/exceptions/EntityDoesNotHaveComponentException.js LF web/src/entitas/exceptions/EntityIsAlreadyReleasedException.js LF web/src/entitas/exceptions/EntityIsNotDestroyedException.js LF web/src/entitas/exceptions/EntityIsNotEnabledException.js LF web/src/entitas/exceptions/GroupObserverException.js LF web/src/entitas/exceptions/MatcherException.js LF web/src/entitas/exceptions/PoolDoesNotContainEntityException.js LF web/src/entitas/exceptions/SingleEntityException.js LF web/src/entitas/TriggerOnEvent.js LF web/src/entitas/Matcher.js LF web/src/entitas/Entity.js LF web/src/entitas/Group.js LF web/src/entitas/GroupObserver.js LF web/src/entitas/Pool.js LF web/src/entitas/ReactiveSystem.js LF web/src/entitas/Systems.js LF web/src/entitas/viewer/EntityBehavior.js LF web/src/entitas/viewer/PoolObserver.js LF web/src/entitas/viewer/SystemObserver.js LF web/src/entitas/viewer/VisualDebugging.js > build/entitas.js && uglifyjs build/entitas.js --compress --mangle --output build/entitas.min.js",
+    "_vscode_build": "bin/entitas generate && tsc -p ./tsconfig_entitas.json && tsc -p ./tsconfig_example.json",
+    "build": "tsc --outFile build/entitas.js && cat build/entitas.js | java -jar packages/closure-compiler/lib/vendor/compiler.jar --compilation_level WHITESPACE_ONLY --js_output_file build/entitas.min.js",
+    "build_es6": "tsc && cat build/entitas.js | java -jar /home/bruce/Applications/closure-compiler/compiler-latest/closure-compiler-v20160822.jar --compilation_level WHITESPACE_ONLY --js_output_file build/entitas.min.js",
     "clean": "rm -rf build/*",
-    "get": "bower-installer && cake get",
     "publish": "gulp publish",
-    "jsdoc": "jsdoc goog/lib -r --template ../jaguarjs-jsdoc --configure ./conf.json --readme ./readme.md --destination ./build/web",
-    "prebuild": "bower install && npm run get && npm run clean -s",
+    "doc": "typedoc --out build/web lib/entitas --mode file --theme node_modules/typedoc-dash-theme/bin",
+    "prebuild": "bower-installer && npm run clean -s",
     "start": "tools/server web",
     "test": "NODE_ENV=test mocha --compilers coffee:coffee-script --require test/test_helper.js --recursive",
-    "transpile": "tsc",
-    "typedoc": "typedoc --theme minimal --module commonjs --target ES5 --out ./build/doc lib/entitas && cp -f ./build/doc/index.html ./build/web/index.html"
+    "transpile": "tsc"
   },
   "author": "darkoverlordofdata@gmail.com",
   "license": "MIT",
@@ -29,18 +28,16 @@
   "devDependencies": {
     "chai": "~1.9.2",
     "coffee-script": "1.9.0",
-    "coffee2closure": "^0.1.12",
     "gulp": "^3.9.0",
     "gulp-gh-pages": "^0.5.2",
-    "gulp-manifest": "0.0.7",
     "gulp-shell": "^0.4.2",
     "gulp-webserver": "^0.9.1",
+    "liquid.coffee": "^0.1.2",
+    "mkdirp": "^0.5.1",
     "mocha": "~2.0.1",
     "morgan": "^1.6.1",
+    "nw": "^0.17.3",
     "walker": "^1.0.7"
   },
-  "dependencies": {
-    "liquid.coffee": "^0.1.2",
-    "mkdirp": "^0.5.1"
-  }
+  "dependencies": {}
 }

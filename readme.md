@@ -7,16 +7,15 @@ use entitas cli to generate components, extensions & typescript declarations for
     Usage:
     entitas init namespace [-t name]
     entitas create -c name field:type... 
-    entitas generate [-p <html5|fsharp|scala|kotlin>]
+    entitas generate [-p <html5|scala>]
     
     Options:
+    -d  [--debug>     # debug html5
     -t  [--template]  # template name
     -c  [--component] # create a component
     -p  [--platform]  # target platform for generated code: 
                             html5   - typescript & javascript combination (default)
                             scala   - scala & scalaJs
-                            kt      - kotlin 
-                            fs      - fsharp
                             
 
 Components classes are generated from json configuration, enforcing data oriented design.
@@ -28,12 +27,6 @@ Components classes are generated from json configuration, enforcing data oriente
     npm install . -g
 
 
-### Generate Doc
-
-    tools/configure
-    tools/ts2goog
-    npm run jsodc
-    
     
 ### Entitas RunTime
 For CSharp, use the original: https://github.com/sschmid/Entitas-CSharp

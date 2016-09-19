@@ -1,1 +1,1 @@
-bosco.start(example.config);
+bosco.start(example.config)

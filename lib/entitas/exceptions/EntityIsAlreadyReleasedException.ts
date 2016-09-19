@@ -1,7 +1,7 @@
 module entitas.exceptions {
-  "use strict";
+  "use strict"
 
-  import Exception = entitas.Exception;
+  import Exception = entitas.Exception
 
   export class EntityIsAlreadyReleasedException extends Exception {
     /**
@@ -9,7 +9,7 @@ module entitas.exceptions {
      * @constructor
      */
     public constructor() {
-      super("Entity is already released!");
+      super("Entity is already released!")
     }
   }
 }

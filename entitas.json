@@ -1,6 +1,7 @@
 {
   "namespace": "example",
   "src": "example/src",
+  "debug": false,
   "output": {
     "javascript": "web/src/example/generatedExtensions.js",
     "typescript": "example/src/generatedComponents.ts",

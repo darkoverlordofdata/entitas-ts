@@ -7,21 +7,21 @@ module entitas.viewer {
    */
   export class SystemObserver {
     public get name():string {
-      return "Systems";
+      return "Systems"
     }
 
     public get Systems():string {
       return "Systems " + " (" +
         this._systems._initializeSystems.length + " init, " +
-        this._systems._executeSystems.length + " exe ";
+        this._systems._executeSystems.length + " exe "
 
     }
     public get initialize():string {
-      return this._systems._initializeSystems.length;
+      return this._systems._initializeSystems.length
     }
 
     public get execute():string {
-      return this._systems._executeSystems.length;
+      return this._systems._executeSystems.length
     }
 
     /**

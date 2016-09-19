@@ -31,7 +31,9 @@ module.exports =
 #
   run: (flags...) ->
 
-    #if flags.indexOf('-u') or flags.indexOf('--unity')
+    #dbg = if flags.indexOf('-d') or flags.indexOf('--debug') then true else false
+    dbg = config.debug
+    console.log('debug = ',dbg)
 
     ts = [] # StringBuilder for generated typescript code
     js = [] # StringBuilder for generated javascript code
@@ -342,6 +344,7 @@ module.exports =
     ###
      * Pools
     ###
+
     ts.push "  export class Pools {"
     ts.push "    "
     ts.push "    static _allPools:Array<Pool>;"
@@ -357,7 +360,7 @@ module.exports =
     ts.push "    "
     ts.push "    static get pool():Pool {"
     ts.push "      if (Pools._pool == null) {"
-    ts.push "        Pools._pool = new Pool(CoreComponentIds, CoreComponentIds.TotalComponents);"
+    ts.push "        Pools._pool = new Pool(CoreComponentIds, CoreComponentIds.TotalComponents, #{dbg});"
     ts.push "        entitas.viewer.VisualDebugging.init(Pools._pool);"
     ts.push "      }"
     ts.push "    "

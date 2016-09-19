@@ -1,16 +1,16 @@
 module entitas {
-  "use strict";
+  "use strict"
 
-  import Group = entitas.Group;
-  import IMatcher = entitas.IMatcher;
-  import GroupObserver = entitas.GroupObserver;
-  import GroupEventType = entitas.GroupEventType;
-  import IReactiveSystem = entitas.IReactiveSystem;
-  import IEnsureComponents = entitas.IEnsureComponents;
-  import IExcludeComponents = entitas.IExcludeComponents;
-  import IMultiReactiveSystem = entitas.IMultiReactiveSystem;
-  import IClearReactiveSystem = entitas.IClearReactiveSystem;
-  import IReactiveExecuteSystem = entitas.IReactiveExecuteSystem;
+  import Group = entitas.Group
+  import IMatcher = entitas.IMatcher
+  import GroupObserver = entitas.GroupObserver
+  import GroupEventType = entitas.GroupEventType
+  import IReactiveSystem = entitas.IReactiveSystem
+  import IEnsureComponents = entitas.IEnsureComponents
+  import IExcludeComponents = entitas.IExcludeComponents
+  import IMultiReactiveSystem = entitas.IMultiReactiveSystem
+  import IClearReactiveSystem = entitas.IClearReactiveSystem
+  import IReactiveExecuteSystem = entitas.IReactiveExecuteSystem
 
   /**
    * As
@@ -21,7 +21,7 @@ module entitas {
    * @returns Object
    */
   function as(object, method:string) {
-    return method in object ? object : null;
+    return method in object ? object : null
   }
 
   export class ReactiveSystem implements IExecuteSystem {
@@ -32,12 +32,12 @@ module entitas {
      * @name entitas.Pool#subsystem */
     public get subsystem():entitas.IReactiveExecuteSystem {return this._subsystem;}
 
-    private _subsystem:IReactiveExecuteSystem;
-    public _observer:GroupObserver;
-    public _ensureComponents:IMatcher;
-    public _excludeComponents:IMatcher;
-    public _clearAfterExecute:boolean;
-    public _buffer:Array<Entity>;
+    private _subsystem:IReactiveExecuteSystem
+    public _observer:GroupObserver
+    public _ensureComponents:IMatcher
+    public _excludeComponents:IMatcher
+    public _clearAfterExecute:boolean
+    public _buffer:Array<Entity>
 
     /**
      * @constructor
@@ -47,42 +47,42 @@ module entitas {
      */
     constructor(pool:Pool, subSystem:IReactiveSystem|IMultiReactiveSystem) {
 
-      var triggers:Array<TriggerOnEvent> = 'triggers' in subSystem ?  subSystem['triggers'] : [subSystem['trigger']];
-      this._subsystem = subSystem;
+      const triggers:Array<TriggerOnEvent> = 'triggers' in subSystem ?  subSystem['triggers'] : [subSystem['trigger']]
+      this._subsystem = subSystem
 
-      var ensureComponents = as(subSystem, 'ensureComponents');
+      const ensureComponents = as(subSystem, 'ensureComponents')
       if (ensureComponents != null) {
-        this._ensureComponents = ensureComponents.ensureComponents;
+        this._ensureComponents = ensureComponents.ensureComponents
       }
-      var excludeComponents = as(subSystem, 'excludeComponents');
+      const excludeComponents = as(subSystem, 'excludeComponents')
       if (excludeComponents != null) {
-        this._excludeComponents = excludeComponents.excludeComponents;
+        this._excludeComponents = excludeComponents.excludeComponents
       }
 
-      this._clearAfterExecute = as(subSystem, 'clearAfterExecute') != null;
+      this._clearAfterExecute = as(subSystem, 'clearAfterExecute') != null
 
-      var triggersLength = triggers.length;
-      var groups = new Array(triggersLength);
-      var eventTypes = new Array(triggersLength);
-      for (var i = 0; i < triggersLength; i++) {
-        var trigger = triggers[i];
-        groups[i] = pool.getGroup(trigger.trigger);
-        eventTypes[i] = trigger.eventType;
+      const triggersLength = triggers.length
+      const groups = new Array(triggersLength)
+      const eventTypes = new Array(triggersLength)
+      for (let i = 0; i < triggersLength; i++) {
+        const trigger = triggers[i]
+        groups[i] = pool.getGroup(trigger.trigger)
+        eventTypes[i] = trigger.eventType
       }
-      this._observer = new GroupObserver(groups, eventTypes);
-      this._buffer = [];
+      this._observer = new GroupObserver(groups, eventTypes)
+      this._buffer = []
     }
 
     public activate() {
-      this._observer.activate();
+      this._observer.activate()
     }
 
     public deactivate() {
-      this._observer.deactivate();
+      this._observer.deactivate()
     }
 
     public clear() {
-      this._observer.clearCollectedEntities();
+      this._observer.clearCollectedEntities()
     }
 
 
@@ -91,53 +91,53 @@ module entitas {
      */
     public execute() {
 
-      var collectedEntities = this._observer.collectedEntities;
-      var ensureComponents = this._ensureComponents;
-      var excludeComponents = this._excludeComponents;
-      var buffer = this._buffer;
-      var j = buffer.length;
+      const collectedEntities = this._observer.collectedEntities
+      const ensureComponents = this._ensureComponents
+      const excludeComponents = this._excludeComponents
+      const buffer = this._buffer
+      let j = buffer.length
 
 
       if (Object.keys(collectedEntities).length != 0) {
         if (ensureComponents) {
           if (excludeComponents) {
-            for (var k in collectedEntities) {
-              var e = collectedEntities[k];
+            for (let k in collectedEntities) {
+              const e = collectedEntities[k]
               if (ensureComponents.matches(e) && !excludeComponents.matches(e)) {
-                buffer[j++] = e.addRef();
+                buffer[j++] = e.addRef()
               }
             }
           } else {
-            for (var k in collectedEntities) {
-              var e = collectedEntities[k];
+            for (let k in collectedEntities) {
+              const e = collectedEntities[k]
               if (ensureComponents.matches(e)) {
-                buffer[j++] = e.addRef();
+                buffer[j++] = e.addRef()
               }
             }
           }
         } else if (excludeComponents) {
-          for (var k in collectedEntities) {
-            var e = collectedEntities[k];
+          for (let k in collectedEntities) {
+            const e = collectedEntities[k]
             if (!excludeComponents.matches(e)) {
-              buffer[j++] = e.addRef();
+              buffer[j++] = e.addRef()
             }
           }
         } else {
-          for (var k in collectedEntities) {
-            var e = collectedEntities[k];
-            buffer[j++] = e.addRef();
+          for (let k in collectedEntities) {
+            const e = collectedEntities[k]
+            buffer[j++] = e.addRef()
           }
         }
 
-        this._observer.clearCollectedEntities();
+        this._observer.clearCollectedEntities()
         if (buffer.length != 0) {
-          this._subsystem.execute(buffer);
-          for (var i = 0, bufferCount = buffer.length; i < bufferCount; i++) {
-            buffer[i].release();
+          this._subsystem.execute(buffer)
+          for (let i = 0, bufferCount = buffer.length; i < bufferCount; i++) {
+            buffer[i].release()
           }
-          buffer.length = 0;
+          buffer.length = 0
           if (this._clearAfterExecute) {
-            this._observer.clearCollectedEntities();
+            this._observer.clearCollectedEntities()
           }
         }
       }

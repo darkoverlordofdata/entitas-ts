@@ -1,7 +1,7 @@
 module entitas.exceptions {
-  "use strict";
+  "use strict"
 
-  import Exception = entitas.Exception;
+  import Exception = entitas.Exception
 
   export class EntityIsNotDestroyedException extends Exception {
     /**
@@ -10,7 +10,7 @@ module entitas.exceptions {
      * @param message
      */
     public constructor(message:string) {
-      super(message + "\nEntity is not destroyed yet!");
+      super(message + "\nEntity is not destroyed yet!")
     }
   }
 }

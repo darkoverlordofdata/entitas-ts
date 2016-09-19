@@ -5,9 +5,9 @@ module entitas.viewer {
    */
   export class EntityBehavior {
     public get name():string {
-      return this._name;
+      return this._name
     }
-    private _name:string;
+    private _name:string
 
     /**
      * @constructor
@@ -16,11 +16,11 @@ module entitas.viewer {
      */
     constructor(protected obj) {
       if (this.obj.name) {
-        this._name = this.obj.name;
+        this._name = this.obj.name
       } else {
-        this._name = `Entity_${this.obj._creationIndex}`;
+        this._name = `Entity_${this.obj._creationIndex}`
       }
-      Object.defineProperty(this, this._name, {get: () => this.obj.toString()});
+      Object.defineProperty(this, this._name, {get: () => this.obj.toString()})
     }
   }
 

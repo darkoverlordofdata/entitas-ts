@@ -1,1 +1,1 @@
-module.exports = require('./build/lib.js');
+module.exports = require('./build/entitas.js')

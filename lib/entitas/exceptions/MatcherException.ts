@@ -1,7 +1,7 @@
 module entitas.exceptions {
-  "use strict";
+  "use strict"
 
-  import Exception = entitas.Exception;
+  import Exception = entitas.Exception
 
   export class MatcherException extends Exception {
     /**
@@ -10,7 +10,7 @@ module entitas.exceptions {
      * @param matcher
      */
     public constructor(matcher:IMatcher) {
-      super("matcher.indices.length must be 1 but was " + matcher.indices.length);
+      super("matcher.indices.length must be 1 but was " + matcher.indices.length)
     }
   }
 }

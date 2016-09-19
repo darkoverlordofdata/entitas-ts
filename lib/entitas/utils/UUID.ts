@@ -1,7 +1,7 @@
 module entitas.utils {
-  "use strict";
+  "use strict"
 
-  var hex = [ // hex identity values 0-255
+  const hex = [ // hex identity values 0-255
     "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f",
     "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1a", "1b", "1c", "1d", "1e", "1f",
     "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "2a", "2b", "2c", "2d", "2e", "2f",
@@ -18,14 +18,14 @@ module entitas.utils {
     "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "da", "db", "dc", "dd", "de", "df",
     "e0", "e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9", "ea", "eb", "ec", "ed", "ee", "ef",
     "f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "fa", "fb", "fc", "fd", "fe", "ff"
-  ];
+  ]
 
   /**
    * @class UUID
    */
   export class UUID {
 
-    //static check = {};
+    //static check = {}
     /**
      * Fast UUID generator, RFC4122 version 4 compliant
      * format xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
@@ -35,14 +35,14 @@ module entitas.utils {
      * @link http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/21963136#21963136
      **/
     static randomUUID() {
-      var d0 = Math.random() * 0xffffffff | 0;
-      var d1 = Math.random() * 0xffffffff | 0;
-      var d2 = Math.random() * 0xffffffff | 0;
-      var d3 = Math.random() * 0xffffffff | 0;
+      const d0 = Math.random() * 0xffffffff | 0
+      const d1 = Math.random() * 0xffffffff | 0
+      const d2 = Math.random() * 0xffffffff | 0
+      const d3 = Math.random() * 0xffffffff | 0
       return hex[d0 & 0xff] + hex[d0 >> 8 & 0xff] + hex[d0 >> 16 & 0xff] + hex[d0 >> 24 & 0xff] + '-' +
         hex[d1 & 0xff] + hex[d1 >> 8 & 0xff] + '-' + hex[d1 >> 16 & 0x0f | 0x40] + hex[d1 >> 24 & 0xff] + '-' +
         hex[d2 & 0x3f | 0x80] + hex[d2 >> 8 & 0xff] + '-' + hex[d2 >> 16 & 0xff] + hex[d2 >> 24 & 0xff] +
-        hex[d3 & 0xff] + hex[d3 >> 8 & 0xff] + hex[d3 >> 16 & 0xff] + hex[d3 >> 24 & 0xff];
+        hex[d3 & 0xff] + hex[d3 >> 8 & 0xff] + hex[d3 >> 16 & 0xff] + hex[d3 >> 24 & 0xff]
 
     }
 
