@@ -3,17 +3,17 @@
     "config": "tpl/default/entitas.json",
     "src" : {
       "controllers": [
-        "tpl/default/controllers/GameController.ts.tpl",
-        "tpl/default/controllers/InputController.ts.tpl",
-        "tpl/default/controllers/ScoreLabelController.ts.tpl"
+        "tpl/default/controllers/GameController.ts.liquid",
+        "tpl/default/controllers/InputController.ts.liquid",
+        "tpl/default/controllers/ScoreLabelController.ts.liquid"
       ],
       "systems": [
-        "tpl/default/systems/AddViewSystem.ts.tpl",
-        "tpl/default/systems/DestroySystem.ts.tpl",
-        "tpl/default/systems/ProcessInputSystem.ts.tpl",
-        "tpl/default/systems/RemoveViewSystem.ts.tpl",
-        "tpl/default/systems/RenderPositionSystem.ts.tpl",
-        "tpl/default/systems/ScoreSystem.ts.tpl"
+        "tpl/default/systems/AddViewSystem.ts.liquid",
+        "tpl/default/systems/DestroySystem.ts.liquid",
+        "tpl/default/systems/ProcessInputSystem.ts.liquid",
+        "tpl/default/systems/RemoveViewSystem.ts.liquid",
+        "tpl/default/systems/RenderPositionSystem.ts.liquid",
+        "tpl/default/systems/ScoreSystem.ts.liquid"
       ]
     }
   }

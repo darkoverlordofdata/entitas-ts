@@ -34,13 +34,14 @@ getDefault = (arg) ->
     when 'string'   then '""'
     else 'null'
     
+camel = (str) -> str.charAt(0).toLowerCase() + str.substr(1)
 
 params = (args) ->
   s = []
   for arg in args
     name = arg.split(':')[0]
     type = getType(arg.split(':')[1]).replace('?', '') 
-    s.push "#{name}:#{type}"
+    s.push "#{camel(name)}:#{type}"
     
   s.join(', ') 
 
@@ -48,7 +49,7 @@ paramsonly = (args) ->
   s = []
   for arg in args
     name = arg.split(':')[0]
-    s.push "#{name}"
+    s.push "#{camel(name)}"
     
   s.join(', ') 
 
@@ -86,7 +87,7 @@ module.exports =
     # define some custom filters
     liquid.Template.registerFilter class
         @defaultValue: (field) -> getDefault getType(field.split(':')[1]).replace('?', '')
-        @camel: (str) -> str.charAt(0).toLowerCase() + str.substr(1)
+        @camel: camel
         @property: (str) -> str.split(':')[0]
         @params: params
         @paramsonly: paramsonly
@@ -101,7 +102,7 @@ module.exports =
           
     
     # generate the template
-    tpl = liquid.Template.parse(fs.readFileSync("#{__dirname}/lang/#{lang}.components.tpl", 'utf8'))
+    tpl = liquid.Template.parse(fs.readFileSync("#{__dirname}/lang/#{lang}.components.liquid", 'utf8'))
     code = tpl.render(merge(config, options, ext:ext))
     
     # Components - overwrite
@@ -110,7 +111,7 @@ module.exports =
     
     # systems
     mkdirp.sync path.join(process.cwd(), location, sysloc)
-    tpl = liquid.Template.parse(fs.readFileSync("#{__dirname}/lang/#{lang}.systems.tpl", 'utf8'))
+    tpl = liquid.Template.parse(fs.readFileSync("#{__dirname}/lang/#{lang}.systems.liquid", 'utf8'))
     for Name, interfaces of config.systems
       name = path.join(process.cwd(), location, "#{sysloc}/#{Name}System.#{lang}")
       unless fs.existsSync(name)

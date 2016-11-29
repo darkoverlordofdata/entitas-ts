@@ -10,14 +10,14 @@
     "outDir": "web/src/{{ namespace }}"
   },
   "files": [
-    "controllers/GameController.ts.tpl",
-    "controllers/InputController.ts.tpl",
-    "controllers/ScoreLabelController.ts.tpl",
-    "systems/AddViewSystem.ts.tpl",
-    "systems/DestroySystem.ts.tpl",
-    "systems/ProcessInputSystem.ts.tpl",
-    "systems/RemoveViewSystem.ts.tpl",
-    "systems/RenderPositionSystem.ts.tpl",
-    "systems/ScoreSystem.ts.tpl"
+    "controllers/GameController.ts.liquid",
+    "controllers/InputController.ts.liquid",
+    "controllers/ScoreLabelController.ts.liquid",
+    "systems/AddViewSystem.ts.liquid",
+    "systems/DestroySystem.ts.liquid",
+    "systems/ProcessInputSystem.ts.liquid",
+    "systems/RemoveViewSystem.ts.liquid",
+    "systems/RenderPositionSystem.ts.liquid",
+    "systems/ScoreSystem.ts.liquid"
   ]
 }

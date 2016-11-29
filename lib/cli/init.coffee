@@ -75,7 +75,7 @@ module.exports =
       tpl = liquid.Template.parse(fs.readFileSync("#{tf}/#{file}", 'utf8'))
       content = tpl.render(namespace:namespace)
       folder = path.dirname(file)
-      base = path.basename(file, '.tpl')
+      base = path.basename(file, '.liquid')
       mkdirp.sync "#{process.cwd()}/#{config.src}/#{folder}"
       fs.writeFileSync("#{process.cwd()}/#{config.src}/#{folder}/#{base}", content)
       console.log "#{type}:source #{process.cwd()}/#{config.src}/#{folder}/#{base}"

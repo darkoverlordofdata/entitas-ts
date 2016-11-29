@@ -23,7 +23,7 @@ module EntitasExtensions =
     [<AllowNullLiteral>]
     type {{ component.key }}Component() =
         inherit Component()
-{% if component.value == false %}        member val active = false with get, set
+{% if component.value == false %}        member val Active = false with get, set
 {% else %}{% for field in component.value %}        member val {{ field | property }} = {{ field | defaultValue }} with get, set
 {% endfor %}{% endif %}{% endfor %}
 
@@ -43,59 +43,59 @@ module EntitasExtensions =
     type Entity with
 {% for component in components %}
         (** Entity: {{ component.key }} methods*)
-{% if component.value == false %}        static member {{ component.key | camel }}Component= new {{ component.key }}Component()
+{% if component.value == false %}        static member {{ component.key }}Component= new {{ component.key }}Component()
 
-        member this.is{{ component.key }}
+        member this.Is{{ component.key }}
             with get() =
                 this.HasComponent(Component.{{ component.key }})
             and set(value) =
-                if (value <> this.is{{ component.key }}) then
-                    this.AddComponent(Component.{{ component.key }}, Entity.{{ component.key | camel }}Component) |> ignore
+                if (value <> this.Is{{ component.key }}) then
+                    this.AddComponent(Component.{{ component.key }}, Entity.{{ component.key }}Component) |> ignore
                 else
                     this.RemoveComponent(Component.{{ component.key }}) |> ignore
                 
         member this.Set{{ component.key }}(value) =
-            this.is{{ component.key }} <- value
+            this.Is{{ component.key }} <- value
             this
 
 {% else %}
-        member this.{{ component.key | camel }}ComponentPool
+        member this.{{ component.key }}ComponentPool
             with get() = new Stack<{{ component.key }}Component>()
 
-        member this.{{ component.key | camel }}
+        member this.{{ component.key }}
             with get() = this.GetComponent(Component.{{ component.key }}):?>{{ component.key }}Component
 
         member this.Has{{ component.key }}
             with get() = this.HasComponent(Component.{{ component.key }})
  
         member this.Clear{{ component.key }}ComponentPool() =
-            this.{{ component.key | camel }}ComponentPool.Clear()
+            this.{{ component.key }}ComponentPool.Clear()
 
         member this.Add{{ component.key }}({{ component.value | paramsonly }}) =
             let mutable c =
-                match this.{{ component.key | camel }}ComponentPool.Count with
+                match this.{{ component.key }}ComponentPool.Count with
                 | 0 -> new {{ component.key }}Component()
-                | _ -> this.{{ component.key | camel }}ComponentPool.Pop()
-            {% for field in component.value %}c.{{ field | property }} <- {{ field | property }}
+                | _ -> this.{{ component.key }}ComponentPool.Pop()
+            {% for field in component.value %}c.{{ field | property }} <- {{ field | property | camel }}
             {% endfor %}this.AddComponent(Component.{{ component.key }}, c) |> ignore
             this
 
         member this.Replace{{ component.key }}({{ component.value | paramsonly }}) =
-            let previousComponent = if this.Has{{ component.key }} then this.{{ component.key | camel }} else null
+            let previousComponent = if this.Has{{ component.key }} then this.{{ component.key }} else null
             let mutable c =
-                match this.{{ component.key | camel }}ComponentPool.Count with
+                match this.{{ component.key }}ComponentPool.Count with
                 | 0 -> new {{ component.key }}Component()
-                | _ -> this.{{ component.key | camel }}ComponentPool.Pop()
-            {% for field in component.value %}c.{{ field | property }} <- {{ field | property }}
+                | _ -> this.{{ component.key }}ComponentPool.Pop()
+            {% for field in component.value %}c.{{ field | property }} <- {{ field | property | camel }}
             {% endfor %}this.ReplaceComponent(Component.{{ component.key }}, c) |> ignore
             if not(isNull(previousComponent)) then
-                this.{{ component.key | camel }}ComponentPool.Push(previousComponent)
+                this.{{ component.key }}ComponentPool.Push(previousComponent)
             this
 
         member this.Remove{{ component.key }}() =
-            let c = this.{{ component.key | camel }}
+            let c = this.{{ component.key }}
             this.RemoveComponent(Component.{{ component.key }}) |> ignore
-            this.{{ component.key | camel }}ComponentPool.Push(c)
+            this.{{ component.key }}ComponentPool.Push(c)
             this
 
 {% endif %}{% endfor %}

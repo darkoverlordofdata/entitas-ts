@@ -9,3 +9,10 @@
                 Replace jsdoc with typedoc
                 Use let/const
                 fix fsharp templates
+
+        0.1.0 - move mkdirp to dependencies
+                move liquid.coffee to dependencies
+                rename templates to *.liquid for syntax highlighting
+                follow dotnet naming conventions for fsharp
+
+                todo: fix platform destination
