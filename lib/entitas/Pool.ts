@@ -65,19 +65,19 @@ module entitas {
      * Count of active entities
      * @type {number}
      * @name entitas.Pool#count */
-    public get count(): number { return Object.keys(this._entities).length; }
+    public get count(): number { return Object.keys(this._entities).length }
 
     /**
      * Count of entities waiting to be recycled
      * @type {number}
      * @name entitas.Pool#reusableEntitiesCount */
-    public get reusableEntitiesCount(): number { return this._reusableEntities.size(); }
+    public get reusableEntitiesCount(): number { return this._reusableEntities.size() }
 
     /**
      * Count of entities that sill have references
      * @type {number}
      * @name entitas.Pool#retainedEntitiesCount */
-    public get retainedEntitiesCount(): number { return Object.keys(this._retainedEntities).length; }
+    public get retainedEntitiesCount(): number { return Object.keys(this._retainedEntities).length }
 
     /**
      * Subscribe to Entity Created Event
@@ -133,10 +133,10 @@ module entitas {
     public _cachedUpdateGroupsComponentReplaced: Entity.ComponentReplaced
     public _cachedOnEntityReleased: Entity.EntityReleased
 
-    public getEntities(matcher: IMatcher): Entity[]
-    public getEntities(): Entity[]
-    public createSystem(system: ISystem)
-    public createSystem(system: Function)
+    public getEntities(matcher: IMatcher): Entity[];
+    public getEntities(): Entity[];
+    public createSystem(system: ISystem);
+    public createSystem(system: Function);
     
     /**
      * Set the system pool if supported

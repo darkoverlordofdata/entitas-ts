@@ -483,16 +483,6 @@ declare module entitas {
     import IAnyOfMatcher = entitas.IAnyOfMatcher;
     import INoneOfMatcher = entitas.INoneOfMatcher;
     import TriggerOnEvent = entitas.TriggerOnEvent;
-    /**
-     * Event Types
-     * @readonly
-     * @enum {number}
-     */
-    enum GroupEventType {
-        OnEntityAdded = 0,
-        OnEntityRemoved = 1,
-        OnEntityAddedOrRemoved = 2,
-    }
     module Matcher {
     }
     class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {
@@ -601,6 +591,19 @@ declare module entitas {
          * @returns {string}
          */
         toString(): string;
+        /**
+         * Check if the matchers are equal
+         * @param {Object} obj
+         * @returns {boolean}
+         */
+        equals(obj: any): boolean;
+        /**
+         * Check if the lists of component indices are equal
+         * @param {Array<number>} list1
+         * @param {Array<number>} list2
+         * @returns {boolean}
+         */
+        static equalIndices(i1: number[], i2: number[]): boolean;
         /**
          * Get the set if distinct (non-duplicate) indices from a list
          * @param {Array<number>} indices
@@ -872,7 +875,7 @@ declare module entitas {
         static dim(count: number, size: number): void;
         /**
          * Initialize
-         * allocate the entity pool.
+         * Extension point to allocate enetity pool.
          *
          * @param {number} totalComponents
          * @returns {Array<entitas.IComponent>}
@@ -1112,7 +1115,16 @@ declare module entitas {
     import Group = entitas.Group;
     import Entity = entitas.Entity;
     import IComponent = entitas.IComponent;
-    import GroupEventType = entitas.GroupEventType;
+    /**
+     * Event Types
+     * @readonly
+     * @enum {number}
+     */
+    enum GroupEventType {
+        OnEntityAdded = 0,
+        OnEntityRemoved = 1,
+        OnEntityAddedOrRemoved = 2,
+    }
     class GroupObserver {
         /**
          * Entities being observed
@@ -1268,7 +1280,6 @@ declare module entitas {
          * Global reference to pool instance
          * @type {entitas.Pool} */
         static instance: Pool;
-        _debug: boolean;
         _entities: {};
         _groups: {};
         _groupsForIndex: Bag<Bag<Group>>;
@@ -1299,7 +1310,7 @@ declare module entitas {
          * @param {number} totalComponents
          * @param {number} startCreationIndex
          */
-        constructor(components: {}, totalComponents: number, debug?: boolean, startCreationIndex?: number);
+        constructor(components: {}, totalComponents: number, startCreationIndex?: number);
         /**
          * Create a new entity
          * @param {string} name

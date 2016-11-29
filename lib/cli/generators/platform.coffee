@@ -52,8 +52,13 @@ paramsonly = (args) ->
     
   s.join(', ') 
 
-filename = (name) ->
-    if config.output? then if config.output[name]? then config.output[name] else "#{name}.#{lang}" 
+filename = (name, lang) ->
+    # if config.output? then if config.output[name]? then config.output[name] else "#{name}.#{lang}" 
+    if config.output?
+      if config.output[name]? then config.output[name] else "#{name}.#{lang}" 
+    else 
+      "unknown"
+
     
 merge = (options...) ->
   result = {}
@@ -100,8 +105,8 @@ module.exports =
     code = tpl.render(merge(config, options, ext:ext))
     
     # Components - overwrite
-    mkdirp.sync path.dirname(path.join(process.cwd(), location, filename("generated")))
-    fs.writeFileSync(path.join(process.cwd(), location, filename("generated")), code)
+    mkdirp.sync path.dirname(path.join(process.cwd(), location, filename("generated", lang)))
+    fs.writeFileSync(path.join(process.cwd(), location, filename("generated", lang)), code)
     
     # systems
     mkdirp.sync path.join(process.cwd(), location, sysloc)

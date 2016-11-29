@@ -328,10 +328,8 @@ module entitas {
             indices[j++] = i
           }
         }
-
         this._componentIndicesCache = indices
       }
-
       return this._componentIndicesCache
 
     }

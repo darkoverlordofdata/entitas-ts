@@ -1,13 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "declaration": true,
+    "target": "es6",
     "noImplicitAny": false,
     "removeComments": false,
     "preserveConstEnums": false,
     "sourceMap": true,
     "experimentalDecorators": true,
-    "outFile": "lib/cli/generators/entitas.js"
+    "outDir": "web/src/entitas"
   },
   "files": [
     "lib/entitas/utils/UUID.ts",

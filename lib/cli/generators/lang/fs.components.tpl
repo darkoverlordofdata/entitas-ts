@@ -49,8 +49,8 @@ module EntitasExtensions =
             with get() =
                 this.HasComponent(Component.{{ component.key }})
             and set(value) =
-                if (value != this.is{{ component.key }}) then
-                    this.AddComponent(Component.{{ component.key }}, this.{{ component.key | camel }}Component) |> ignore
+                if (value <> this.is{{ component.key }}) then
+                    this.AddComponent(Component.{{ component.key }}, Entity.{{ component.key | camel }}Component) |> ignore
                 else
                     this.RemoveComponent(Component.{{ component.key }}) |> ignore
                 
