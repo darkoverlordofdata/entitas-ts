@@ -8,3 +8,4 @@
                 Add debug flag for html5 projects
                 Replace jsdoc with typedoc
                 Use let/const
+                fix fsharp templates
