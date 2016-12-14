@@ -24,21 +24,20 @@ namespace Entitas {
     public class {{ component.key }}Component : Object, IComponent {
 {% if component.value == false %}        public bool active = true;
 {% else %}{% for field in component.value %}        public {{ field | fieldType }} {{ field | property }};  
-{% endfor %}{% endif %}{% endfor %}
-    }
+{% endfor %}{% endif %}
+    }{% endfor %}
 
     /**
     * Entity extensions
     */
     public class Entity : EntityBase {
 
-        public Entity(string componentsEnum, int totalComponents = 32) {
-            super(componentsEnum, totalComponents);
+        public Entity(string[] componentsEnum, int totalComponents = 32) {
+            base(componentsEnum, totalComponents);
             /* Preallocate component pools*/
-{% for component in components %}{% if (component.value == false) %} {
+{% for component in components %}{% if component.value == false %} 
             _{{ component.key | camel }}Component = new {{ component.key }}Component();
-            }
-{% else %}            _{{ component.key | camel }}ComponentPool = new Bag of {{ component.key }}Component;
+{% else %}            _{{ component.key | camel }}ComponentPool = new Bag<{{ component.key }}Component>();
             for (var i=0; i < POOL_SIZE; i++) {
                 _{{ component.key | camel }}ComponentPool.push(new {{ component.key }}Component());
             }
@@ -48,65 +47,79 @@ namespace Entitas {
         /** Entity: {{ component.key }} methods*/
 {% if component.value == false %}
 
-        /** @type {boolean} */
+        /** @type boolean */
         public bool is{{ component.key }} {
             get {
                 return hasComponent(Component.{{ component.key }});
             }
             set {
                 if (value)
-                    addComponent(Component.{{ component.key }}, Entity.{{ component.key }}Component);
+                    addComponent(Component.{{ component.key }}, _{{ component.key | camel }}Component);
                 else
                     removeComponent(Component.{{ component.key }});
             }
         }
         /**
-         * @param {boolean} value
-         * @returns {entitas.Entity}
+         * @param value boolean 
+         * @returns entitas.Entity
          */
-        Entity set{{ component.key }}(bool value) {
+        public Entity set{{ component.key }}(bool value) {
             is{{ component.key }} = value;
             return this;
         }
 {% else %}
+        /** @type {{ component.key }} */
         public {{ component.key }}Component {{ component.key | camel }} {
             get {
                 return ({{ component.key }}Component)getComponent(Component.{{ component.key }});
             }
         }
+        /** @type boolean */
         public bool has{{ component.key }} {
             get {
                 return hasComponent(Component.{{ component.key }});
             }
         }
-        public void clear{{ component.key | camel }}ComponentPool() {
+        public void clear{{ component.key }}ComponentPool() {
             _{{ component.key | camel }}ComponentPool.clear();
         }
-        public Entity add{{ component.key }}({{ component.value }}) {
-            var c = _{{ component.key | camel }}ComponentPool.length>0? _{{ component.key | camel }}ComponentPool.pop() : new {{ component.key }}Component();
+        /**{% for field in component.value %}
+         * @param {{ field | property }} {{ field | fieldType }}
+         {% endfor %}* @returns entitas.Entity
+         */
+        public Entity add{{ component.key }}({{ component.value | cparams }}) {
+            var c = _{{ component.key | camel }}ComponentPool.length > 0 ? _{{ component.key | camel }}ComponentPool.pop() : new {{ component.key }}Component();
             {% for field in component.value %}c.{{ field | property }} = {{ field | property | camel }};
             {% endfor %}addComponent(Component.{{ component.key }}, c);
             return this;
         }
-        public Entity replace{{ component.key }}({{ component.value }}) {
-            var previousComponent = has{{ component.key }} ? {{ component.key | camel }} : null;
-            var c = _{{ component.key | camel }}ComponentPool.length>0? _{{ component.key | camel }}ComponentPool.pop() : new {{ component.key }}Component();
+        /**{% for field in component.value %}fv
+         * @param {{ field | property }} {{ field | fieldType }}
+         {% endfor %}* @returns entitas.Entity
+         */
+        public Entity replace{{ component.key }}({{ component.value | cparams }}) {
+            var previousComponent = has{{ component.key }} ? this.{{ component.key | camel }} : null;
+            var c = _{{ component.key | camel }}ComponentPool.length > 0 ? _{{ component.key | camel }}ComponentPool.pop() : new {{ component.key }}Component();
             {% for field in component.value %}c.{{ field | property }} = {{ field | property | camel }};
             {% endfor %}replaceComponent(Component.{{ component.key }}, c) ;
             if (previousComponent != null)
                 _{{ component.key | camel }}ComponentPool.push(previousComponent);
             return this;
         }
+        /**
+         * @returns entitas.Entity
+         */
         public Entity remove{{ component.key }}() {
-            var c = {{ component.key }};
+            var c = {{ component.key | camel }};
             removeComponent(Component.{{ component.key }});
             _{{ component.key | camel }}ComponentPool.push(c);
             return this;
         }
 {% endif %}{% endfor %}
 {% for component in components %}{% if component.value == false %}
+        /** @type {{ component.key }} */
         {{ component.key }}Component _{{ component.key | camel }}Component;
-{% else %}
+{% else %}        /** @type entitas.utils.Bag<{{ component.key }}> */
         Bag<{{ component.key }}Component> _{{ component.key | camel }}ComponentPool;
 {% endif %}{% endfor %}
     }    

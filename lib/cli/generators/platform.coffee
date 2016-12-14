@@ -49,7 +49,7 @@ cparams = (args) ->
   s = []
   for arg in args
     name = arg.split(':')[0]
-    type = getType(arg.split(':')[1]).replace('?', '') 
+    type = getType(arg.split(':')[1]) ##.replace('?', '') 
     s.push "#{type} #{camel(name)}"
     
   s.join(', ') 
@@ -124,7 +124,7 @@ module.exports =
     mkdirp.sync path.join(process.cwd(), location, sysloc)
     tpl = liquid.Template.parse(fs.readFileSync("#{__dirname}/lang/#{lang}.systems.liquid", 'utf8'))
     for Name, interfaces of config.systems
-      name = path.join(process.cwd(), location, "#{sysloc}/#{Name}System.#{lang}")
+      name = path.join(process.cwd(), location, "#{sysloc}/#{Name}.#{lang}")
       unless fs.existsSync(name)
         code = tpl.render(merge(config, options, name:Name, interfaces:interfaces))
         fs.writeFileSync(name, code) 
