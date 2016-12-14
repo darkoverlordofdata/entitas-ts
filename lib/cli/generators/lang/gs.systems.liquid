@@ -1,0 +1,24 @@
+[indent=4]
+uses
+    Bosco
+    Entitas
+
+namespace {{ namespace }} 
+
+
+    class {{ name }} : Object implements {% for iface in interfaces %} {{ iface }}, {% endfor %}ISystem
+        _game : Game
+        _world: World
+
+        construct(game : Game)
+            _game = game
+
+
+{% for iface in interfaces %}
+{% case iface %}
+{% when "IExecuteSystem" %}        def execute()
+{% when "IInitializeSystem" %}        def initialize
+{% when "ISetWorld" %}        def setWorld(world: World)
+            _world = world
+{% endcase %}
+{% endfor %}

@@ -15,7 +15,7 @@ Usage:
   entitas create -s name interface...
   entitas create -e name 
   entitas create -x class name field:type...
-  entitas generate [-p <html5|fsharp|nim>]
+  entitas generate [-p <fs|html5|gs|scala>]
 
 Options:
   -t  [--template]  # template name
@@ -27,7 +27,8 @@ Options:
   -p  [--platform]  # target platform for generated code: 
                         html5   - typescript & javascript combination (default)
                         scala   - scala & scalaJs
-                        
+                        fs      - fsharp
+                        gs      - genie
                         
 """
 switch process.argv[2]

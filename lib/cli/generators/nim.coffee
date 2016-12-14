@@ -324,9 +324,12 @@ module.exports =
     se.push('\n')
     s2.push('\n')
     s3.push('\n')
+
+    const output = [s0.join('\n'), se.join('\n'), s2.join('\n'), s3.join('\n')]
+    fs.writeFileSync(path.join(process.cwd(), "src/gen/EntitasExtensions.nim"), output.join('\n'))
     
-    fs.writeFileSync(path.join(process.cwd(), "src/gen/ComponentEx.nim"), s0.join('\n'))
-    fs.writeFileSync(path.join(process.cwd(), "src/gen/EntityEx.nim"), se.join('\n'))
-    fs.writeFileSync(path.join(process.cwd(), "src/gen/MatchEx.nim"), s2.join('\n'))
-    fs.writeFileSync(path.join(process.cwd(), "src/gen/WorldEx.nim"), s3.join('\n'))
+    # fs.writeFileSync(path.join(process.cwd(), "src/gen/ComponentEx.nim"), s0.join('\n'))
+    # fs.writeFileSync(path.join(process.cwd(), "src/gen/EntityEx.nim"), se.join('\n'))
+    # fs.writeFileSync(path.join(process.cwd(), "src/gen/MatchEx.nim"), s2.join('\n'))
+    # fs.writeFileSync(path.join(process.cwd(), "src/gen/WorldEx.nim"), s3.join('\n'))
 

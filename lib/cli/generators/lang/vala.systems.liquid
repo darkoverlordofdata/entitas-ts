@@ -1,0 +1,25 @@
+using Entitas;
+
+namespace {{ namespace }} {
+
+
+    public class {{ name }} : Object, {% for iface in interfaces %} {{ iface }}, {% endfor %}ISystem {
+        Game _game;
+        World _world;
+
+        public {{ name }}(Game game) {
+            _game = game;
+        }
+
+
+{% for iface in interfaces %}
+{% case iface %}
+{% when "IExecuteSystem" %}        public void execute(){}
+{% when "IInitializeSystem" %}        public void initialize{}
+{% when "ISetWorld" %}        public void setWorld(World world) {
+            _world = world;
+        }
+{% endcase %}
+{% endfor %}
+    }
+}
