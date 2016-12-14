@@ -84,8 +84,8 @@ namespace Entitas {
             _{{ component.key | camel }}ComponentPool.clear();
         }
         /**{% for field in component.value %}
-         * @param {{ field | property }} {{ field | fieldType }}
-         {% endfor %}* @returns entitas.Entity
+         * @param {{ field | property }} {{ field | fieldType }}{% endfor %}
+         * @returns entitas.Entity
          */
         public Entity add{{ component.key }}({{ component.value | cparams }}) {
             var c = _{{ component.key | camel }}ComponentPool.length > 0 ? _{{ component.key | camel }}ComponentPool.pop() : new {{ component.key }}Component();
@@ -93,9 +93,9 @@ namespace Entitas {
             {% endfor %}addComponent(Component.{{ component.key }}, c);
             return this;
         }
-        /**{% for field in component.value %}fv
-         * @param {{ field | property }} {{ field | fieldType }}
-         {% endfor %}* @returns entitas.Entity
+        /**{% for field in component.value %}
+         * @param {{ field | property }} {{ field | fieldType }}{% endfor %}
+         * @returns entitas.Entity
          */
         public Entity replace{{ component.key }}({{ component.value | cparams }}) {
             var previousComponent = has{{ component.key }} ? this.{{ component.key | camel }} : null;

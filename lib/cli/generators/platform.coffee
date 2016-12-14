@@ -11,7 +11,7 @@ path = require('path')
 mkdirp = require('mkdirp')
 config = require("#{process.cwd()}/entitas.json")
 location = "#{config.src}/#{config.namespace.replace(/\./g,'/')}/"
-sysloc = if config.output.systems? then config.output.systems else "systems"
+sysloc = config.output.systems ? "systems"
 liquid = require('liquid.coffee')
 
 getType = (arg) ->

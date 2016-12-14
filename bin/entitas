@@ -15,7 +15,7 @@ Usage:
   entitas create -s name interface...
   entitas create -e name 
   entitas create -x class name field:type...
-  entitas generate [-p <fs|html5|gs|scala>]
+  entitas generate [-p <fs|html5|gs|scala|vala>]
 
 Options:
   -t  [--template]  # template name
@@ -29,6 +29,7 @@ Options:
                         scala   - scala & scalaJs
                         fs      - fsharp
                         gs      - genie
+                        vala    - vala
                         
 """
 switch process.argv[2]
