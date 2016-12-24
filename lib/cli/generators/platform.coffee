@@ -93,6 +93,7 @@ module.exports =
     ext = []
     options = parse(flags)
 
+
     # define some custom filters
     liquid.Template.registerFilter class
         @fieldType: (field) -> getType(field.split(':')[1]).replace('?', '')
@@ -111,9 +112,11 @@ module.exports =
           if type.indexOf('.') > -1 then ext.push type
               
           
+    folder = "#{__dirname}/lang/"
+    if flags[0] == "-t" then folder = path.resolve(flags[1])
     
     # generate the template
-    tpl = liquid.Template.parse(fs.readFileSync("#{__dirname}/lang/#{lang}.components.liquid", 'utf8'))
+    tpl = liquid.Template.parse(fs.readFileSync("#{folder}/#{lang}.components.liquid", 'utf8'))
     code = tpl.render(merge(config, options, ext:ext))
     
     # Components - overwrite
@@ -122,7 +125,7 @@ module.exports =
     
     # systems
     mkdirp.sync path.join(process.cwd(), location, sysloc)
-    tpl = liquid.Template.parse(fs.readFileSync("#{__dirname}/lang/#{lang}.systems.liquid", 'utf8'))
+    tpl = liquid.Template.parse(fs.readFileSync("#{folder}/#{lang}.systems.liquid", 'utf8'))
     for Name, interfaces of config.systems
       name = path.join(process.cwd(), location, "#{sysloc}/#{Name}.#{lang}")
       unless fs.existsSync(name)

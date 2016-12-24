@@ -38,9 +38,9 @@ namespace Entitas
             /* Preallocate component pools*/
 {% for component in components %}{% if component.value == false %}
             _{{ component.key | camel }}Component = new {{ component.key }}Component()
-{% else %}            _{{ component.key | camel }}ComponentPool = new Bag of {{ component.key }}Component
+{% else %}            _{{ component.key | camel }}ComponentPool = new GLib.Queue of {{ component.key }}Component
             for var i=1 to POOL_SIZE
-                _{{ component.key | camel }}ComponentPool.push(new {{ component.key }}Component())
+                _{{ component.key | camel }}ComponentPool.push_head(new {{ component.key }}Component())
 {% endif %}{% endfor %}
 {% for component in components %}
         /** Entity: {{ component.key }} methods*/
@@ -82,7 +82,7 @@ namespace Entitas
          * @return entitas.Entity
          */
         def add{{ component.key }}({{ component.value }}) : Entity
-            var c = _{{ component.key | camel }}ComponentPool.length > 0 ? _{{ component.key | camel }}ComponentPool.pop() : new {{ component.key }}Component()
+            var c = _{{ component.key | camel }}ComponentPool.length > 0 ? _{{ component.key | camel }}ComponentPool.pop_head() : new {{ component.key }}Component()
             {% for field in component.value %}c.{{ field | property }} = {{ field | property | camel }}
             {% endfor %}addComponent(Component.{{ component.key }}, c)
             return this
@@ -93,11 +93,11 @@ namespace Entitas
          */
         def replace{{ component.key }}({{ component.value }}) : Entity
             var previousComponent = has{{ component.key }} ? this.{{ component.key | camel }} : null
-            var c = _{{ component.key | camel }}ComponentPool.length>0? _{{ component.key | camel }}ComponentPool.pop() : new {{ component.key }}Component()
+            var c = _{{ component.key | camel }}ComponentPool.length>0? _{{ component.key | camel }}ComponentPool.pop_head() : new {{ component.key }}Component()
             {% for field in component.value %}c.{{ field | property }} = {{ field | property | camel }}
             {% endfor %}replaceComponent(Component.{{ component.key }}, c) 
             if previousComponent != null
-                _{{ component.key | camel }}ComponentPool.push(previousComponent)
+                _{{ component.key | camel }}ComponentPool.push_head(previousComponent)
             return this
 
         /**
@@ -106,13 +106,13 @@ namespace Entitas
         def remove{{ component.key }}() : Entity
             var c = {{ component.key | camel }}
             removeComponent(Component.{{ component.key }}) 
-            _{{ component.key | camel }}ComponentPool.push(c)
+            _{{ component.key | camel }}ComponentPool.push_head(c)
             return this
 
 {% endif %}{% endfor %}
 {% for component in components %}{% if component.value == false %}
         /** @type {{ component.key }} */
         _{{ component.key | camel }}Component : {{ component.key }}Component
-{% else %}        /** @type entitas.utils.Bag<{{ component.key }}> */
-        _{{ component.key | camel }}ComponentPool : Bag of {{ component.key }}Component
+{% else %}        /** @type entitas.utils.GLib.Queue<{{ component.key }}> */
+        _{{ component.key | camel }}ComponentPool : GLib.Queue of {{ component.key }}Component
 {% endif %}{% endfor %}

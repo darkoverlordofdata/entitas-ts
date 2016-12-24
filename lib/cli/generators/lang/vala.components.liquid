@@ -37,9 +37,9 @@ namespace Entitas {
             /* Preallocate component pools*/
 {% for component in components %}{% if component.value == false %} 
             _{{ component.key | camel }}Component = new {{ component.key }}Component();
-{% else %}            _{{ component.key | camel }}ComponentPool = new Bag<{{ component.key }}Component>();
+{% else %}            _{{ component.key | camel }}ComponentPool = new GLib.Queue<{{ component.key }}Component>();
             for (var i=0; i < POOL_SIZE; i++) {
-                _{{ component.key | camel }}ComponentPool.push(new {{ component.key }}Component());
+                _{{ component.key | camel }}ComponentPool.push_head(new {{ component.key }}Component());
             }
 {% endif %}{% endfor %}
         }
@@ -88,7 +88,7 @@ namespace Entitas {
          * @returns entitas.Entity
          */
         public Entity add{{ component.key }}({{ component.value | cparams }}) {
-            var c = _{{ component.key | camel }}ComponentPool.length > 0 ? _{{ component.key | camel }}ComponentPool.pop() : new {{ component.key }}Component();
+            var c = _{{ component.key | camel }}ComponentPool.length > 0 ? _{{ component.key | camel }}ComponentPool.pop_head() : new {{ component.key }}Component();
             {% for field in component.value %}c.{{ field | property }} = {{ field | property | camel }};
             {% endfor %}addComponent(Component.{{ component.key }}, c);
             return this;
@@ -99,11 +99,11 @@ namespace Entitas {
          */
         public Entity replace{{ component.key }}({{ component.value | cparams }}) {
             var previousComponent = has{{ component.key }} ? this.{{ component.key | camel }} : null;
-            var c = _{{ component.key | camel }}ComponentPool.length > 0 ? _{{ component.key | camel }}ComponentPool.pop() : new {{ component.key }}Component();
+            var c = _{{ component.key | camel }}ComponentPool.length > 0 ? _{{ component.key | camel }}ComponentPool.pop_head() : new {{ component.key }}Component();
             {% for field in component.value %}c.{{ field | property }} = {{ field | property | camel }};
             {% endfor %}replaceComponent(Component.{{ component.key }}, c) ;
             if (previousComponent != null)
-                _{{ component.key | camel }}ComponentPool.push(previousComponent);
+                _{{ component.key | camel }}ComponentPool.push_head(previousComponent);
             return this;
         }
         /**
@@ -112,15 +112,15 @@ namespace Entitas {
         public Entity remove{{ component.key }}() {
             var c = {{ component.key | camel }};
             removeComponent(Component.{{ component.key }});
-            _{{ component.key | camel }}ComponentPool.push(c);
+            _{{ component.key | camel }}ComponentPool.push_head(c);
             return this;
         }
 {% endif %}{% endfor %}
 {% for component in components %}{% if component.value == false %}
         /** @type {{ component.key }} */
         {{ component.key }}Component _{{ component.key | camel }}Component;
-{% else %}        /** @type entitas.utils.Bag<{{ component.key }}> */
-        Bag<{{ component.key }}Component> _{{ component.key | camel }}ComponentPool;
+{% else %}        /** @type entitas.utils.GLib.Queue<{{ component.key }}> */
+        GLib.Queue<{{ component.key }}Component> _{{ component.key | camel }}ComponentPool;
 {% endif %}{% endfor %}
     }    
 }
