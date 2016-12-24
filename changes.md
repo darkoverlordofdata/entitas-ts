@@ -15,7 +15,7 @@
                 rename templates to *.liquid for syntax highlighting
                 follow dotnet naming conventions for fsharp
 
-        0.1.1 - add vala & genie templates
+        0.1.2 - add vala & genie templates
                 generate -t [path] to specify path to look in for templates
                 add alternate genie templates in samples folder
                 ,resolves relative paths

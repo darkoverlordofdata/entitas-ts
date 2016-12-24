@@ -1,6 +1,6 @@
 {
   "name": "entitas-cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Entitas ECS Command Line Generator",
   "main": "index.js",
   "bin": {
@@ -12,7 +12,6 @@
     "build": "tsc --outFile build/entitas.js && cat build/entitas.js | java -jar packages/closure-compiler/lib/vendor/compiler.jar --compilation_level WHITESPACE_ONLY --js_output_file build/entitas.min.js",
     "build_es6": "tsc && cat build/entitas.js | java -jar /home/bruce/Applications/closure-compiler/compiler-latest/closure-compiler-v20160822.jar --compilation_level WHITESPACE_ONLY --js_output_file build/entitas.min.js",
     "clean": "rm -rf build/*",
-    "publish": "gulp publish",
     "doc": "typedoc --out build/web lib/entitas --mode file --theme node_modules/typedoc-dash-theme/bin",
     "prebuild": "bower-installer && npm run clean -s",
     "start": "tools/server web",
