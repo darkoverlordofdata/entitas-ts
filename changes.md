@@ -19,3 +19,7 @@
                 generate -t [path] to specify path to look in for templates
                 add alternate genie templates in samples folder
                 ,resolves relative paths
+
+        0.1.3 - init: add -t bin for non-html projects
+                platform: no insert namespace in src path, leave as is
+                

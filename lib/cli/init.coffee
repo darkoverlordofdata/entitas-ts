@@ -46,10 +46,42 @@ module.exports =
   }
 }
 """
+    ##
+    # this is plain html5, same as no option
+    ##
     if type is 'none'
       fs.writeFileSync("#{process.cwd()}/entitas.json", content)
       return
 
+    bin = """
+{
+  "namespace":"#{namespace}",
+  "src": "src",
+  "output": {
+    "systems":"Systems"
+  },
+  "alloc": {
+    "entities": 128,
+    "components": 64
+  },
+  "components": {
+  },
+  "systems": {
+  },
+  "entities": {
+  }
+}
+"""
+    ##
+    # this is plain non-html5, use for fsharp, vala, etc
+    ##
+    if type is 'bin'
+      fs.writeFileSync("#{process.cwd()}/entitas.json", bin)
+      return
+
+    ##
+    # this will be deprecated
+    ##
     # source template folder
     tf = "#{__dirname}/tpl/#{type}"
 

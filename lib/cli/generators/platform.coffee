@@ -10,7 +10,8 @@ fs = require('fs')
 path = require('path')
 mkdirp = require('mkdirp')
 config = require("#{process.cwd()}/entitas.json")
-location = "#{config.src}/#{config.namespace.replace(/\./g,'/')}/"
+#location = "#{config.src}/#{config.namespace.replace(/\./g,'/')}/"
+location = "#{config.src}/"
 sysloc = config.output.systems ? "systems"
 liquid = require('liquid.coffee')
 
