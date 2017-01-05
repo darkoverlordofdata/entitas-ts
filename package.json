@@ -1,6 +1,6 @@
 {
   "name": "entitas-cli",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Entitas ECS Command Line Generator",
   "main": "index.js",
   "bin": {
