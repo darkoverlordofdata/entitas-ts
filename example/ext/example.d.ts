@@ -25,6 +25,10 @@ declare module entitas.utils {
         contains(e: E): boolean;
     }
 }
+/**
+ * @port https://github.com/junkdog/artemis-odb/blob/master/artemis/src/main/java/com/artemis/utils/Bag.java
+ * not a full implementation, mostly just what is needed by the game engine.
+ */
 declare module entitas.utils {
     /**
      * Collection type a bit like ArrayList but does not preserve the order of its
@@ -178,13 +182,9 @@ declare module entitas.utils {
         /**
          * Dispatch event
          *
-         * @param $0
-         * @param $1
-         * @param $2
-         * @param $3
-         * @param $4
+         * @param args list
          */
-        dispatch($0?: any, $1?: any, $2?: any, $3?: any, $4?: any): void;
+        dispatch(...args: any[]): void;
         /**
          * Add event listener
          * @param listener
@@ -402,6 +402,27 @@ declare module entitas.exceptions {
 }
 declare module entitas.exceptions {
     import Exception = entitas.Exception;
+    class EntityIsAlreadyReleasedException extends Exception {
+        /**
+         * Entity Is Already Released Exception
+         * @constructor
+         */
+        constructor();
+    }
+}
+declare module entitas.exceptions {
+    import Exception = entitas.Exception;
+    class EntityIsNotDestroyedException extends Exception {
+        /**
+         * Entity Is Not Destroyed Exception
+         * @constructor
+         * @param message
+         */
+        constructor(message: string);
+    }
+}
+declare module entitas.exceptions {
+    import Exception = entitas.Exception;
     class EntityIsNotEnabledException extends Exception {
         /**
          * Entity Is Not Enabled Exception
@@ -413,53 +434,9 @@ declare module entitas.exceptions {
 }
 declare module entitas.exceptions {
     import Exception = entitas.Exception;
-    class EntityIsAlreadyReleasedException extends Exception {
-        /**
-         * Entity Is Already Released Exception
-         * @constructor
-         */
-        constructor();
-    }
-}
-declare module entitas.exceptions {
-    import Exception = entitas.Exception;
-    class SingleEntityException extends Exception {
-        /**
-         * Single Entity Exception
-         * @constructor
-         * @param matcher
-         */
-        constructor(matcher: IMatcher);
-    }
-}
-declare module entitas.exceptions {
-    import Exception = entitas.Exception;
     class GroupObserverException extends Exception {
         /**
          * Group Observer Exception
-         * @constructor
-         * @param message
-         */
-        constructor(message: string);
-    }
-}
-declare module entitas.exceptions {
-    import Exception = entitas.Exception;
-    class PoolDoesNotContainEntityException extends Exception {
-        /**
-         * Pool Does Not Contain Entity Exception
-         * @constructor
-         * @param entity
-         * @param message
-         */
-        constructor(entity: Entity, message: string);
-    }
-}
-declare module entitas.exceptions {
-    import Exception = entitas.Exception;
-    class EntityIsNotDestroyedException extends Exception {
-        /**
-         * Entity Is Not Destroyed Exception
          * @constructor
          * @param message
          */
@@ -477,12 +454,59 @@ declare module entitas.exceptions {
         constructor(matcher: IMatcher);
     }
 }
+declare module entitas.exceptions {
+    import Exception = entitas.Exception;
+    class PoolDoesNotContainEntityException extends Exception {
+        /**
+         * Pool Does Not Contain Entity Exception
+         * @constructor
+         * @param entity
+         * @param message
+         */
+        constructor(entity: Entity, message: string);
+    }
+}
+declare module entitas.exceptions {
+    import Exception = entitas.Exception;
+    class SingleEntityException extends Exception {
+        /**
+         * Single Entity Exception
+         * @constructor
+         * @param matcher
+         */
+        constructor(matcher: IMatcher);
+    }
+}
+declare module entitas {
+    import GroupEventType = entitas.GroupEventType;
+    class TriggerOnEvent {
+        trigger: IMatcher;
+        eventType: GroupEventType;
+        /**
+         * @constructor
+         *
+         * @param trigger
+         * @param eventType
+         */
+        constructor(trigger: IMatcher, eventType: GroupEventType);
+    }
+}
 declare module entitas {
     import Entity = entitas.Entity;
     import IAllOfMatcher = entitas.IAllOfMatcher;
     import IAnyOfMatcher = entitas.IAnyOfMatcher;
     import INoneOfMatcher = entitas.INoneOfMatcher;
     import TriggerOnEvent = entitas.TriggerOnEvent;
+    /**
+     * Event Types
+     * @readonly
+     * @enum {number}
+     */
+    enum GroupEventType {
+        OnEntityAdded = 0,
+        OnEntityRemoved = 1,
+        OnEntityAddedOrRemoved = 2,
+    }
     module Matcher {
     }
     class Matcher implements IAllOfMatcher, IAnyOfMatcher, INoneOfMatcher {
@@ -592,19 +616,6 @@ declare module entitas {
          */
         toString(): string;
         /**
-         * Check if the matchers are equal
-         * @param {Object} obj
-         * @returns {boolean}
-         */
-        equals(obj: any): boolean;
-        /**
-         * Check if the lists of component indices are equal
-         * @param {Array<number>} list1
-         * @param {Array<number>} list2
-         * @returns {boolean}
-         */
-        static equalIndices(i1: number[], i2: number[]): boolean;
-        /**
          * Get the set if distinct (non-duplicate) indices from a list
          * @param {Array<number>} indices
          * @returns {Array<number>}
@@ -621,20 +632,6 @@ declare module entitas {
         static anyOf(...args: number[]): IAnyOfMatcher;
         static anyOf(...args: Array<IMatcher>): IAnyOfMatcher;
         private static appendIndices(sb, prefix, indexArray);
-    }
-}
-declare module entitas {
-    import GroupEventType = entitas.GroupEventType;
-    class TriggerOnEvent {
-        trigger: IMatcher;
-        eventType: GroupEventType;
-        /**
-         * @constructor
-         *
-         * @param trigger
-         * @param eventType
-         */
-        constructor(trigger: IMatcher, eventType: GroupEventType);
     }
 }
 /**
@@ -875,7 +872,7 @@ declare module entitas {
         static dim(count: number, size: number): void;
         /**
          * Initialize
-         * Extension point to allocate enetity pool.
+         * allocate the entity pool.
          *
          * @param {number} totalComponents
          * @returns {Array<entitas.IComponent>}
@@ -1115,16 +1112,7 @@ declare module entitas {
     import Group = entitas.Group;
     import Entity = entitas.Entity;
     import IComponent = entitas.IComponent;
-    /**
-     * Event Types
-     * @readonly
-     * @enum {number}
-     */
-    enum GroupEventType {
-        OnEntityAdded = 0,
-        OnEntityRemoved = 1,
-        OnEntityAddedOrRemoved = 2,
-    }
+    import GroupEventType = entitas.GroupEventType;
     class GroupObserver {
         /**
          * Entities being observed
@@ -1280,6 +1268,7 @@ declare module entitas {
          * Global reference to pool instance
          * @type {entitas.Pool} */
         static instance: Pool;
+        _debug: boolean;
         _entities: {};
         _groups: {};
         _groupsForIndex: Bag<Bag<Group>>;
@@ -1310,7 +1299,7 @@ declare module entitas {
          * @param {number} totalComponents
          * @param {number} startCreationIndex
          */
-        constructor(components: {}, totalComponents: number, startCreationIndex?: number);
+        constructor(components: {}, totalComponents: number, debug?: boolean, startCreationIndex?: number);
         /**
          * Create a new entity
          * @param {string} name
@@ -1422,6 +1411,22 @@ declare module entitas {
 }
 declare module entitas.viewer {
     /**
+     * Profiler class for Entities
+     */
+    class EntityBehavior {
+        protected obj: any;
+        name: string;
+        private _name;
+        /**
+         * @constructor
+         *
+         * @param obj
+         */
+        constructor(obj: any);
+    }
+}
+declare module entitas.viewer {
+    /**
      * Profiler class for Pools
      */
     class PoolObserver {
@@ -1456,22 +1461,6 @@ declare module entitas.viewer {
          * @param _systems
          */
         constructor(_systems: any);
-    }
-}
-declare module entitas.viewer {
-    /**
-     * Profiler class for Entities
-     */
-    class EntityBehavior {
-        protected obj: any;
-        name: string;
-        private _name;
-        /**
-         * @constructor
-         *
-         * @param obj
-         */
-        constructor(obj: any);
     }
 }
 /**

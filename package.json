@@ -1,6 +1,6 @@
 {
   "name": "entitas-cli",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Entitas ECS Command Line Generator",
   "main": "index.js",
   "bin": {
@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "chai": "~1.9.2",
-    "coffee-script": "1.9.0",
+    "coffee-script": "1.12.4",
     "gulp": "^3.9.0",
     "gulp-gh-pages": "^0.5.2",
     "gulp-shell": "^0.4.2",
@@ -38,7 +38,7 @@
     "walker": "^1.0.7"
   },
   "dependencies": {
-    "liquid.coffee": "^0.1.2",
+    "liquid.coffee": "^0.1.8",
     "mkdirp": "^0.5.1"
   }
 }

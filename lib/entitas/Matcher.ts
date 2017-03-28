@@ -76,9 +76,9 @@ module entitas {
     private _id:number
 
     /** Extension Points */
-    public onEntityAdded():TriggerOnEvent;
-    public onEntityRemoved():TriggerOnEvent
-    public onEntityAddedOrRemoved():TriggerOnEvent
+    // public onEntityAdded():TriggerOnEvent 
+    // public onEntityRemoved():TriggerOnEvent
+    // public onEntityAddedOrRemoved():TriggerOnEvent
 
     /**
      * @constructor

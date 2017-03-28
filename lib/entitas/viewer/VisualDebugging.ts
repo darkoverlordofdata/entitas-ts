@@ -67,14 +67,18 @@ module entitas.viewer {
           VisualDebugging._systems.add(sys, 'execute').listen()
         }
 
-        function get_Systems() {
-          return "Systems " + " (" +
-            this._initializeSystems.length + " init, " +
-            this._executeSystems.length + " exe "
-        }
+        // function get_Systems() {
+        //   return "Systems " + " (" +
+        //     this._initializeSystems.length + " init, " +
+        //     this._executeSystems.length + " exe "
+        // }
 
         Object.defineProperty(Systems.prototype, 'name', {get: () => 'Systems'})
-        Object.defineProperty(Systems.prototype, 'Systems', {get: get_Systems})
+        Object.defineProperty(Systems.prototype, 'Systems', {get: () => {
+          return "Systems " + " (" +
+            this['_initializeSystems'].length + " init, " +
+            this['_executeSystems'].length + " exe "
+        }})
       }
     }
   }

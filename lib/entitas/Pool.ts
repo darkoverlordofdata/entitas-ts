@@ -133,10 +133,10 @@ module entitas {
     public _cachedUpdateGroupsComponentReplaced: Entity.ComponentReplaced
     public _cachedOnEntityReleased: Entity.EntityReleased
 
-    public getEntities(matcher: IMatcher): Entity[];
-    public getEntities(): Entity[];
-    public createSystem(system: ISystem);
-    public createSystem(system: Function);
+    // public getEntities(matcher: IMatcher): Entity[];
+    // public getEntities(): Entity[];
+    // public createSystem(system: ISystem);
+    // public createSystem(system: Function);
     
     /**
      * Set the system pool if supported

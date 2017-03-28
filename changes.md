@@ -23,3 +23,4 @@
         0.1.3 - init: add -t bin for non-html projects
                 platform: no insert namespace in src path, leave as is
                 
+        0.2.0 - update for typescript 2.1.6, coffeescript 1.12.4
